@@ -1,0 +1,62 @@
+import React from 'react'
+import axios from 'axios'
+import { useCart } from 'react-use-cart'
+
+const urlDevelopment = process.env.NEXT_PUBLIC_DEV_URL_PAYMENT
+const urlProduction = process.env.NEXT_PUBLIC_PRODUCTION_URL_PAYMENT
+const orderCodeUrl = process.env.NEXT_PUBLIC_ORDERCODE_URL
+
+
+export default function usePaymentVivaWallet() {
+    const [error, setError] = React.useState(null)
+    const { emptyCart } = useCart()
+
+    // Função para gerar o token no servidor e gerar o pagamento
+    const useVivaPayment = async (paymentData) => {
+        try {
+            // Realizar a requisição de pagamento
+            const payment = await axios.post(urlProduction, paymentData);
+
+            if (payment.status === 200) {
+                const orderCode = payment.data.orderCode;
+                const email = localStorage.getItem("email");
+
+                if (orderCode && email) {
+                    try {
+                        // Atualizar o customer com o orderCode
+                        const responseOrderCode = await axios.put(orderCodeUrl, { email, orderCode });
+
+                        if (responseOrderCode.status === 200) {
+                            console.log("Customer atualizado com sucesso.");
+                            emptyCart(); // Limpar o carrinho após a atualização bem-sucedida
+
+                            // Redirecionar para a tela de pagamento (APÓS atualizar o customer)
+                            window.location.href = `https://demo.vivapayments.com/web/checkout?ref=${orderCode}`;
+                        } else {
+                            console.error("Erro ao atualizar o customer:", responseOrderCode.status, responseOrderCode.data);
+                            setError("Erro ao atualizar os dados do cliente.  Por favor, tente novamente.");
+                        }
+                    } catch (updateErr) {
+                        console.error("Erro ao atualizar o customer:", updateErr);
+                        setError("Erro ao atualizar os dados do cliente.  Por favor, tente novamente.");
+                    }
+                } else {
+                    console.error("orderCode ou email não encontrados.");
+                    setError("Erro ao processar o pagamento. orderCode ou email não foram encontrados.");
+                }
+            } else {
+                console.error("Erro ao criar ordem de pagamento:", payment.status, payment.data);
+                setError("Erro ao criar ordem de pagamento.  Por favor, tente novamente.");
+            }
+        } catch (err) {
+            console.error("Erro geral ao criar ordem de pagamento:", err);
+            setError("Erro inesperado ao processar o pagamento.  Por favor, tente novamente.");
+        }
+    };
+
+    return {
+        error,
+        useVivaPayment,
+    }
+}
+
