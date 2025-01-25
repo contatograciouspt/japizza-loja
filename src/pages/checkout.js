@@ -34,12 +34,7 @@ const Checkout = () => {
   const { data: storeSetting } = useAsync(SettingServices.getStoreSetting);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [address, setAddress] = useState({
-    street: "",
-    city: "",
-    country: "",
-    zipCode: "",
-  });
+  const [address, setAddress] = useState({ street: "", city: "", country: "", zipCode: "" });
 
   // Função para obter localização do usuário
   const getGeolocation = async () => {
@@ -56,7 +51,7 @@ const Checkout = () => {
       async (position) => {
         try {
           const { latitude, longitude } = position.coords;
-          console.log("Latitude:", latitude, "Longitude:", longitude);
+          // console.log("Latitude:", latitude, "Longitude:", longitude);
 
           setCoordenadas(`${latitude},${longitude}`);
 
@@ -128,6 +123,8 @@ const Checkout = () => {
     hasShippingAddress,
     isCouponAvailable,
     handleDefaultShippingAddress,
+    pagamentoNaEntrega,
+    setPagamentoNaEntrega
   } = useCheckoutSubmit();
 
   return (
@@ -276,7 +273,7 @@ const Checkout = () => {
                         <Error errorName={errors.zipCode} />
                       </div>
                     </div>
-                    <div className="flex row sm:flex-col justify-between items-center xs:flex-col">
+                    <div className="flex row max-[768px]:flex-col gap-2 justify-between items-center">
                       <button
                         type="button"
                         onClick={getGeolocation}
@@ -322,93 +319,37 @@ const Checkout = () => {
                             Number(
                               storeCustomizationSetting?.checkout
                                 ?.shipping_one_cost
-                            ) || 60
+                            ) || 50
                           }
                         />
                         <Error errorName={errors.shippingOption} />
                       </div>
-                      <div className="col-span-6 sm:col-span-3">
-                        <InputShipping
-                          currency={currency}
-                          handleShippingCost={handleShippingCost}
-                          register={register}
-                          value={showingTranslateValue(
-                            storeCustomizationSetting?.checkout
-                              ?.shipping_name_two
-                          )}
-                          description={showingTranslateValue(
-                            storeCustomizationSetting?.checkout
-                              ?.shipping_two_desc
-                          )}
-                          // time="7 Days"
-                          cost={
-                            Number(
-                              storeCustomizationSetting?.checkout
-                                ?.shipping_two_cost
-                            ) || 20
-                          }
-                        />
-                        <Error errorName={errors.shippingOption} />
+                      <div className="flex items-center col-span-6 sm:col-span-3">
+                        {/* Pagamento na Entrega */}
+                        {storeSetting?.cod_status && (
+                          <div className="">
+                            <InputPayment
+                              setShowCard={setShowCard}
+                              register={register}
+                              name={t("common:cashOnDelivery")}
+                              checked={pagamentoNaEntrega}
+                              Icon={IoWalletSharp}
+                              value="CashOnDelivery"
+                              onChange={() => setPagamentoNaEntrega(!pagamentoNaEntrega)}
+                            />
+                            <Error errorMessage={errors.paymentMethod} />
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
-
                   <div className="form-group mt-12">
-                    {/* <h2 className="font-semibold text-base text-gray-700 pb-3"> */}
-                      {/* 03. Loja Selecionada */}
-                      {/* {showingTranslateValue(
-                        storeCustomizationSetting?.checkout?.payment_method
-                      )} */}
-                    {/* </h2> */}
-                    {/* <p className="text-white font-semibold w-60 bg-emerald-500 py-2 px-4 rounded">
-                      {lojaSelecionada}
-                    </p> */}
                     {showCard && (
                       <div className="mb-3">
                         <CardElement />{" "}
                         <p className="text-red-400 text-sm mt-1">{error}</p>
                       </div>
                     )}
-                    <div className="grid sm:grid-cols-3 grid-cols-1 gap-4">
-                      {/* Pagamento na Entrega */}
-                      {storeSetting?.cod_status && (
-                        <div className="">
-                          <InputPayment
-                            setShowCard={setShowCard}
-                            register={register}
-                            name={t("common:cashOnDelivery")}
-                            value="Cash"
-                            Icon={IoWalletSharp}
-                          />
-                          <Error errorMessage={errors.paymentMethod} />
-                        </div>
-                      )}
-                      {/* {storeSetting?.stripe_status && (
-                        <div className="">
-                          <InputPayment
-                            setShowCard={setShowCard}
-                            register={register}
-                            name={t("common:creditCard")}
-                            value="Card"
-                            Icon={ImCreditCard}
-                          />
-                          <Error errorMessage={errors.paymentMethod} />
-                        </div>
-                      )} */}
-                      {/* {storeSetting?.razorpay_status && ( */}
-                      {/* RazorPay */}
-                      {/* <div className="">
-                        <InputPayment
-                          setShowCard={setShowCard}
-                          register={register}
-                          name="RazorPay"
-                          value="RazorPay"
-                          Icon={ImCreditCard}
-                        />
-                        <Error errorMessage={errors.paymentMethod} />
-                      </div> */}
-                      {/* )} */}
-                    </div>
                   </div>
                   <div className="grid grid-cols-6 gap-4 lg:gap-6 mt-10">
                     <div className="col-span-6 sm:col-span-3">

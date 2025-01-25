@@ -24,7 +24,8 @@ const VariantList = ({
 
   return (
     <>
-      {option === "Dropdown" ? (
+      {/* {option === "Dropdown" ? ( */}
+      {option === "Checkbox" ? (
         <select
           onChange={(e) => handleChangeVariant(e.target.value)}
           className="focus:shadow-none w-1/2 px-2 py-1 form-select outline-none h-10 text-sm focus:outline-none block rounded-md bg-gray-100 border-transparent focus:bg-white border-emerald-600 focus:border-emerald-400 focus:ring focus:ring-emerald-200"

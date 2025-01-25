@@ -13,6 +13,8 @@ import CouponServices from "@services/CouponServices";
 import { notifyError, notifySuccess } from "@utils/toast";
 import CustomerServices from "@services/CustomerServices";
 import usePaymentVivaWallet from "./vivawallet/useVivaPayment";
+import axios from "axios";
+import { useRouter } from "next/router";
 
 const useCheckoutSubmit = (storeSetting) => {
   const { dispatch } = useContext(UserContext);
@@ -22,6 +24,7 @@ const useCheckoutSubmit = (storeSetting) => {
   const [couponInfo, setCouponInfo] = useState({});
   const [minimumAmount, setMinimumAmount] = useState(0);
   const [showCard, setShowCard] = useState(false);
+  const [pagamentoNaEntrega, setPagamentoNaEntrega] = useState(false);
   const [shippingCost, setShippingCost] = useState(0);
   const [discountAmount, setDiscountAmount] = useState(0);
   const [discountPercentage, setDiscountPercentage] = useState(0);
@@ -34,7 +37,10 @@ const useCheckoutSubmit = (storeSetting) => {
 
   const couponRef = useRef("");
   const [Razorpay] = useRazorpay();
-  const { isEmpty, items, cartTotal, updateItem } = useCart();
+  const { isEmpty, items, cartTotal, emptyCart, updateItem } = useCart();
+  const router = useRouter();
+
+  const deliveryUrl = process.env.NEXT_PUBLIC_DELIVERY_URL;
 
   const { useVivaPayment } = usePaymentVivaWallet();
 
@@ -129,7 +135,7 @@ const useCheckoutSubmit = (storeSetting) => {
         return `${item.title?.pt},  Tamanho: ${item?.tamanho?.title} , Extras: ${extrasDetail || 'Nenhum'}`;
       });
 
-      const orderPaymentData = {
+      let orderPaymentData = {
         "amount": totalPrice,
         "customerTrns": `Local ${coordenadas}`,
         "customer": {
@@ -143,7 +149,7 @@ const useCheckoutSubmit = (storeSetting) => {
         "preauth": false,
         "allowRecurring": false,
         "maxInstallments": 12,
-        "merchantTrns": `${itemsDetails}`,
+        "merchantTrns": `${itemsDetails}, ${orderInfo}`,
         "paymentNotification": true,
         "tipAmount": 0,
         "disableExactAmount": false,
@@ -152,7 +158,7 @@ const useCheckoutSubmit = (storeSetting) => {
         "sourceCode": "Default",
       }
 
-      await useVivaPayment(orderPaymentData);
+      await handleCashOnDelivery(orderPaymentData);
 
       await CustomerServices.addShippingAddress({
         userId: userInfo?.id,
@@ -171,6 +177,27 @@ const useCheckoutSubmit = (storeSetting) => {
     } catch (err) {
       notifyError(err ? err?.response?.data?.message : err?.message);
       setIsCheckoutSubmit(false);
+    }
+  };
+
+  // Aqui vamos verificar se o pagamento é na entrega ou não
+  const handleCashOnDelivery = async (orderPaymentData) => {
+    try {
+      if (pagamentoNaEntrega) {
+        const response = await axios.post(deliveryUrl, orderPaymentData);
+        if (response.status === 200) {
+          notifySuccess('Pedido confirmado com sucesso!');
+          emptyCart();
+          router.push('/success');
+        } else {
+          notifyError('Erro ao salvar o pedido.');
+        }
+      } else {
+        await useVivaPayment(orderPaymentData);
+      }
+    } catch (error) {
+      console.log('Erro ao salvar pedido: ', error);
+      notifyError("Erro ao salvar o pedido");
     }
   };
 
@@ -233,12 +260,12 @@ const useCheckoutSubmit = (storeSetting) => {
 
       if (total < result[0]?.minimumAmount) {
         notifyError(
-          `Minimum ${ result[0].minimumAmount } USD required for Apply this coupon!`
+          `Minimum ${result[0].minimumAmount} USD required for Apply this coupon!`
         );
         return;
       } else {
         notifySuccess(
-          `Your Coupon ${ result[0].couponCode } is Applied on ${ result[0].productType } !`
+          `Your Coupon ${result[0].couponCode} is Applied on ${result[0].productType} !`
         );
         setIsCouponApplied(true);
         setMinimumAmount(result[0]?.minimumAmount);
@@ -250,21 +277,6 @@ const useCheckoutSubmit = (storeSetting) => {
       return notifyError(error.message);
     }
   };
-
-  // const getStoreSelected = () => {
-  //   const portimao = localStorage.getItem("portimao");
-  //   const mexilhoeira = localStorage.getItem("mexilhoeira");
-
-  //   if (portimao) {
-  //     setLojaSelecionada("Portimão");
-  //   } else if (mexilhoeira) {
-  //     setLojaSelecionada("Mexilhoeira");
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   getStoreSelected();
-  // }, [])
 
   return {
     register,
@@ -293,6 +305,8 @@ const useCheckoutSubmit = (storeSetting) => {
     isCouponAvailable,
     coordenadas,
     setCoordenadas,
+    pagamentoNaEntrega,
+    setPagamentoNaEntrega,
     handleDefaultShippingAddress,
   };
 };

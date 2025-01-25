@@ -24,12 +24,12 @@ import useUtilsFunction from "@hooks/useUtilsFunction";
 
 const NavbarPromo = () => {
   const [languages, setLanguages] = useState([]);
-  // const [currentLang, setCurrentLang] = useState({});
+  const [currentLang, setCurrentLang] = useState({});
   const { lang, storeCustomizationSetting } = useGetSetting();
   const { isLoading, setIsLoading } = useContext(SidebarContext);
 
   const { showingTranslateValue } = useUtilsFunction();
-  // const currentLanguage = Cookies.get("_curr_lang") || null;
+  const currentLanguage = Cookies.get("_curr_lang") || null;
 
   // console.log("currentLanguage", currentLanguage);
 
@@ -333,7 +333,7 @@ const NavbarPromo = () => {
           </div>
           <div className="flex">
             {/* flag */}
-            {/* <div className="dropdown">
+            <div className="dropdown">
               <div
                 className={`flot-l flag ${currentLang?.flag?.toLowerCase()}`}
               >
@@ -360,7 +360,7 @@ const NavbarPromo = () => {
                   );
                 })}
               </div>
-            </div> */}
+            </div>
 
             {storeCustomizationSetting?.navbar?.privacy_policy_status && (
               <Link
