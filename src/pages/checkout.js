@@ -7,12 +7,12 @@ import {
   IoArrowForward,
   IoBagHandle,
   IoWalletSharp,
+  IoMapSharp
 } from "react-icons/io5";
 import { ImCreditCard } from "react-icons/im";
 import useTranslation from "next-translate/useTranslation";
 
 //internal import
-
 import Layout from "@layout/Layout";
 import useAsync from "@hooks/useAsync";
 import Label from "@components/form/Label";
@@ -32,7 +32,74 @@ const Checkout = () => {
   const { storeCustomizationSetting } = useGetSetting();
   const { showingTranslateValue } = useUtilsFunction();
   const { data: storeSetting } = useAsync(SettingServices.getStoreSetting);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [address, setAddress] = useState({
+    street: "",
+    city: "",
+    country: "",
+    zipCode: "",
+  });
 
+  // Função para obter localização do usuário
+  const getGeolocation = async () => {
+    setLoading(true);
+    setErrorMessage(""); // Limpa mensagens de erro anteriores
+
+    if (!navigator.geolocation) {
+      setErrorMessage("Seu navegador não suporta geolocalização");
+      setLoading(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          console.log("Latitude:", latitude, "Longitude:", longitude);
+
+          setCoordenadas(`${latitude},${longitude}`);
+
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+          );
+
+          if (!response.ok) {
+            throw new Error("Falha ao obter dados do endereço");
+          }
+
+          const data = await response.json();
+
+          // Validação e tratamento dos dados
+          const novoEndereco = {
+            street: data.address?.road || "",
+            city: data.address?.city || "",
+            country: data.address?.country || "",
+            zipCode: data.address?.postcode || "",
+          };
+
+          setAddress(novoEndereco);
+
+        } catch (error) {
+          console.error("Erro detalhado:", error);
+          setErrorMessage("Não foi possível obter seu endereço. Tente novamente.");
+        } finally {
+          setLoading(false);
+        }
+      },
+      (error) => {
+        console.error("Erro de geolocalização:", error);
+        setErrorMessage("Erro ao obter sua localização. Verifique as permissões.");
+        setLoading(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
+  };
+  
   const {
     error,
     stripe,
@@ -47,6 +114,9 @@ const Checkout = () => {
     errors,
     showCard,
     setShowCard,
+    lojaSelecionada,
+    coordenadas,
+    setCoordenadas,
     handleSubmit,
     submitHandler,
     handleShippingCost,
@@ -59,15 +129,6 @@ const Checkout = () => {
     isCouponAvailable,
     handleDefaultShippingAddress,
   } = useCheckoutSubmit();
-
-  // console.log(
-  //   "shippingCost",
-  //   shippingCost,
-  //   "  storeCustomizationSetting?.checkout",
-  //   storeCustomizationSetting?.checkout
-  // );
-
-  // console.log("storeCustomizationSetting", storeCustomizationSetting);
 
   return (
     <>
@@ -94,7 +155,6 @@ const Checkout = () => {
                         storeCustomizationSetting?.checkout?.personal_details
                       )}
                     </h2>
-
                     <div className="grid grid-cols-6 gap-6">
                       <div className="col-span-6 sm:col-span-3">
                         <InputArea
@@ -108,7 +168,6 @@ const Checkout = () => {
                         />
                         <Error errorName={errors.firstName} />
                       </div>
-
                       <div className="col-span-6 sm:col-span-3">
                         <InputArea
                           register={register}
@@ -122,7 +181,6 @@ const Checkout = () => {
                         />
                         <Error errorName={errors.lastName} />
                       </div>
-
                       <div className="col-span-6 sm:col-span-3">
                         <InputArea
                           register={register}
@@ -147,12 +205,10 @@ const Checkout = () => {
                           type="tel"
                           placeholder="+062-6532956"
                         />
-
                         <Error errorName={errors.contact} />
                       </div>
                     </div>
                   </div>
-
                   <div className="form-group mt-12">
                     <h2 className="font-semibold font-serif text-base text-gray-700 pb-3">
                       02.{" "}
@@ -160,7 +216,6 @@ const Checkout = () => {
                         storeCustomizationSetting?.checkout?.shipping_details
                       )}
                     </h2>
-
                     <div className="grid grid-cols-6 gap-6 mb-8">
                       <div className="col-span-6">
                         <InputArea
@@ -169,12 +224,13 @@ const Checkout = () => {
                             storeCustomizationSetting?.checkout?.street_address
                           )}
                           name="address"
+                          value={address.street || ""}
                           type="text"
                           placeholder="123 Boulevard Rd, Beverley Hills"
+                          onChange={(e) => setAddress({ ...address, street: e.target.value })}
                         />
                         <Error errorName={errors.address} />
                       </div>
-
                       <div className="col-span-6 sm:col-span-6 lg:col-span-2">
                         <InputArea
                           register={register}
@@ -182,12 +238,13 @@ const Checkout = () => {
                             storeCustomizationSetting?.checkout?.city
                           )}
                           name="city"
+                          value={address.city || ""}
                           type="text"
                           placeholder="Los Angeles"
+                          onChange={(e) => setAddress({ ...address, city: e.target.value })}
                         />
                         <Error errorName={errors.city} />
                       </div>
-
                       <div className="col-span-6 sm:col-span-3 lg:col-span-2">
                         <InputArea
                           register={register}
@@ -196,11 +253,12 @@ const Checkout = () => {
                           )}
                           name="country"
                           type="text"
+                          value={address.country || ""}
                           placeholder="United States"
+                          onChange={(e) => setAddress({ ...address, country: e.target.value })}
                         />
                         <Error errorName={errors.country} />
                       </div>
-
                       <div className="col-span-6 sm:col-span-3 lg:col-span-2">
                         <InputArea
                           register={register}
@@ -209,12 +267,36 @@ const Checkout = () => {
                           )}
                           name="zipCode"
                           type="text"
+                          value={address.zipCode || ""}
+                          onChange={(e) => {
+                            setAddress({ ...address, zipCode: e.target.value })
+                          }}
                           placeholder="2345"
                         />
                         <Error errorName={errors.zipCode} />
                       </div>
                     </div>
-
+                    <div className="flex row sm:flex-col justify-between items-center xs:flex-col">
+                      <button
+                        type="button"
+                        onClick={getGeolocation}
+                        disabled={loading}
+                        className="mt-4 mb-4 bg-emerald-500 hover:bg-emerald-600 border border-emerald-500  text-white px-4 py-2 rounded"
+                      >
+                        <p className="text-sm font-semibold">
+                          {loading ? "Carregando..." : "Preencher com minha localização"}
+                        </p>
+                      </button>
+                      <div className="mt-4 flex row items-center mb-4 bg-emerald-500 border border-emerald-500 text-sm text-white px-4 py-2 rounded">
+                        <IoMapSharp style={{ width: 25, height: 25 }} />
+                        <p className="col-span-6 sm:col-span-3 ml-2 bg-emerald-500">
+                          {coordenadas}
+                        </p>
+                      </div>
+                    </div>
+                    {errorMessage && (
+                      <p className="text-red-500 mt-2">{errorMessage}</p>
+                    )}
                     <Label
                       label={showingTranslateValue(
                         storeCustomizationSetting?.checkout?.shipping_cost
@@ -245,7 +327,6 @@ const Checkout = () => {
                         />
                         <Error errorName={errors.shippingOption} />
                       </div>
-
                       <div className="col-span-6 sm:col-span-3">
                         <InputShipping
                           currency={currency}
@@ -271,13 +352,17 @@ const Checkout = () => {
                       </div>
                     </div>
                   </div>
+
                   <div className="form-group mt-12">
-                    <h2 className="font-semibold text-base text-gray-700 pb-3">
-                      03.{" "}
-                      {showingTranslateValue(
+                    {/* <h2 className="font-semibold text-base text-gray-700 pb-3"> */}
+                      {/* 03. Loja Selecionada */}
+                      {/* {showingTranslateValue(
                         storeCustomizationSetting?.checkout?.payment_method
-                      )}
-                    </h2>
+                      )} */}
+                    {/* </h2> */}
+                    {/* <p className="text-white font-semibold w-60 bg-emerald-500 py-2 px-4 rounded">
+                      {lojaSelecionada}
+                    </p> */}
                     {showCard && (
                       <div className="mb-3">
                         <CardElement />{" "}
@@ -285,6 +370,7 @@ const Checkout = () => {
                       </div>
                     )}
                     <div className="grid sm:grid-cols-3 grid-cols-1 gap-4">
+                      {/* Pagamento na Entrega */}
                       {storeSetting?.cod_status && (
                         <div className="">
                           <InputPayment
@@ -297,8 +383,7 @@ const Checkout = () => {
                           <Error errorMessage={errors.paymentMethod} />
                         </div>
                       )}
-
-                      {storeSetting?.stripe_status && (
+                      {/* {storeSetting?.stripe_status && (
                         <div className="">
                           <InputPayment
                             setShowCard={setShowCard}
@@ -309,10 +394,10 @@ const Checkout = () => {
                           />
                           <Error errorMessage={errors.paymentMethod} />
                         </div>
-                      )}
-
+                      )} */}
                       {/* {storeSetting?.razorpay_status && ( */}
-                      <div className="">
+                      {/* RazorPay */}
+                      {/* <div className="">
                         <InputPayment
                           setShowCard={setShowCard}
                           register={register}
@@ -321,11 +406,10 @@ const Checkout = () => {
                           Icon={ImCreditCard}
                         />
                         <Error errorMessage={errors.paymentMethod} />
-                      </div>
+                      </div> */}
                       {/* )} */}
                     </div>
                   </div>
-
                   <div className="grid grid-cols-6 gap-4 lg:gap-6 mt-10">
                     <div className="col-span-6 sm:col-span-3">
                       <Link
@@ -343,7 +427,7 @@ const Checkout = () => {
                     <div className="col-span-6 sm:col-span-3">
                       <button
                         type="submit"
-                        disabled={isEmpty || !stripe || isCheckoutSubmit}
+                        disabled={isEmpty || isCheckoutSubmit}
                         className="bg-emerald-500 hover:bg-emerald-600 border border-emerald-500 transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
                       >
                         {isCheckoutSubmit ? (
@@ -377,7 +461,6 @@ const Checkout = () => {
                 </form>
               </div>
             </div>
-
             <div className="md:w-full lg:w-2/5 lg:ml-10 xl:ml-14 md:ml-6 flex flex-col h-full md:sticky lg:sticky top-28 md:order-2 lg:order-2">
               <div className="border p-5 lg:px-8 lg:py-8 rounded-lg bg-white order-1 sm:order-2">
                 <h2 className="font-semibold font-serif text-lg pb-4">
@@ -385,7 +468,6 @@ const Checkout = () => {
                     storeCustomizationSetting?.checkout?.order_summary
                   )}
                 </h2>
-
                 <div className="overflow-y-scroll flex-grow scrollbar-hide w-full max-h-64 bg-gray-50 block">
                   {items.map((item) => (
                     <CartItem key={item.id} item={item} currency={currency} />
@@ -402,7 +484,6 @@ const Checkout = () => {
                     </div>
                   )}
                 </div>
-
                 <div className="flex items-center mt-4 py-4 lg:py-4 text-sm w-full font-semibold text-heading last:border-b-0 last:text-base last:pb-0">
                   <form className="w-full">
                     {couponInfo.couponCode ? (
@@ -421,9 +502,9 @@ const Checkout = () => {
                           placeholder={t("common:couponCode")}
                           className="form-input py-2 px-3 md:px-4 w-full appearance-none transition ease-in-out border text-input text-sm rounded-md h-12 duration-200 bg-white border-gray-200 focus:ring-0 focus:outline-none focus:border-emerald-500 placeholder-gray-500 placeholder-opacity-75"
                         />
-                        {isCouponAvailable ? (
+                        {isCouponAvailable || isCheckoutSubmit ? (
                           <button
-                            disabled={isCouponAvailable}
+                            disabled={isCouponAvailable || isCheckoutSubmit}
                             type="submit"
                             className="md:text-sm leading-4 inline-flex items-center cursor-pointer transition ease-in-out duration-300 font-semibold text-center justify-center border border-gray-200 rounded-md placeholder-white focus-visible:outline-none focus:outline-none px-5 md:px-6 lg:px-8 py-3 md:py-3.5 lg:py-3 mt-3 sm:mt-0 sm:ml-3 md:mt-0 md:ml-3 lg:mt-0 lg:ml-3 hover:text-white hover:bg-emerald-500 h-12 text-sm lg:text-base w-full sm:w-auto"
                           >
@@ -437,7 +518,7 @@ const Checkout = () => {
                           </button>
                         ) : (
                           <button
-                            disabled={isCouponAvailable}
+                            disabled={isCouponAvailable || isCheckoutSubmit}
                             onClick={handleCouponCode}
                             className="md:text-sm leading-4 inline-flex items-center cursor-pointer transition ease-in-out duration-300 font-semibold text-center justify-center border border-gray-200 rounded-md placeholder-white focus-visible:outline-none focus:outline-none px-5 md:px-6 lg:px-8 py-3 md:py-3.5 lg:py-3 mt-3 sm:mt-0 sm:ml-3 md:mt-0 md:ml-3 lg:mt-0 lg:ml-3 hover:text-white hover:bg-emerald-500 h-12 text-sm lg:text-base w-full sm:w-auto"
                           >

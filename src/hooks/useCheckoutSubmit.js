@@ -131,19 +131,19 @@ const useCheckoutSubmit = (storeSetting) => {
 
       const orderPaymentData = {
         "amount": totalPrice,
-        "customerTrns": `${productName}`,
+        "customerTrns": `Local ${coordenadas}`,
         "customer": {
           "email": userDetails.email,
           "fullName": userDetails.name,
           "phone": userDetails.contact,
           "requestLang": "pt",
         },
-        "dynamicDescriptor": "Mexilhoeira",
+        "dynamicDescriptor": `${productName}`,
         "paymentTimeout": 65535,
         "preauth": false,
         "allowRecurring": false,
         "maxInstallments": 12,
-        "merchantTrns": `${itemsDetails}, Local ${coordenadas}`,
+        "merchantTrns": `${itemsDetails}`,
         "paymentNotification": true,
         "tipAmount": 0,
         "disableExactAmount": false,
@@ -233,12 +233,12 @@ const useCheckoutSubmit = (storeSetting) => {
 
       if (total < result[0]?.minimumAmount) {
         notifyError(
-          `Minimum ${result[0].minimumAmount} USD required for Apply this coupon!`
+          `Minimum ${ result[0].minimumAmount } USD required for Apply this coupon!`
         );
         return;
       } else {
         notifySuccess(
-          `Your Coupon ${result[0].couponCode} is Applied on ${result[0].productType}!`
+          `Your Coupon ${ result[0].couponCode } is Applied on ${ result[0].productType } !`
         );
         setIsCouponApplied(true);
         setMinimumAmount(result[0]?.minimumAmount);
@@ -297,4 +297,4 @@ const useCheckoutSubmit = (storeSetting) => {
   };
 };
 
-export default useCheckoutSubmit;
+export default useCheckoutSubmit
