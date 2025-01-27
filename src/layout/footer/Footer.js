@@ -33,7 +33,6 @@ const Footer = () => {
                 <CMSkeleton
                   count={1}
                   height={20}
-                  // error={error}
                   loading={loading}
                   data={storeCustomizationSetting?.footer?.block1_title}
                 />
@@ -47,7 +46,6 @@ const Footer = () => {
                     <CMSkeleton
                       count={1}
                       height={10}
-                      // error={error}
                       loading={loading}
                       data={
                         storeCustomizationSetting?.footer?.block1_sub_title1
@@ -63,7 +61,6 @@ const Footer = () => {
                     <CMSkeleton
                       count={1}
                       height={10}
-                      // error={error}
                       loading={loading}
                       data={
                         storeCustomizationSetting?.footer?.block1_sub_title2
@@ -82,7 +79,6 @@ const Footer = () => {
                     <CMSkeleton
                       count={1}
                       height={10}
-                      // error={error}
                       loading={loading}
                       data={
                         storeCustomizationSetting?.footer?.block1_sub_title3
@@ -98,7 +94,6 @@ const Footer = () => {
                     <CMSkeleton
                       count={1}
                       height={10}
-                      // error={error}
                       loading={loading}
                       data={
                         storeCustomizationSetting?.footer?.block1_sub_title4
@@ -115,7 +110,6 @@ const Footer = () => {
                 <CMSkeleton
                   count={1}
                   height={20}
-                  // error={error}
                   loading={loading}
                   data={storeCustomizationSetting?.footer?.block2_title}
                 />
@@ -129,7 +123,6 @@ const Footer = () => {
                     <CMSkeleton
                       count={1}
                       height={10}
-                      // error={error}
                       loading={loading}
                       data={
                         storeCustomizationSetting?.footer?.block2_sub_title1
@@ -146,7 +139,6 @@ const Footer = () => {
                     <CMSkeleton
                       count={1}
                       height={10}
-                      // error={error}
                       loading={loading}
                       data={
                         storeCustomizationSetting?.footer?.block2_sub_title2
@@ -162,7 +154,6 @@ const Footer = () => {
                     <CMSkeleton
                       count={1}
                       height={10}
-                      // error={error}
                       loading={loading}
                       data={
                         storeCustomizationSetting?.footer?.block2_sub_title3
@@ -178,7 +169,6 @@ const Footer = () => {
                     <CMSkeleton
                       count={1}
                       height={10}
-                      // error={error}
                       loading={loading}
                       data={
                         storeCustomizationSetting?.footer?.block2_sub_title4
@@ -195,7 +185,6 @@ const Footer = () => {
                 <CMSkeleton
                   count={1}
                   height={20}
-                  // error={error}
                   loading={loading}
                   data={storeCustomizationSetting?.footer?.block3_title}
                 />
@@ -213,7 +202,6 @@ const Footer = () => {
                     <CMSkeleton
                       count={1}
                       height={10}
-                      // error={error}
                       loading={loading}
                       data={
                         storeCustomizationSetting?.footer?.block3_sub_title1
@@ -233,7 +221,6 @@ const Footer = () => {
                     <CMSkeleton
                       count={1}
                       height={10}
-                      // error={error}
                       loading={loading}
                       data={
                         storeCustomizationSetting?.footer?.block3_sub_title2
@@ -253,7 +240,6 @@ const Footer = () => {
                     <CMSkeleton
                       count={1}
                       height={10}
-                      // error={error}
                       loading={loading}
                       data={
                         storeCustomizationSetting?.footer?.block3_sub_title3
@@ -273,7 +259,6 @@ const Footer = () => {
                     <CMSkeleton
                       count={1}
                       height={10}
-                      // error={error}
                       loading={loading}
                       data={
                         storeCustomizationSetting?.footer?.block3_sub_title4
@@ -311,7 +296,6 @@ const Footer = () => {
                 <CMSkeleton
                   count={1}
                   height={10}
-                  // error={error}
                   loading={loading}
                   data={storeCustomizationSetting?.footer?.block4_address}
                 />

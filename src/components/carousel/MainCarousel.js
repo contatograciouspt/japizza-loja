@@ -135,7 +135,7 @@ const MainCarousel = () => {
               <Image
                 width={950}
                 height={400}
-                src={item.image}
+                src={item.image || "/slider/slider-1.jpg"}
                 alt={item.title}
                 className="object-cover"
                 priority

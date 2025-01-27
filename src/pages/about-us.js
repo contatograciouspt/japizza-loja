@@ -12,8 +12,6 @@ const AboutUs = () => {
   const { storeCustomizationSetting, loading, error } = useGetSetting();
   const { showingTranslateValue } = useUtilsFunction();
 
-  // console.log("data", data, );
-
   return (
     <Layout title="About Us" description="This is about us page">
       <PageHeader
@@ -33,7 +31,6 @@ const AboutUs = () => {
                 <CMSkeleton
                   count={1}
                   height={50}
-                  // error={error}
                   loading={loading}
                   data={storeCustomizationSetting?.about_us?.top_title}
                 />
@@ -43,7 +40,6 @@ const AboutUs = () => {
                   <CMSkeleton
                     count={5}
                     height={20}
-                    // error={error}
                     loading={loading}
                     data={storeCustomizationSetting?.about_us?.top_description}
                   />
@@ -112,7 +108,7 @@ const AboutUs = () => {
             </div>
 
             <div className="mt-10 lg:mt-0">
-              <Image
+              <img
                 width={920}
                 height={750}
                 src={
@@ -128,7 +124,6 @@ const AboutUs = () => {
               <CMSkeleton
                 count={5}
                 height={20}
-                // error={error}
                 loading={loading}
                 data={
                   storeCustomizationSetting?.about_us?.middle_description_one
@@ -169,7 +164,6 @@ const AboutUs = () => {
                   <CMSkeleton
                     count={1}
                     height={50}
-                    // error={error}
                     loading={loading}
                     data={storeCustomizationSetting?.about_us?.founder_title}
                   />
@@ -178,7 +172,6 @@ const AboutUs = () => {
                   <CMSkeleton
                     count={3}
                     height={20}
-                    // error={error}
                     loading={loading}
                     data={
                       storeCustomizationSetting?.about_us?.founder_description

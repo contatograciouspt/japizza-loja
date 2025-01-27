@@ -26,7 +26,9 @@ const CMSkeleton = ({
           highlightColor={highlightColor || "#cbd5e1"}
         />
       ) : error ? (
-        <span className="text-center mx-auto text-red-500">{error}</span>
+        <span className="text-center mx-auto text-red-500">
+          {error?.response?.data?.message || error?.message}
+        </span>
       ) : data ? (
         html ? (
           parse(showingTranslateValue(data))

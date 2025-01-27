@@ -2,6 +2,7 @@ import { notifyError, notifySuccess } from "@utils/toast";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 
 //internal import
 import { getUserSession } from "@lib/auth";
@@ -82,45 +83,40 @@ const useShippingAddressSubmit = (id) => {
     }
   };
 
+  const { data, isFetched } = useQuery({
+    queryKey: ["shippingAddress", { id: userInfo?.id }],
+    queryFn: async () =>
+      await CustomerServices.getShippingAddress({
+        userId: userInfo?.id,
+      }),
+    select: (data) => data?.shippingAddress,
+  });
+
   useEffect(() => {
-    if (id) {
-      (async () => {
-        try {
-          const { shippingAddress } = await CustomerServices.getShippingAddress(
-            {
-              userId: userInfo?.id,
-            }
-          );
-          // console.log("shippingAddress", shippingAddress);
-          if (shippingAddress) {
-            setValue("name", shippingAddress.name);
-            setValue("address", shippingAddress.address);
-            setValue("contact", shippingAddress.contact);
-            setValue("email", shippingAddress.email || userInfo?.email);
-            setValue("country", shippingAddress.country);
-            setValue("city", shippingAddress.city);
-            setValue("area", shippingAddress.area);
-            setValue("zipCode", shippingAddress.zipCode);
-            setSelectedValue({
-              country: shippingAddress.country,
-              city: shippingAddress.city,
-              area: shippingAddress.area,
-            });
-            setCities([
-              {
-                name: shippingAddress.city,
-              },
-            ]);
-            setAreas([shippingAddress.area]);
-          }
-        } catch (err) {
-          notifyError(err?.response?.data?.message || err?.message);
-        }
-      })();
+    if (isFetched && data) {
+      setValue("name", data.name);
+      setValue("address", data.address);
+      setValue("contact", data.contact);
+      setValue("email", data.email || userInfo?.email);
+      setValue("country", data.country);
+      setValue("city", data.city);
+      setValue("area", data.area);
+      setValue("zipCode", data.zipCode);
+      setSelectedValue({
+        country: data.country,
+        city: data.city,
+        area: data.area,
+      });
+      setCities([
+        {
+          name: data.city,
+        },
+      ]);
+      setAreas([data.area]);
     } else {
       setValue("email", userInfo?.email);
     }
-  }, [id]);
+  }, [data]);
 
   return {
     register,

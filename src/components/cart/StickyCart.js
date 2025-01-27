@@ -1,17 +1,17 @@
 import dynamic from "next/dynamic";
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { IoBagHandleOutline } from "react-icons/io5";
 import { useCart } from "react-use-cart";
 
 //internal import
+import useGetSetting from "@hooks/useGetSetting";
 import { SidebarContext } from "@context/SidebarContext";
-import useAsync from "@hooks/useAsync";
-import SettingServices from "@services/SettingServices";
 
 const StickyCart = () => {
   const { totalItems, cartTotal } = useCart();
   const { toggleCartDrawer } = useContext(SidebarContext);
-  const { data: globalSetting } = useAsync(SettingServices.getGlobalSetting);
+
+  const { globalSetting } = useGetSetting();
 
   const currency = globalSetting?.default_currency || "$";
 

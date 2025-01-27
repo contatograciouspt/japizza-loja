@@ -8,6 +8,9 @@ const CustomerServices = {
   verifyEmailAddress: async (body) => {
     return requests.post("/customer/verify-email", body);
   },
+  verifyPhoneNumber: async (body) => {
+    return requests.post("/customer/verify-phone", body);
+  },
 
   registerCustomer: async (token, body) => {
     return requests.post(`/customer/register/${token}`, body);

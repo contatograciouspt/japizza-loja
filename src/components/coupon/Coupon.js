@@ -1,19 +1,26 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import dayjs from "dayjs";
+import { useQuery } from "@tanstack/react-query";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
 //internal import
-import useAsync from "@hooks/useAsync";
 import CouponServices from "@services/CouponServices";
 import OfferTimer from "@components/coupon/OfferTimer";
 import useUtilsFunction from "@hooks/useUtilsFunction";
+import CMSkeletonTwo from "@components/preloader/CMSkeletonTwo";
 
 const Coupon = ({ couponInHome }) => {
   const [copiedCode, setCopiedCode] = useState("");
   const [copied, setCopied] = useState(false);
 
-  const { data, error } = useAsync(CouponServices.getShowingCoupons);
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["coupon"],
+    queryFn: async () => await CouponServices.getShowingCoupons(),
+    // staleTime: 5 * 60 * 1000, //default cache for 5 minute, if you want to without cache then comment this and gcTime lines
+    // gcTime: 5 * 60 * 1000,
+  });
+
   const { showingTranslateValue, currency } = useUtilsFunction();
 
   // console.log("coupon  data", data);
@@ -27,10 +34,13 @@ const Coupon = ({ couponInHome }) => {
 
   return (
     <>
-      {error ? (
-        <p className="flex justify-center align-middle items-center m-auto text-xl text-red-500">
-          <span> {error}</span>
-        </p>
+      {isLoading ? (
+        <CMSkeletonTwo
+          count={10}
+          width={100}
+          error={error}
+          loading={isLoading}
+        />
       ) : couponInHome ? (
         data?.slice(0, 2).map((coupon) => (
           <div
@@ -40,11 +50,11 @@ const Coupon = ({ couponInHome }) => {
             <div className="tengah py-2 px-3 flex items-center justify-items-start">
               <figure>
                 <Image
-                  src={coupon.logo || ""}
+                  src={coupon.logo || "/slider/slider-1.jpg"}
                   width={100}
                   height={100}
                   className="rounded-lg"
-                  alt={showingTranslateValue(coupon.title)}
+                  alt={showingTranslateValue(coupon.title) || "coupon"}
                 />
               </figure>
               <div className="ml-3">
@@ -151,7 +161,7 @@ const Coupon = ({ couponInHome }) => {
               <figure>
                 <Image
                   src={coupon.logo}
-                  alt={coupon.title}
+                  alt={coupon.title || "coupon"}
                   width={120}
                   height={120}
                   className="rounded-lg"

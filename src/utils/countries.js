@@ -311,15 +311,6 @@ const countries = [
     ],
   },
   {
-    name: "Portugal",
-    cities: [
-      {
-        name: "Mexilhoeira Grande",
-        areas: ["Mexilhoeira Grande"],
-      },
-    ]
-  },
-  {
     name: "Brazil",
     cities: [
       {

@@ -1,80 +1,96 @@
-import { FiLock, FiMail } from "react-icons/fi";
+import Link from "next/link";
+import PhoneInput, { formatPhoneNumberIntl } from "react-phone-number-input";
+import phone from "phone";
+import { Controller } from "react-hook-form";
 
-//internal  import
+//internal import
 import Layout from "@layout/Layout";
-import Error from "@components/form/Error";
+import Label from "@components/form/Label";
 import useLoginSubmit from "@hooks/useLoginSubmit";
-import InputArea from "@components/form/InputArea";
 import BottomNavigation from "@components/login/BottomNavigation";
-import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 
-const Login = () => {
-  const { user, handleSubmit, submitHandler, setUser, showPass, setShowPass, register, errors, loading } = useLoginSubmit();
+const PhoneSignup = () => {
+  const { errors, control, loading, handleSubmit, submitHandler } =
+    useLoginSubmit();
+
+  const name = "phone";
+
+  const rules = {
+    required: {
+      value: true,
+      message: "Phone Number is required!",
+    },
+    validate: (value) => {
+      return phone(value)?.isValid || "Enter valid phone number!";
+    },
+  };
+
+  // console.log("phoneError", errors);
 
   return (
-    <Layout title="Login" description="This is login page">
+    <Layout
+      title="Phone Signup"
+      description="this is phone number sign up page"
+    >
       <div className="mx-auto max-w-screen-2xl px-3 sm:px-10">
         <div className="py-4 flex flex-col lg:flex-row w-full">
           <div className="w-full sm:p-5 lg:p-8">
             <div className="mx-auto text-left justify-center rounded-md w-full max-w-lg px-4 py-8 sm:p-10 overflow-hidden align-middle transition-all transform bg-white shadow-xl rounded-2x">
               <div className="overflow-hidden mx-auto">
                 <div className="text-center mb-6">
-                  <h2 className="text-3xl font-bold font-serif">Login</h2>
-                  <p className="text-sm md:text-base text-gray-500 mt-2 mb-8 sm:mb-10">
-                    Login with your email and password
+                  <h2 className="text-3xl font-bold font-serif">Signing Up</h2>
+                  <p className="text-sm text-gray-500 mt-2 mb-8 sm:mb-10">
+                    Create an account by phone number.
                   </p>
                 </div>
+
                 <form
+                  noValidate
+                  autoComplete="off"
                   onSubmit={handleSubmit(submitHandler)}
-                  className="flex flex-col justify-center"
+                  className="flex flex-col justify-center mb-6"
                 >
                   <div className="grid grid-cols-1 gap-5">
                     <div className="form-group">
-                      <InputArea
-                        register={register}
-                        label="Email"
-                        name="email"
-                        type="email"
-                        placeholder="Email"
-                        Icon={FiMail}
-                        autocomplete="email"
-                        value={user.email || ""}
-                        onChange={(e) => setUser({ ...user, email: e.target.value })}
+                      <Label label="Phone Number" />
+
+                      <Controller
+                        name={name}
+                        control={control}
+                        rules={rules}
+                        defaultValue={formatPhoneNumberIntl("12345678900")}
+                        render={({ field }) => {
+                          return (
+                            <PhoneInput
+                              {...field}
+                              name={name}
+                              placeholder="Enter phone number"
+                              international={true}
+                              onChange={(value) => {
+                                field.onChange(value);
+                              }}
+                              className="rounded-md h-12"
+                            />
+                          );
+                        }}
                       />
-                      <Error errorName={errors.email} />
-                    </div>
-                    <div className="form-group">
-                      <InputArea
-                        register={register}
-                        label="Password"
-                        name="password"
-                        type={showPass ? "text" : "password"}
-                        placeholder="Password"
-                        Icon={FiLock}
-                        autocomplete="current-password"
-                        value={user.password || ""}
-                        onChange={(e) => setUser({ ...user, password: e.target.value })}
-                      />
-                      <button
-                        type="button"
-                        className="text-gray-950 absolute inset-y-0 right-0 pr-14 top-12 flex items-center text-sm"
-                        onClick={() => setShowPass(!showPass)}
-                      >
-                        {showPass ? (<AiFillEyeInvisible />) : (<AiFillEye />)}
-                      </button>
-                      <Error errorName={errors.password} />
+                      {errors?.phone && (
+                        <span className="text-red-400 text-sm mt-2 ml-10">
+                          {errors?.phone?.message}
+                        </span>
+                      )}
                     </div>
 
-                    {/* <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between">
                       <div className="flex ms-auto">
                         <Link
-                          href="/auth/forget-password"
+                          href="/auth/signup"
                           className="text-end text-sm text-heading ps-3 underline hover:no-underline focus:outline-none"
                         >
-                          Forgot password?
+                          Sign Up with Email?
                         </Link>
                       </div>
-                    </div> */}
+                    </div>
                     {loading ? (
                       <button
                         disabled={loading}
@@ -97,16 +113,17 @@ const Login = () => {
                         type="submit"
                         className="w-full text-center py-3 rounded bg-emerald-500 text-white hover:bg-emerald-600 transition-all focus:outline-none my-1"
                       >
-                        Login
+                        Register
                       </button>
                     )}
                   </div>
                 </form>
+
                 <BottomNavigation
-                  or={true}
-                  route={"/auth/signup"}
-                  pageName={"Sign Up"}
-                  loginTitle="Login"
+                  desc
+                  route={"/auth/login"}
+                  pageName={"Login"}
+                  loginTitle="Sign Up"
                 />
               </div>
             </div>
@@ -117,4 +134,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default PhoneSignup;

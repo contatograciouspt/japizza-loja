@@ -56,6 +56,7 @@ const useUtilsFunction = () => {
     showDateFormat,
     showingImage,
     showingUrl,
+    globalSetting,
     showDateTimeFormat,
     showingTranslateValue,
   };

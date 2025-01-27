@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React from "react";
 import dynamic from "next/dynamic";
-import { CardElement } from "@stripe/react-stripe-js";
 import Link from "next/link";
 import {
   IoReturnUpBackOutline,
@@ -9,12 +8,14 @@ import {
   IoWalletSharp,
   IoMapSharp
 } from "react-icons/io5";
+import { useQueryClient } from "@tanstack/react-query";
 import { ImCreditCard } from "react-icons/im";
+import { FaHome } from "react-icons/fa";
 import useTranslation from "next-translate/useTranslation";
 
 //internal import
+
 import Layout from "@layout/Layout";
-import useAsync from "@hooks/useAsync";
 import Label from "@components/form/Label";
 import Error from "@components/form/Error";
 import CartItem from "@components/cart/CartItem";
@@ -26,17 +27,25 @@ import useCheckoutSubmit from "@hooks/useCheckoutSubmit";
 import useUtilsFunction from "@hooks/useUtilsFunction";
 import SettingServices from "@services/SettingServices";
 import SwitchToggle from "@components/form/SwitchToggle";
+import InputDelivery from "@components/form/InputDelivery";
 
 const Checkout = () => {
   const { t } = useTranslation();
   const { storeCustomizationSetting } = useGetSetting();
   const { showingTranslateValue } = useUtilsFunction();
-  const { data: storeSetting } = useAsync(SettingServices.getStoreSetting);
-  const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [address, setAddress] = useState({ street: "", city: "", country: "", zipCode: "" });
+  const [loading, setLoading] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState("");
+  const [address, setAddress] = React.useState({ street: "", city: "", country: "", zipCode: "" });
+  const [selectedOption, setSelectedOption] = React.useState(null); // Novo estado
+  const [isOptionSelected , setIsOptionSelected] = React.useState(false);
 
-  // Função para obter localização do usuário
+  const { data: storeSetting } = useQueryClient({
+    queryKey: ["storeSetting"],
+    queryFn: async () => await SettingServices.getStoreSetting(),
+    staleTime: 4 * 60 * 1000, // Api request after 4 minutes
+  });
+
+  //   // Função para obter localização do usuário
   const getGeolocation = async () => {
     setLoading(true);
     setErrorMessage(""); // Limpa mensagens de erro anteriores
@@ -94,7 +103,7 @@ const Checkout = () => {
       }
     );
   };
-  
+
   const {
     error,
     stripe,
@@ -109,9 +118,6 @@ const Checkout = () => {
     errors,
     showCard,
     setShowCard,
-    lojaSelecionada,
-    coordenadas,
-    setCoordenadas,
     handleSubmit,
     submitHandler,
     handleShippingCost,
@@ -122,10 +128,25 @@ const Checkout = () => {
     useExistingAddress,
     hasShippingAddress,
     isCouponAvailable,
-    handleDefaultShippingAddress,
+    coordenadas,
+    setCoordenadas,
     pagamentoNaEntrega,
-    setPagamentoNaEntrega
+    setPagamentoNaEntrega,
+    handleDefaultShippingAddress,
   } = useCheckoutSubmit();
+
+  const handleOptionChange = (option) => {
+    setSelectedOption(option);
+    if (option === 'delivery') {
+      setPagamentoNaEntrega(!pagamentoNaEntrega);
+      handleShippingCost(0);
+
+    }
+    if (option === 'shipping') {
+      setPagamentoNaEntrega(false);
+      handleShippingCost(shippingCost);
+    }
+  };
 
   return (
     <>
@@ -152,6 +173,7 @@ const Checkout = () => {
                         storeCustomizationSetting?.checkout?.personal_details
                       )}
                     </h2>
+
                     <div className="grid grid-cols-6 gap-6">
                       <div className="col-span-6 sm:col-span-3">
                         <InputArea
@@ -165,6 +187,7 @@ const Checkout = () => {
                         />
                         <Error errorName={errors.firstName} />
                       </div>
+
                       <div className="col-span-6 sm:col-span-3">
                         <InputArea
                           register={register}
@@ -178,6 +201,7 @@ const Checkout = () => {
                         />
                         <Error errorName={errors.lastName} />
                       </div>
+
                       <div className="col-span-6 sm:col-span-3">
                         <InputArea
                           register={register}
@@ -202,10 +226,12 @@ const Checkout = () => {
                           type="tel"
                           placeholder="+062-6532956"
                         />
+
                         <Error errorName={errors.contact} />
                       </div>
                     </div>
                   </div>
+
                   <div className="form-group mt-12">
                     <h2 className="font-semibold font-serif text-base text-gray-700 pb-3">
                       02.{" "}
@@ -213,6 +239,7 @@ const Checkout = () => {
                         storeCustomizationSetting?.checkout?.shipping_details
                       )}
                     </h2>
+
                     <div className="grid grid-cols-6 gap-6 mb-8">
                       <div className="col-span-6">
                         <InputArea
@@ -221,13 +248,14 @@ const Checkout = () => {
                             storeCustomizationSetting?.checkout?.street_address
                           )}
                           name="address"
-                          value={address.street || ""}
                           type="text"
                           placeholder="123 Boulevard Rd, Beverley Hills"
+                          value={address.street || ""}
                           onChange={(e) => setAddress({ ...address, street: e.target.value })}
                         />
                         <Error errorName={errors.address} />
                       </div>
+
                       <div className="col-span-6 sm:col-span-6 lg:col-span-2">
                         <InputArea
                           register={register}
@@ -235,13 +263,14 @@ const Checkout = () => {
                             storeCustomizationSetting?.checkout?.city
                           )}
                           name="city"
-                          value={address.city || ""}
                           type="text"
                           placeholder="Los Angeles"
+                          value={address.city || ""}
                           onChange={(e) => setAddress({ ...address, city: e.target.value })}
                         />
                         <Error errorName={errors.city} />
                       </div>
+
                       <div className="col-span-6 sm:col-span-3 lg:col-span-2">
                         <InputArea
                           register={register}
@@ -250,12 +279,13 @@ const Checkout = () => {
                           )}
                           name="country"
                           type="text"
-                          value={address.country || ""}
                           placeholder="United States"
+                          value={address.country || ""}
                           onChange={(e) => setAddress({ ...address, country: e.target.value })}
                         />
                         <Error errorName={errors.country} />
                       </div>
+
                       <div className="col-span-6 sm:col-span-3 lg:col-span-2">
                         <InputArea
                           register={register}
@@ -264,11 +294,11 @@ const Checkout = () => {
                           )}
                           name="zipCode"
                           type="text"
+                          placeholder="2345"
                           value={address.zipCode || ""}
                           onChange={(e) => {
-                            setAddress({ ...address, zipCode: e.target.value })
+                            setAddress({ ...address, zipCode: e.target.value });
                           }}
-                          placeholder="2345"
                         />
                         <Error errorName={errors.zipCode} />
                       </div>
@@ -291,9 +321,6 @@ const Checkout = () => {
                         </p>
                       </div>
                     </div>
-                    {errorMessage && (
-                      <p className="text-red-500 mt-2">{errorMessage}</p>
-                    )}
                     <Label
                       label={showingTranslateValue(
                         storeCustomizationSetting?.checkout?.shipping_cost
@@ -301,15 +328,14 @@ const Checkout = () => {
                     />
                     <div className="grid grid-cols-6 gap-6">
                       <div className="col-span-6 sm:col-span-3">
+                        {/* entrega com Frete */}
                         <InputShipping
                           currency={currency}
-                          handleShippingCost={handleShippingCost}
+                          handleShippingCost={handleOptionChange}
                           register={register}
                           // value="FedEx"
-                          value={showingTranslateValue(
-                            storeCustomizationSetting?.checkout
-                              ?.shipping_name_two
-                          )}
+                          checked={selectedOption === 'shipping'}
+                          value="shipping"
                           description={showingTranslateValue(
                             storeCustomizationSetting?.checkout
                               ?.shipping_one_desc
@@ -319,38 +345,30 @@ const Checkout = () => {
                             Number(
                               storeCustomizationSetting?.checkout
                                 ?.shipping_one_cost
-                            ) || 50
+                            ) || 60
                           }
+                          disabled={isOptionSelected}
                         />
                         <Error errorName={errors.shippingOption} />
                       </div>
-                      <div className="flex items-center col-span-6 sm:col-span-3">
-                        {/* Pagamento na Entrega */}
-                        {storeSetting?.cod_status && (
-                          <div className="">
-                            <InputPayment
-                              setShowCard={setShowCard}
-                              register={register}
-                              name={t("common:cashOnDelivery")}
-                              checked={pagamentoNaEntrega}
-                              Icon={IoWalletSharp}
-                              value="CashOnDelivery"
-                              onChange={() => setPagamentoNaEntrega(!pagamentoNaEntrega)}
-                            />
-                            <Error errorMessage={errors.paymentMethod} />
-                          </div>
-                        )}
+
+                      <div className="col-span-6 sm:col-span-3">
+                        {/* Pagamento na entrega */}
+                        <InputDelivery
+                          onChange={() => { handleOptionChange("delivery") }}
+                          checked={selectedOption === 'delivery'}
+                          register={register}
+                          value={pagamentoNaEntrega}
+                          type="radio"
+                          Icon={FaHome}
+                          name="Pagamento na Entrega"
+                        />
+                        <Error errorName={errors.shippingOption} />
                       </div>
                     </div>
                   </div>
-                  <div className="form-group mt-12">
-                    {showCard && (
-                      <div className="mb-3">
-                        <CardElement />{" "}
-                        <p className="text-red-400 text-sm mt-1">{error}</p>
-                      </div>
-                    )}
-                  </div>
+
+
                   <div className="grid grid-cols-6 gap-4 lg:gap-6 mt-10">
                     <div className="col-span-6 sm:col-span-3">
                       <Link
@@ -402,6 +420,7 @@ const Checkout = () => {
                 </form>
               </div>
             </div>
+
             <div className="md:w-full lg:w-2/5 lg:ml-10 xl:ml-14 md:ml-6 flex flex-col h-full md:sticky lg:sticky top-28 md:order-2 lg:order-2">
               <div className="border p-5 lg:px-8 lg:py-8 rounded-lg bg-white order-1 sm:order-2">
                 <h2 className="font-semibold font-serif text-lg pb-4">
@@ -409,6 +428,7 @@ const Checkout = () => {
                     storeCustomizationSetting?.checkout?.order_summary
                   )}
                 </h2>
+
                 <div className="overflow-y-scroll flex-grow scrollbar-hide w-full max-h-64 bg-gray-50 block">
                   {items.map((item) => (
                     <CartItem key={item.id} item={item} currency={currency} />
@@ -425,6 +445,7 @@ const Checkout = () => {
                     </div>
                   )}
                 </div>
+
                 <div className="flex items-center mt-4 py-4 lg:py-4 text-sm w-full font-semibold text-heading last:border-b-0 last:text-base last:pb-0">
                   <form className="w-full">
                     {couponInfo.couponCode ? (
@@ -443,9 +464,9 @@ const Checkout = () => {
                           placeholder={t("common:couponCode")}
                           className="form-input py-2 px-3 md:px-4 w-full appearance-none transition ease-in-out border text-input text-sm rounded-md h-12 duration-200 bg-white border-gray-200 focus:ring-0 focus:outline-none focus:border-emerald-500 placeholder-gray-500 placeholder-opacity-75"
                         />
-                        {isCouponAvailable || isCheckoutSubmit ? (
+                        {isCouponAvailable ? (
                           <button
-                            disabled={isCouponAvailable || isCheckoutSubmit}
+                            disabled={isCouponAvailable}
                             type="submit"
                             className="md:text-sm leading-4 inline-flex items-center cursor-pointer transition ease-in-out duration-300 font-semibold text-center justify-center border border-gray-200 rounded-md placeholder-white focus-visible:outline-none focus:outline-none px-5 md:px-6 lg:px-8 py-3 md:py-3.5 lg:py-3 mt-3 sm:mt-0 sm:ml-3 md:mt-0 md:ml-3 lg:mt-0 lg:ml-3 hover:text-white hover:bg-emerald-500 h-12 text-sm lg:text-base w-full sm:w-auto"
                           >
@@ -459,7 +480,7 @@ const Checkout = () => {
                           </button>
                         ) : (
                           <button
-                            disabled={isCouponAvailable || isCheckoutSubmit}
+                            disabled={isCouponAvailable}
                             onClick={handleCouponCode}
                             className="md:text-sm leading-4 inline-flex items-center cursor-pointer transition ease-in-out duration-300 font-semibold text-center justify-center border border-gray-200 rounded-md placeholder-white focus-visible:outline-none focus:outline-none px-5 md:px-6 lg:px-8 py-3 md:py-3.5 lg:py-3 mt-3 sm:mt-0 sm:ml-3 md:mt-0 md:ml-3 lg:mt-0 lg:ml-3 hover:text-white hover:bg-emerald-500 h-12 text-sm lg:text-base w-full sm:w-auto"
                           >
@@ -520,3 +541,4 @@ const Checkout = () => {
 };
 
 export default dynamic(() => Promise.resolve(Checkout), { ssr: false });
+

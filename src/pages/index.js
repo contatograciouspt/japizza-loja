@@ -68,7 +68,6 @@ const Home = ({ popularProducts, discountProducts, attributes }) => {
                         <CMSkeleton
                           count={1}
                           height={30}
-                          // error={error}
                           loading={loading}
                           data={storeCustomizationSetting?.home?.feature_title}
                         />
@@ -101,7 +100,6 @@ const Home = ({ popularProducts, discountProducts, attributes }) => {
                       <CMSkeleton
                         count={1}
                         height={30}
-                        // error={error}
                         loading={loading}
                         data={storeCustomizationSetting?.home?.popular_title}
                       />
@@ -174,7 +172,6 @@ const Home = ({ popularProducts, discountProducts, attributes }) => {
                         <CMSkeleton
                           count={1}
                           height={30}
-                          // error={error}
                           loading={loading}
                           data={
                             storeCustomizationSetting?.home
@@ -186,7 +183,6 @@ const Home = ({ popularProducts, discountProducts, attributes }) => {
                         <CMSkeleton
                           count={5}
                           height={20}
-                          // error={error}
                           loading={loading}
                           data={
                             storeCustomizationSetting?.home
@@ -248,10 +244,10 @@ export const getServerSideProps = async (context) => {
 
   return {
     props: {
+      attributes,
+      cookies: cookies,
       popularProducts: data.popularProducts,
       discountProducts: data.discountedProducts,
-      cookies: cookies,
-      attributes,
     },
   };
 };

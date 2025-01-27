@@ -1,11 +1,10 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useContext } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { IoChevronForwardSharp } from "react-icons/io5";
 
 //internal import
-
-import useAsync from "@hooks/useAsync";
 import CategoryServices from "@services/CategoryServices";
 import CMSkeleton from "@components/preloader/CMSkeleton";
 import { SidebarContext } from "@context/SidebarContext";
@@ -16,11 +15,16 @@ const FeatureCategory = () => {
   const { isLoading, setIsLoading } = useContext(SidebarContext);
   const { showingTranslateValue } = useUtilsFunction();
 
-  const { data, error, loading } = useAsync(
-    CategoryServices.getShowingCategory
-  );
+  const {
+    data,
+    error,
+    isLoading: loading,
+  } = useQuery({
+    queryKey: ["category"],
+    queryFn: async () => await CategoryServices.getShowingCategory(),
+  });
 
-  // console.log('category',data)
+  // console.log("category", data);
 
   const handleCategoryClick = (id, categoryName) => {
     const category_name = categoryName

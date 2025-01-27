@@ -1,12 +1,14 @@
 import Image from "next/image";
 import { useCart } from "react-use-cart";
 import { FiPlus, FiMinus } from "react-icons/fi";
-import SettingServices from "@services/SettingServices";
-import useAsync from "@hooks/useAsync";
+
+//internal imports
+import useGetSetting from "@hooks/useGetSetting";
 
 const CheckoutCard = ({ item }) => {
   const { updateItemQuantity } = useCart();
-  const { data: globalSetting } = useAsync(SettingServices.getGlobalSetting);
+
+  const { globalSetting } = useGetSetting();
 
   const currency = globalSetting?.default_currency || "$";
 

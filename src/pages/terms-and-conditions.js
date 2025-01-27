@@ -8,8 +8,8 @@ import CMSkeleton from "@components/preloader/CMSkeleton";
 import useUtilsFunction from "@hooks/useUtilsFunction";
 
 const TermAndConditions = () => {
-  const { storeCustomizationSetting, loading, error } = useGetSetting();
   const { showingTranslateValue } = useUtilsFunction();
+  const { storeCustomizationSetting, loading, error } = useGetSetting();
 
   return (
     <Layout

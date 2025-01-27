@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { ImFacebook, ImGithub, ImGoogle } from "react-icons/im";
 import { signIn } from "next-auth/react";
-import useAsync from "@hooks/useAsync";
+import { useQuery } from "@tanstack/react-query";
+
+//internal imports
 import SettingServices from "@services/SettingServices";
 
 const BottomNavigation = ({ or, route, desc, pageName, loginTitle }) => {
@@ -10,8 +12,15 @@ const BottomNavigation = ({ or, route, desc, pageName, loginTitle }) => {
     px-3 py-4 h-12 w-full mb-6 mr-2
   `;
 
-  const { data, loading, error } = useAsync(SettingServices.getStoreSetting);
-  // console.log("data", data);
+  const {
+    error,
+    isLoading,
+    data: storeSetting,
+  } = useQuery({
+    queryKey: ["storeSetting"],
+    queryFn: async () => await SettingServices.getStoreSetting(),
+    staleTime: 4 * 60 * 1000, // Api request after 4 minutes
+  });
 
   return (
     <>
@@ -21,9 +30,9 @@ const BottomNavigation = ({ or, route, desc, pageName, loginTitle }) => {
         </div>
       )}
 
-      {!error && !loading && (
+      {!error && !isLoading && (
         <div className="flex flex-col mb-4">
-          {data?.google_login_status && (
+          {storeSetting?.google_login_status && (
             <button
               onClick={() =>
                 signIn("google", {
@@ -39,7 +48,7 @@ const BottomNavigation = ({ or, route, desc, pageName, loginTitle }) => {
               <span className="ml-2">{loginTitle} With Google</span>
             </button>
           )}
-          {data?.facebook_login_status && (
+          {storeSetting?.facebook_login_status && (
             <button
               onClick={() =>
                 signIn("facebook", {
@@ -55,7 +64,7 @@ const BottomNavigation = ({ or, route, desc, pageName, loginTitle }) => {
               <span className="ml-2">{loginTitle} With Facebook</span>
             </button>
           )}
-          {data?.github_login_status && (
+          {storeSetting?.github_login_status && (
             <button
               onClick={() =>
                 signIn("github", {

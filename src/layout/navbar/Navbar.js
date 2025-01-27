@@ -17,7 +17,7 @@ import CartDrawer from "@components/drawer/CartDrawer";
 import { SidebarContext } from "@context/SidebarContext";
 
 const Navbar = () => {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation("common");
   const [searchText, setSearchText] = useState("");
   const { toggleCartDrawer } = useContext(SidebarContext);
   const { totalItems } = useCart();
@@ -28,6 +28,8 @@ const Navbar = () => {
   const { storeCustomizationSetting } = useGetSetting();
 
   // console.log("storeCustomizationSetting", storeCustomizationSetting);
+
+  // console.log("t", t, "lang::::", lang);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -85,7 +87,7 @@ const Navbar = () => {
                         onChange={(e) => setSearchText(e.target.value)}
                         value={searchText}
                         className="form-input w-full pl-5 appearance-none transition ease-in-out border text-input text-sm font-sans rounded-md min-h-10 h-10 duration-200 bg-white focus:ring-0 outline-none border-none focus:outline-none placeholder-gray-500 placeholder-opacity-75"
-                        placeholder={t(`common:search-placeholder`)}
+                        placeholder={t("search-placeholder")}
                       />
                     </label>
                     <button

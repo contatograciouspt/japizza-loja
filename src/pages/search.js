@@ -6,12 +6,12 @@ import useTranslation from "next-translate/useTranslation";
 import Layout from "@layout/Layout";
 import useFilter from "@hooks/useFilter";
 import Card from "@components/cta-card/Card";
+import Loading from "@components/preloader/Loading";
 import ProductServices from "@services/ProductServices";
 import ProductCard from "@components/product/ProductCard";
-import CategoryCarousel from "@components/carousel/CategoryCarousel";
 import { SidebarContext } from "@context/SidebarContext";
-import Loading from "@components/preloader/Loading";
 import AttributeServices from "@services/AttributeServices";
+import CategoryCarousel from "@components/carousel/CategoryCarousel";
 
 const Search = ({ products, attributes }) => {
   const { t } = useTranslation();
@@ -122,40 +122,8 @@ export const getServerSideProps = async (context) => {
 
   return {
     props: {
-      products: data?.products,
       attributes,
+      products: data?.products,
     },
   };
 };
-
-// export const getServerSideProps = async (context) => {
-//   const { query } = context.query;
-//   const { Category } = context.query;
-//   const { category } = context.query;
-//   const data = await ProductServices.getShowingProducts();
-
-//   let products = [];
-//   //service filter with parent category
-//   if (Category) {
-//     products = data.filter(
-//       (product) => product.parent.toLowerCase().replace("&", "").split(" ").join("-") === Category
-//     );
-//   }
-//   //service filter with child category
-//   if (category) {
-//     products = data.filter(
-//       (product) => product.children.toLowerCase().replace("&", "").split(" ").join("-") === category
-//     );
-//   }
-
-//   //search result
-//   if (query) {
-//     products = data.filter((product) => product.title.toLowerCase().includes(query.toLowerCase()));
-//   }
-
-//   return {
-//     props: {
-//       products,
-//     },
-//   };
-// };

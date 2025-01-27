@@ -14,29 +14,39 @@ import {
   FiPocket,
   FiPhoneIncoming,
 } from "react-icons/fi";
+import { useQuery } from "@tanstack/react-query";
 
 //internal import
-import { notifyError } from "@utils/toast";
 import useGetSetting from "@hooks/useGetSetting";
 import Category from "@components/category/Category";
 import { SidebarContext } from "@context/SidebarContext";
 import useUtilsFunction from "@hooks/useUtilsFunction";
+import useTranslation from "next-translate/useTranslation";
 
 const NavbarPromo = () => {
-  const [languages, setLanguages] = useState([]);
-  const [currentLang, setCurrentLang] = useState({});
+  const { t } = useTranslation();
   const { lang, storeCustomizationSetting } = useGetSetting();
   const { isLoading, setIsLoading } = useContext(SidebarContext);
 
   const { showingTranslateValue } = useUtilsFunction();
-  const currentLanguage = Cookies.get("_curr_lang") || null;
 
-  // console.log("currentLanguage", currentLanguage);
+  const currentLanguageCookie = Cookies.get("_curr_lang");
 
-  // let currentLang = currentLanguage ? JSON.parse(currentLanguage) : {};
+  let currentLang = {};
+  if (currentLanguageCookie && currentLanguageCookie !== "undefined") {
+    try {
+      currentLang = JSON.parse(currentLanguageCookie);
+    } catch (error) {
+      // console.error("Error parsing current language cookie:", error);
+      currentLang = {}; // Fallback to an empty object or handle as necessary
+    }
+  } else {
+    currentLang = null;
+  }
+  // const translation = t("common:search-placeholder");
+  // console.log("Translated title:", translation, router, router.pathname);
 
   const handleLanguage = (lang) => {
-    // setCurrentLang(lang);
     Cookies.set("_lang", lang?.iso_code, {
       sameSite: "None",
       secure: true,
@@ -46,30 +56,22 @@ const NavbarPromo = () => {
       secure: true,
     });
   };
+  const { data: languages, isFetched } = useQuery({
+    queryKey: ["languages"],
+    queryFn: async () => await SettingServices.getShowingLanguage(),
+    staleTime: 10 * 60 * 1000, //cache for 10 minutes,
+    gcTime: 15 * 60 * 1000,
+  });
 
-  useEffect(() => {
-    (async () => {
-      {
-        try {
-          const res = await SettingServices.getShowingLanguage();
-          setLanguages(res);
-          const currentLanguage = Cookies.get("_curr_lang");
-          if (!currentLanguage) {
-            const result = res?.find((language) => language?.iso_code === lang);
-            Cookies.set("_curr_lang", JSON.stringify(result || res[0]), {
-              sameSite: "None",
-              secure: true,
-            });
-            // console.log("result", result);
-            // // setCurrentLang(currentLanguage);
-          }
-        } catch (err) {
-          notifyError(err);
-          console.log("error on getting lang", err);
-        }
-      }
-    })();
-  }, []);
+  const currentLanguage = Cookies.get("_curr_lang");
+  if (!currentLanguage && isFetched) {
+    const result = languages?.find((language) => language?.iso_code === lang);
+    Cookies.set("_curr_lang", JSON.stringify(result || languages[0]), {
+      sameSite: "None",
+      secure: true,
+    });
+    // console.log("result", result);
+  }
 
   return (
     <>
@@ -336,8 +338,7 @@ const NavbarPromo = () => {
             <div className="dropdown">
               <div
                 className={`flot-l flag ${currentLang?.flag?.toLowerCase()}`}
-              >
-              </div>
+              ></div>
               <button className="dropbtn">
                 {currentLang?.name}
                 &nbsp;<i className="fas fa-angle-down"></i>
@@ -351,6 +352,7 @@ const NavbarPromo = () => {
                       }}
                       key={i + 1}
                       href="/"
+                      locale={`${language.iso_code}`}
                     >
                       <div
                         className={`flot-l flag ${language?.flag?.toLowerCase()}`}

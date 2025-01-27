@@ -25,7 +25,7 @@ const useCheckoutSubmit = (storeSetting) => {
   const [minimumAmount, setMinimumAmount] = useState(0);
   const [showCard, setShowCard] = useState(false);
   const [pagamentoNaEntrega, setPagamentoNaEntrega] = useState(false);
-  const [shippingCost, setShippingCost] = useState(0);
+  const [shippingCost, setShippingCost] = useState(6);
   const [discountAmount, setDiscountAmount] = useState(0);
   const [discountPercentage, setDiscountPercentage] = useState(0);
   const [isCheckoutSubmit, setIsCheckoutSubmit] = useState(false);
@@ -46,13 +46,9 @@ const useCheckoutSubmit = (storeSetting) => {
 
   const userInfo = getUserSession();
 
-  const { data, loading } = useAsync(() =>
-    CustomerServices.getShippingAddress({ userId: userInfo?.id }));
+  const { data, loading } = useAsync(() => CustomerServices.getShippingAddress({ userId: userInfo?.id }));
 
-  const hasShippingAddress =
-    !loading &&
-    data?.shippingAddress &&
-    Object.keys(data?.shippingAddress)?.length > 0;
+  const hasShippingAddress = !loading && data?.shippingAddress && Object.keys(data?.shippingAddress)?.length > 0;
 
   const { register, handleSubmit, setValue, formState: { errors } } = useForm();
 
@@ -77,8 +73,7 @@ const useCheckoutSubmit = (storeSetting) => {
 
   //calculate total and discount value
   useEffect(() => {
-    const discountProductTotal = items?.reduce(
-      (preValue, currentValue) => preValue + currentValue.itemTotal, 0);
+    const discountProductTotal = items?.reduce((preValue, currentValue) => preValue + currentValue.itemTotal, 0);
 
     let totalValue = 0;
     const subTotal = parseFloat(cartTotal + Number(shippingCost));
@@ -91,7 +86,6 @@ const useCheckoutSubmit = (storeSetting) => {
 
     setDiscountAmount(discountAmountTotal);
     // console.log("total", totalValue);
-
     setTotal(totalValue);
   }, [cartTotal, shippingCost, discountPercentage]);
 
@@ -100,7 +94,7 @@ const useCheckoutSubmit = (storeSetting) => {
 
   // Acessando o primeiro item do array, se ele existir
   const quantityItems = items.map((item) => item.quantity)
-  const productName = items.map((item) => item.title?.pt)
+  const productName = items.map((item) => item.title)
 
   const submitHandler = async (data) => {
 
@@ -130,14 +124,14 @@ const useCheckoutSubmit = (storeSetting) => {
         total: total,
       };
 
-      const itemsDetails = items?.map((item, i) => {
-        const extrasDetail = item.extras?.map((extra) => `${extra.title}`).join(", ");
-        return `${item.title?.pt},  Tamanho: ${item?.tamanho?.title} , Extras: ${extrasDetail || 'Nenhum'}`;
-      });
+      // const itemsDetails = items?.map((item, i) => {
+      //   const extrasDetail = item.extras?.map((extra) => `${extra.title}`).join(", ");
+      //   return `${item.title?.pt},  Tamanho: ${item?.tamanho?.title} , Extras: ${extrasDetail || 'Nenhum'}`;
+      // });
 
-      let orderPaymentData = {
+      const orderDelivery = {
         "amount": totalPrice,
-        "customerTrns": `Local ${coordenadas}`,
+        "customerTrns": items,
         "customer": {
           "email": userDetails.email,
           "fullName": userDetails.name,
@@ -149,7 +143,29 @@ const useCheckoutSubmit = (storeSetting) => {
         "preauth": false,
         "allowRecurring": false,
         "maxInstallments": 12,
-        "merchantTrns": `${itemsDetails}, ${orderInfo}`,
+        "merchantTrns": `Local: ${coordenadas}`,
+        "paymentNotification": true,
+        "tipAmount": 0,
+        "disableExactAmount": false,
+        "disableCash": false,
+        "disableWallet": true,
+        "sourceCode": "Default",
+      }
+      const orderVivaPaymentData = {
+        "amount": totalPrice,
+        "customerTrns": `Local: ${coordenadas}`,
+        "customer": {
+          "email": userDetails.email,
+          "fullName": userDetails.name,
+          "phone": userDetails.contact,
+          "requestLang": "pt",
+        },
+        "dynamicDescriptor": `${productName}`,
+        "paymentTimeout": 65535,
+        "preauth": false,
+        "allowRecurring": false,
+        "maxInstallments": 12,
+        "merchantTrns": orderInfo.total,
         "paymentNotification": true,
         "tipAmount": 0,
         "disableExactAmount": false,
@@ -158,7 +174,18 @@ const useCheckoutSubmit = (storeSetting) => {
         "sourceCode": "Default",
       }
 
-      await handleCashOnDelivery(orderPaymentData);
+      if (pagamentoNaEntrega) {
+        const response = await axios.post(deliveryUrl, orderDelivery);
+        if (response.status === 200) {
+          notifySuccess('Pedido confirmado com sucesso!');
+          emptyCart();
+          router.push('/delivery');
+        } else {
+          notifyError('Erro ao salvar o pedido.');
+        }
+      } else {
+        await useVivaPayment(orderVivaPaymentData);
+      };
 
       await CustomerServices.addShippingAddress({
         userId: userInfo?.id,
@@ -177,27 +204,6 @@ const useCheckoutSubmit = (storeSetting) => {
     } catch (err) {
       notifyError(err ? err?.response?.data?.message : err?.message);
       setIsCheckoutSubmit(false);
-    }
-  };
-
-  // Aqui vamos verificar se o pagamento é na entrega ou não
-  const handleCashOnDelivery = async (orderPaymentData) => {
-    try {
-      if (pagamentoNaEntrega) {
-        const response = await axios.post(deliveryUrl, orderPaymentData);
-        if (response.status === 200) {
-          notifySuccess('Pedido confirmado com sucesso!');
-          emptyCart();
-          router.push('/success');
-        } else {
-          notifyError('Erro ao salvar o pedido.');
-        }
-      } else {
-        await useVivaPayment(orderPaymentData);
-      }
-    } catch (error) {
-      console.log('Erro ao salvar pedido: ', error);
-      notifyError("Erro ao salvar o pedido");
     }
   };
 

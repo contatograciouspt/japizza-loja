@@ -7,12 +7,13 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { useQuery } from "@tanstack/react-query";
 
 //internal import
-import useAsync from "@hooks/useAsync";
 import { SidebarContext } from "@context/SidebarContext";
 import CategoryServices from "@services/CategoryServices";
 import useUtilsFunction from "@hooks/useUtilsFunction";
+import Loading from "@components/preloader/Loading";
 
 const CategoryCarousel = () => {
   const router = useRouter();
@@ -22,7 +23,17 @@ const CategoryCarousel = () => {
 
   const { showingTranslateValue } = useUtilsFunction();
   const { isLoading, setIsLoading } = useContext(SidebarContext);
-  const { data, error } = useAsync(() => CategoryServices.getShowingCategory());
+
+  const {
+    data,
+    error,
+    isLoading: loading,
+  } = useQuery({
+    queryKey: ["category"],
+    queryFn: async () => await CategoryServices.getShowingCategory(),
+  });
+
+  // console.log("data", data, "error", error, "isFetched", isFetched);
 
   const handleCategoryClick = (id, category) => {
     const category_name = showingTranslateValue(category)
@@ -92,9 +103,11 @@ const CategoryCarousel = () => {
         modules={[Navigation]}
         className="mySwiper category-slider my-10"
       >
-        {error ? (
+        {loading ? (
+          <Loading loading={loading} />
+        ) : error ? (
           <p className="flex justify-center align-middle items-center m-auto text-xl text-red-500">
-            <span> {error}</span>
+            {error?.response?.data?.message || error?.message}
           </p>
         ) : (
           <div>
@@ -107,7 +120,7 @@ const CategoryCarousel = () => {
                   className="text-center cursor-pointer p-3 bg-white rounded-lg"
                 >
                   <div className="bg-white p-2 mx-auto w-10 h-10 rounded-full shadow-md">
-                    <div className="relative w-9 h-9">
+                    <div className="relative w-6 h-8">
                       <Image
                         src={
                           category?.icon ||

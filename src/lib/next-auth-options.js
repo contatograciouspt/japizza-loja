@@ -1,5 +1,5 @@
 // dynamicSettings.js
-
+import { QueryClient } from "@tanstack/react-query";
 import Google from "next-auth/providers/google";
 import GitHub from "next-auth/providers/github";
 import Facebook from "next-auth/providers/facebook";
@@ -8,8 +8,24 @@ import Credentials from "next-auth/providers/credentials";
 import SettingServices from "@services/SettingServices";
 import CustomerServices from "@services/CustomerServices";
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
 export const getDynamicAuthOptions = async () => {
-  const storeSetting = await SettingServices.getStoreSetting();
+  // Fetch store settings from the cache or trigger a fetch if not cached
+  const storeSetting = await queryClient.fetchQuery({
+    queryKey: ["storeSetting"],
+    queryFn: async () => await SettingServices.getStoreSetting(),
+    staleTime: 4 * 60 * 1000, // Api request after 4 minutes
+  });
+
+  // console.log("storeSetting", storeSetting);
 
   const providers = [
     Google({
@@ -31,8 +47,15 @@ export const getDynamicAuthOptions = async () => {
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        const userInfo = await CustomerServices.loginCustomer(credentials);
-        return userInfo;
+        try {
+          const userInfo = await CustomerServices.loginCustomer(credentials);
+          return userInfo;
+        } catch (error) {
+          // Handle custom error from backend
+          const message =
+            error.response?.data?.message || "Login failed! Please try again.";
+          throw new Error(message); // Propagate error to client
+        }
       },
     }),
   ];

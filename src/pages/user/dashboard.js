@@ -8,7 +8,6 @@ import {
   FiCheck,
   FiFileText,
   FiGrid,
-  FiHome,
   FiList,
   FiRefreshCw,
   FiSettings,
@@ -17,6 +16,7 @@ import {
   FiUser,
 } from "react-icons/fi";
 import { signOut } from "next-auth/react";
+import { useQuery } from "@tanstack/react-query";
 
 //internal import
 import Layout from "@layout/Layout";
@@ -35,38 +35,18 @@ const Dashboard = ({ title, description, children }) => {
   const { storeCustomizationSetting } = useGetSetting();
   const { showingTranslateValue } = useUtilsFunction();
 
-  const [data, setData] = useState({});
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let isMounted = true; // Track if the component is mounted
-
-    const handleGetCustomerOrders = async () => {
-      setLoading(true);
-      try {
-        const res = await OrderServices.getOrderCustomer({
-          page: currentPage,
-          limit: 10,
-        });
-        if (isMounted) {
-          setData(res);
-          setLoading(false);
-        }
-      } catch (error) {
-        if (isMounted) {
-          setLoading(false);
-          setError(error.message);
-        }
-      }
-    };
-
-    handleGetCustomerOrders();
-
-    return () => {
-      isMounted = false; // Clean up the effect by setting isMounted to false
-    };
-  }, [currentPage]);
+  const {
+    data,
+    error,
+    isLoading: loading,
+  } = useQuery({
+    queryKey: ["orders", { currentPage }],
+    queryFn: async () =>
+      await OrderServices.getOrderCustomer({
+        page: currentPage,
+        limit: 10,
+      }),
+  });
 
   const handleLogOut = () => {
     signOut();

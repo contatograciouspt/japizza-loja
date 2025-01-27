@@ -106,6 +106,16 @@ const ChangePassword = () => {
                     placeholder={showingTranslateValue(
                       storeCustomizationSetting?.dashboard?.new_password
                     )}
+                    pattern={
+                      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/
+                    }
+                    patternMessage={[
+                      "1. Password must be at least 8 characters long.",
+                      "2. Password must contain at least one uppercase letter.",
+                      "3. Password must contain at least one lowercase letter.",
+                      "4. Password must contain at least one number.",
+                      "5. Password must contain at least one special character.",
+                    ]}
                   />
                   <Error errorName={errors.newPassword} />
                 </div>

@@ -61,7 +61,6 @@ const useLoginSubmit = () => {
     e.preventDefault()
     setLoading(true);
     try {
-      console.log("Usuário antes do registro: ", user);
       const result = await axios.post(registerUrlDev, user, {
         headers: {
           ContentType: 'application/json',

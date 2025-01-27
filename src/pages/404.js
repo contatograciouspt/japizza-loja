@@ -1,9 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import Head from "next/head";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 const NotFound = () => {
+  const router = useRouter();
+  // console.log("router", router.asPath);
+
+  useEffect(() => {
+    const pathLocale = router?.asPath?.split("/")[1]; // Get the current locale from the router
+    if (!router?.locales?.includes(pathLocale)) {
+      router.replace("/"); // Redirect to the home page if the locale is not supported
+    }
+  }, [router]);
+
   return (
     <>
       <Head>

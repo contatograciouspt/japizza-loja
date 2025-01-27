@@ -34,7 +34,6 @@ const FooterTop = () => {
               <CMSkeleton
                 count={1}
                 height={30}
-                // error={error}
                 loading={loading}
                 data={storeCustomizationSetting?.home?.daily_need_title}
               />

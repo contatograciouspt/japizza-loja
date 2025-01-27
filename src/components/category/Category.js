@@ -2,10 +2,10 @@ import { useContext } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { IoClose } from "react-icons/io5";
+import { useQuery } from "@tanstack/react-query";
 
 //internal import
 import { pages } from "@utils/data";
-import useAsync from "@hooks/useAsync";
 import Loading from "@components/preloader/Loading";
 import { SidebarContext } from "@context/SidebarContext";
 import CategoryServices from "@services/CategoryServices";
@@ -16,9 +16,13 @@ const Category = () => {
   const { categoryDrawerOpen, closeCategoryDrawer } =
     useContext(SidebarContext);
   const { showingTranslateValue } = useUtilsFunction();
-  const { data, loading, error } = useAsync(() =>
-    CategoryServices.getShowingCategory()
-  );
+
+  const { data, error, isLoading, isFetched } = useQuery({
+    queryKey: ["category"],
+    queryFn: async () => await CategoryServices.getShowingCategory(),
+  });
+
+  // console.log("data", data, "error", error, "isFetched", isFetched);
 
   return (
     <div className="flex flex-col w-full h-full bg-white cursor-pointer scrollbar-hide">
@@ -49,12 +53,12 @@ const Category = () => {
             All Categories
           </h2>
         )}
-        {error ? (
+        {isLoading ? (
+          <Loading loading={isLoading} />
+        ) : error ? (
           <p className="flex justify-center align-middle items-center m-auto text-xl text-red-500">
-            <span> {error}</span>
+            {error?.response?.data?.message || error?.message}
           </p>
-        ) : data.length === 0 ? (
-          <Loading loading={loading} />
         ) : (
           <div className="relative grid gap-2 p-6">
             {data[0]?.children?.map((category) => (

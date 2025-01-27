@@ -9,9 +9,9 @@ import Layout from "@layout/Layout";
 import Label from "@components/form/Label";
 import Error from "@components/form/Error";
 import { notifySuccess } from "@utils/toast";
+import useGetSetting from "@hooks/useGetSetting";
 import InputArea from "@components/form/InputArea";
 import PageHeader from "@components/header/PageHeader";
-import useGetSetting from "@hooks/useGetSetting";
 import CMSkeleton from "@components/preloader/CMSkeleton";
 import useUtilsFunction from "@hooks/useUtilsFunction";
 
@@ -173,7 +173,6 @@ const ContactUs = () => {
                     <CMSkeleton
                       count={1}
                       height={50}
-                      // error={error}
                       loading={loading}
                       data={storeCustomizationSetting?.contact_us?.form_title}
                     />
@@ -182,7 +181,6 @@ const ContactUs = () => {
                     <CMSkeleton
                       count={2}
                       height={20}
-                      // error={error}
                       loading={loading}
                       data={
                         storeCustomizationSetting?.contact_us?.form_description

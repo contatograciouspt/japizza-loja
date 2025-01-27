@@ -3,11 +3,11 @@ import dynamic from "next/dynamic";
 import { useRef } from "react";
 import { IoCloudDownloadOutline, IoPrintOutline } from "react-icons/io5";
 import ReactToPrint from "react-to-print";
+import { useQuery } from "@tanstack/react-query";
 
 //internal import
 
 import Layout from "@layout/Layout";
-import useAsync from "@hooks/useAsync";
 import useGetSetting from "@hooks/useGetSetting";
 import Invoice from "@components/invoice/Invoice";
 import Loading from "@components/preloader/Loading";
@@ -18,17 +18,19 @@ import InvoiceForDownload from "@components/invoice/InvoiceForDownload";
 const Order = ({ params }) => {
   const printRef = useRef();
   const orderId = params.id;
-  const { data, loading, error } = useAsync(() =>
-    OrderServices.getOrderById(orderId)
-  );
+
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["order"],
+    queryFn: async () => await OrderServices.getOrderById(orderId),
+  });
 
   const { showingTranslateValue, getNumberTwo, currency } = useUtilsFunction();
   const { storeCustomizationSetting, globalSetting } = useGetSetting();
 
   return (
     <Layout title="Invoice" description="order confirmation page">
-      {loading ? (
-        <Loading loading={loading} />
+      {isLoading ? (
+        <Loading loading={isLoading} />
       ) : error ? (
         <h2 className="text-xl text-center my-10 mx-auto w-11/12 text-red-400">
           {error}

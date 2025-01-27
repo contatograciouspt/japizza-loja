@@ -1,24 +1,27 @@
 import Link from "next/link";
 import React from "react";
 import { FiPlus } from "react-icons/fi";
+import { useQuery } from "@tanstack/react-query";
 
 //internal imports
-
-import useAsync from "@hooks/useAsync";
 import { getUserSession } from "@lib/auth";
 import Dashboard from "@pages/user/dashboard";
+import Error from "@components/form/Error";
 import CustomerServices from "@services/CustomerServices";
 
 const MyAccount = () => {
   const userInfo = getUserSession();
-  const { data, loading, error } = useAsync(() =>
-    CustomerServices.getShippingAddress({
-      userId: userInfo?.id,
-    })
-  );
 
-  const hasShippingAddress =
-    data?.shippingAddress && Object.keys(data.shippingAddress).length > 0;
+  const { data, error, isLoading } = useQuery({
+    queryKey: ["shippingAddress", { id: userInfo?.id }],
+    queryFn: async () =>
+      await CustomerServices.getShippingAddress({
+        userId: userInfo?.id,
+      }),
+    select: (data) => data?.shippingAddress,
+  });
+
+  const hasShippingAddress = data && Object.keys(data).length > 0;
 
   // console.log("data", data?.shippingAddress);
 
@@ -71,27 +74,21 @@ const MyAccount = () => {
                   Edit
                 </Link>
                 <div className="flex-grow">
-                  {!loading && error ? (
-                    <Error errorName={error} />
+                  {!isLoading && error ? (
+                    <Error error={error} />
                   ) : (
                     <>
                       <h5 className="leading-none mb-2 text-base font-medium text-gray-700">
-                        {data?.shippingAddress?.name}{" "}
+                        {data?.name}{" "}
                         <span className="text-xs text-gray-500">
                           (Default Shipping Address)
                         </span>
                       </h5>
+                      <p className="text-sm text-gray-500">{data?.contact} </p>
+                      <p className="text-sm text-gray-500">{data?.address} </p>
                       <p className="text-sm text-gray-500">
-                        {data?.shippingAddress?.contact}{" "}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {data?.shippingAddress?.address}{" "}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {data?.shippingAddress?.country},{" "}
-                        {data?.shippingAddress?.city},{" "}
-                        {data?.shippingAddress?.area} -
-                        {data?.shippingAddress?.zipCode}
+                        {data?.country}, {data?.city}, {data?.area} -
+                        {data?.zipCode}
                       </p>
                     </>
                   )}

@@ -8,6 +8,7 @@ const InputShipping = ({
   cost,
   currency,
   description,
+  checked,
   handleShippingCost,
 }) => {
   return (
@@ -33,10 +34,12 @@ const InputShipping = ({
               </div>
             </div>
             <input
-              onClick={() => handleShippingCost(cost)}
+              {...register("shippingOption")}
+              onClick={() => handleShippingCost('shipping', cost)}
               name="shippingOption"
-              type="checkbox"
+              type="radio"
               value={value}
+              checked={checked}
               className="form-radio outline-none focus:ring-0 text-emerald-500"
             />
           </div>
