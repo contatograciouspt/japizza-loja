@@ -9,8 +9,8 @@ const PageHeader = ({ title, headerBg }) => {
       <div className="flex mx-auto w-full max-w-screen-2xl px-3 sm:px-10">
         <div className="w-full flex justify-center flex-col relative">
           <h2 className="text-xl md:text-3xl lg:text-4xl font-bold font-serif text-center">
-            {/* {t(`common:${title}`)} */}
-            {title}
+            {t(`common:${title}`)}
+            {/* {title} */}
           </h2>
         </div>
       </div>
