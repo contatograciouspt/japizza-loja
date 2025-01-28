@@ -8,7 +8,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import CouponServices from "@services/CouponServices";
 import OfferTimer from "@components/coupon/OfferTimer";
 import useUtilsFunction from "@hooks/useUtilsFunction";
-import CMSkeletonTwo from "@components/preloader/CMSkeletonTwo";
+import CMSkeletonTwo from "@components/preloader/CmSkeletonTwo";
 
 const Coupon = ({ couponInHome }) => {
   const [copiedCode, setCopiedCode] = useState("");
