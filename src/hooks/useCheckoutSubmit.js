@@ -131,7 +131,7 @@ const useCheckoutSubmit = (storeSetting) => {
 
       const orderDelivery = {
         "amount": totalPrice,
-        "customerTrns": items,
+        "customerTrns": `${productName}`,
         "customer": {
           "email": userDetails.email,
           "fullName": userDetails.name,
@@ -150,10 +150,11 @@ const useCheckoutSubmit = (storeSetting) => {
         "disableCash": false,
         "disableWallet": true,
         "sourceCode": "Default",
+        "cart": orderInfo
       }
       const orderVivaPaymentData = {
         "amount": totalPrice,
-        "customerTrns": `Local: ${coordenadas}`,
+        "customerTrns": `${productName}`,
         "customer": {
           "email": userDetails.email,
           "fullName": userDetails.name,
@@ -172,6 +173,7 @@ const useCheckoutSubmit = (storeSetting) => {
         "disableCash": false,
         "disableWallet": true,
         "sourceCode": "Default",
+        "cart": orderInfo
       }
 
       if (pagamentoNaEntrega) {
@@ -184,7 +186,7 @@ const useCheckoutSubmit = (storeSetting) => {
           notifyError('Erro ao salvar o pedido.');
         }
       } else {
-        await useVivaPayment(orderVivaPaymentData);
+        await useVivaPayment(orderVivaPaymentData, orderInfo);
       };
 
       await CustomerServices.addShippingAddress({
