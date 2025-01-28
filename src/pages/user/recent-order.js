@@ -9,7 +9,7 @@ import { SidebarContext } from "@context/SidebarContext";
 import useGetSetting from "@hooks/useGetSetting";
 import useUtilsFunction from "@hooks/useUtilsFunction";
 import OrderHistory from "@components/order/OrderHistory";
-import CMSkeletonTwo from "@components/preloader/CMSkeletonTwo";
+import CMSkeletonTwo from "@components/preloader/CmSkeletonTwo";
 
 const RecentOrder = ({ data, loading, error }) => {
   const { handleChangePage, currentPage } = useContext(SidebarContext);

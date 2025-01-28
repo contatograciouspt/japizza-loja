@@ -12,7 +12,7 @@ import Loading from "@components/preloader/Loading";
 import useUtilsFunction from "@hooks/useUtilsFunction";
 import OrderHistory from "@components/order/OrderHistory";
 import { SidebarContext } from "@context/SidebarContext";
-import CMSkeletonTwo from "@components/preloader/CMSkeletonTwo";
+import CMSkeletonTwo from "@components/preloader/CmSkeletonTwo";
 
 const MyOrders = () => {
   const { currentPage, handleChangePage, isLoading, setIsLoading } =

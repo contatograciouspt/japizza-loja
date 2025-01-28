@@ -1,5 +1,5 @@
 import React from "react";
-import CMSkeletonTwo from "@components/preloader/CMSkeletonTwo";
+import CMSkeletonTwo from "./CmSkeletonTwo";
 
 const LoadingForSession = () => {
   return (
