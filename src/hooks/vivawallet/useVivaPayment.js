@@ -5,6 +5,7 @@ import { useCart } from 'react-use-cart'
 const urlDevelopment = process.env.NEXT_PUBLIC_DEV_URL_PAYMENT
 const urlProduction = process.env.NEXT_PUBLIC_PRODUCTION_URL_PAYMENT
 const orderCodeUrl = process.env.NEXT_PUBLIC_ORDERCODE_URL
+const customerEmailUrl = process.env.NEXT_PUBLIC_CUSTOMER_EMAIL_URL
 
 
 export default function usePaymentVivaWallet() {
@@ -19,31 +20,10 @@ export default function usePaymentVivaWallet() {
 
             if (payment.status === 200) {
                 const orderCode = payment.data.orderCode;
-                const email = localStorage.getItem("email");
 
-                if (orderCode && email) {
-                    try {
-                        // Atualizar o customer com o orderCode
-                        const responseOrderCode = await axios.put(orderCodeUrl, { email, orderCode });
-
-                        if (responseOrderCode.status === 200) {
-                            console.log("Customer atualizado com sucesso.");
-                            emptyCart(); // Limpar o carrinho após a atualização bem-sucedida
-
-                            // Redirecionar para a tela de pagamento (APÓS atualizar o customer)
-                            window.location.href = `https://demo.vivapayments.com/web/checkout?ref=${orderCode}`;
-                        } else {
-                            console.error("Erro ao atualizar o customer:", responseOrderCode.status, responseOrderCode.data);
-                            setError("Erro ao atualizar os dados do cliente.  Por favor, tente novamente.");
-                        }
-                    } catch (updateErr) {
-                        console.error("Erro ao atualizar o customer:", updateErr);
-                        setError("Erro ao atualizar os dados do cliente.  Por favor, tente novamente.");
-                    }
-                } else {
-                    console.error("orderCode ou email não encontrados.");
-                    setError("Erro ao processar o pagamento. orderCode ou email não foram encontrados.");
-                }
+                emptyCart(); // Limpar o carrinho após a atualização bem-sucedida
+                // Redirecionar para a tela de pagamento (APÓS atualizar o customer)
+                window.location.href = `https://demo.vivapayments.com/web/checkout?ref=${orderCode}`;
             } else {
                 console.error("Erro ao criar ordem de pagamento:", payment.status, payment.data);
                 setError("Erro ao criar ordem de pagamento.  Por favor, tente novamente.");

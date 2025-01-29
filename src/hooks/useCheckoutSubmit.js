@@ -110,6 +110,7 @@ const useCheckoutSubmit = (storeSetting) => {
         country: data.country,
         city: data.city,
         zipCode: data.zipCode,
+        additionalInformation: data.additionalInformation,
       };
 
       let orderInfo = {
@@ -131,7 +132,7 @@ const useCheckoutSubmit = (storeSetting) => {
 
       const orderDelivery = {
         "amount": totalPrice,
-        "customerTrns": `${productName}`,
+        "customerTrns": userDetails.additionalInformation,
         "customer": {
           "email": userDetails.email,
           "fullName": userDetails.name,
@@ -143,18 +144,19 @@ const useCheckoutSubmit = (storeSetting) => {
         "preauth": false,
         "allowRecurring": false,
         "maxInstallments": 12,
-        "merchantTrns": `Local: ${coordenadas}`,
+        "merchantTrns": `${coordenadas}`,
         "paymentNotification": true,
         "tipAmount": 0,
         "disableExactAmount": false,
         "disableCash": false,
         "disableWallet": true,
         "sourceCode": "Default",
-        "cart": orderInfo
+        "cart": orderInfo,
+        "pagamentoNaEntrega": pagamentoNaEntrega
       }
       const orderVivaPaymentData = {
         "amount": totalPrice,
-        "customerTrns": `${productName}`,
+        "customerTrns": userDetails.additionalInformation,
         "customer": {
           "email": userDetails.email,
           "fullName": userDetails.name,
@@ -166,14 +168,15 @@ const useCheckoutSubmit = (storeSetting) => {
         "preauth": false,
         "allowRecurring": false,
         "maxInstallments": 12,
-        "merchantTrns": orderInfo.total,
+        "merchantTrns":`${coordenadas}`,
         "paymentNotification": true,
         "tipAmount": 0,
         "disableExactAmount": false,
         "disableCash": false,
         "disableWallet": true,
         "sourceCode": "Default",
-        "cart": orderInfo
+        "cart": orderInfo,
+        "pagamentoNaEntrega": pagamentoNaEntrega
       }
 
       if (pagamentoNaEntrega) {

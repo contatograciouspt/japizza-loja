@@ -13,6 +13,7 @@ const InputArea = ({
   placeholder,
   required = true,
   value,
+  rows,
   onChange,
 }) => {
   return (
@@ -26,22 +27,41 @@ const InputArea = ({
             </span>
           </div>
         )}
-        <input
-          {...register(`${name}`, {
-            required: required ? `${label} is required!` : false,
-          })}
-          type={type}
-          name={name}
-          readOnly={readOnly}
-          defaultValue={defaultValue}
-          placeholder={placeholder}
-          autoComplete={autocomplete}
-          value={value}
-          onChange={onChange}
-          className={`${Icon ? "py-2 pl-10" : "py-2 px-4 md:px-5"
-            } w-full appearance-none border text-sm opacity-75 text-input rounded-md placeholder-body min-h-12 transition duration-200 focus:ring-0 ease-in-out bg-white border-gray-200 focus:outline-none focus:border-emerald-500 h-11 md:h-12 ${readOnly ? "bg-gray-100 cursor-not-allowed text-gray-500" : ""
-            }`}
-        />
+        {type === "textarea" ? (
+          <textarea
+            {...register(`${name}`, {
+              required: required ? `${label} is required!` : false,
+            })}
+            name={name}
+            readOnly={readOnly}
+            defaultValue={defaultValue}
+            placeholder={placeholder}
+            autoComplete={autocomplete}
+            value={value}
+            rows={rows}
+            onChange={onChange}
+            className={`${Icon ? "py-2 pl-10" : "py-2 px-4 md:px-5"
+              } w-full appearance-none border text-sm opacity-75 text-input rounded-md placeholder-body min-h-12 transition duration-200 focus:ring-0 ease-in-out bg-white border-gray-200 focus:outline-none focus:border-emerald-500 h-11 md:h-12 ${readOnly ? "bg-gray-100 cursor-not-allowed text-gray-500" : ""
+              }`}
+          />
+        ) : (
+          <input
+            {...register(`${name}`, {
+              required: required ? `${label} is required!` : false,
+            })}
+            type={type}
+            name={name}
+            readOnly={readOnly}
+            defaultValue={defaultValue}
+            placeholder={placeholder}
+            autoComplete={autocomplete}
+            value={value}
+            onChange={onChange}
+            className={`${Icon ? "py-2 pl-10" : "py-2 px-4 md:px-5"
+              } w-full appearance-none border text-sm opacity-75 text-input rounded-md placeholder-body min-h-12 transition duration-200 focus:ring-0 ease-in-out bg-white border-gray-200 focus:outline-none focus:border-emerald-500 h-11 md:h-12 ${readOnly ? "bg-gray-100 cursor-not-allowed text-gray-500" : ""
+              }`}
+          />
+        )}
       </div>
     </>
   );

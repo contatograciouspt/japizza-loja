@@ -35,7 +35,7 @@ const Checkout = () => {
   const { showingTranslateValue } = useUtilsFunction();
   const [loading, setLoading] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState("");
-  const [address, setAddress] = React.useState({ street: "", city: "", country: "", zipCode: "" });
+  const [address, setAddress] = React.useState({ street: "", city: "", country: "", zipCode: "", additionalInformation: "" });
   const [selectedOption, setSelectedOption] = React.useState(null); // Novo estado
   const [isOptionSelected , setIsOptionSelected] = React.useState(false);
 
@@ -302,6 +302,22 @@ const Checkout = () => {
                         />
                         <Error errorName={errors.zipCode} />
                       </div>
+                        {/* informações adicionais */}
+                        <div className="col-span-6">
+                            <InputArea
+                                register={register}
+                                label="Informações adicionais"
+                                name="additionalInformation"
+                                type="textarea"
+                                rows={4}
+                                placeholder="Informações adicionais"
+                                value={address.additionalInformation || ""}
+                                onChange={(e) => {
+                                    setAddress({ ...address, additionalInformation: e.target.value });
+                                }}
+                            />
+                            <Error errorName={errors.additionalInformation} />
+                        </div>
                     </div>
                     <div className="flex row max-[768px]:flex-col gap-2 justify-between items-center">
                       <button
