@@ -6,10 +6,12 @@ import useGetSetting from "@hooks/useGetSetting";
 import PageHeader from "@components/header/PageHeader";
 import CMSkeleton from "@components/preloader/CMSkeleton";
 import useUtilsFunction from "@hooks/useUtilsFunction";
+import useTranslation from "next-translate/useTranslation";
 
 const PrivacyPolicy = () => {
   const { storeCustomizationSetting, loading, error } = useGetSetting();
   const { showingTranslateValue } = useUtilsFunction();
+  const { t } = useTranslation("common");
   // console.log("data", storeCustomizationSetting);
 
   return (
@@ -34,7 +36,7 @@ const PrivacyPolicy = () => {
           <CMSkeleton count={15} height={15} loading={loading} />
           <br />
           <CMSkeleton count={15} height={15} loading={loading} />
-          {/* <div className="mb-8 lg:mb-12 last:mb-0">
+          <div className="mb-8 lg:mb-12 last:mb-0">
             <h2 className="text-xl xl:text-2xl xl:leading-7 font-semibold font-serif mb-2 lg:mb-4">
               {t("common:privacy-policy-consent")}
             </h2>
@@ -110,7 +112,7 @@ const PrivacyPolicy = () => {
               <p>{t("common:privacy-policy-children-information-docs1")}</p>
               <p>{t("common:privacy-policy-children-information-docs2")}</p>
             </div>
-          </div> */}
+          </div>
         </div>
       </div>
     </Layout>

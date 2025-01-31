@@ -7,6 +7,7 @@ import useGetSetting from "@hooks/useGetSetting";
 import PageHeader from "@components/header/PageHeader";
 import CMSkeleton from "@components/preloader/CMSkeleton";
 import useUtilsFunction from "@hooks/useUtilsFunction";
+import useTranslation from "next-translate/useTranslation";
 
 const AboutUs = () => {
   const { storeCustomizationSetting, loading, error } = useGetSetting();
@@ -26,7 +27,7 @@ const AboutUs = () => {
           <div className="grid grid-flow-row lg:grid-cols-2 gap-4 lg:gap-16 items-center">
             <div className="">
               <h3 className="text-xl lg:text-3xl mb-2 font-serif font-semibold">
-                {/* {t("common:about-section-title")} */}
+                
 
                 <CMSkeleton
                   count={1}

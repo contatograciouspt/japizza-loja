@@ -1,6 +1,9 @@
+import useTranslation from "next-translate/useTranslation";
 import React from "react";
 
 const PageHeader = ({ title, headerBg }) => {
+  const { t } = useTranslation("common");
+
   return (
     <div
       style={{ backgroundImage: `url(${headerBg || "/page-header-bg.jpg"})` }}

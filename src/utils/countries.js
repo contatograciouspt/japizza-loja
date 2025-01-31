@@ -426,6 +426,24 @@ const countries = [
       },
     ],
   },
+  // Portugal adicionado manualmente
+  {
+    name: "Portugal",
+    cities: [
+      {
+        name: "Lisbon",
+        areas: ["Porto", "Lisboa", "Belem", "Faro", "Sao Joao da Madeira"],
+      },
+      {
+        name: "Mexilhoeira Grande",
+        areas: ["Mexilhoeira Grande"]
+      },
+      {
+        name: "Portimão",
+        areas: ["Portimão"]
+      }
+    ]
+  },
   {
     name: "Italy",
     cities: [
