@@ -36,7 +36,7 @@ const useUtilsFunction = () => {
   const showingTranslateValue = (data) => {
     return data !== undefined && Object?.keys(data).includes(lang)
       ? data[lang]
-      : data?.en;
+      : data?.pt;
   };
 
   const showingImage = (data) => {
