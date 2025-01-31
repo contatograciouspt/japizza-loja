@@ -20,7 +20,7 @@ const useLoginSubmit = () => {
   });
   const redirectUrl = useSearchParams().get("redirectUrl");
   const registerUrl = process.env.NEXT_PUBLIC_REGISTER_URL // Production url
-  const registerUrlDev = process.env.NEXT_PUBLIC_DEV_REGISTER_URL // Development url
+  // const registerUrlDev = process.env.NEXT_PUBLIC_DEV_REGISTER_URL // Development url
 
   const {
     register,
@@ -61,7 +61,7 @@ const useLoginSubmit = () => {
     e.preventDefault()
     setLoading(true);
     try {
-      const result = await axios.post(registerUrlDev, user, {
+      const result = await axios.post(registerUrl, user, {
         headers: {
           ContentType: 'application/json',
         }
