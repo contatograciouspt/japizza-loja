@@ -14,9 +14,9 @@ class MyDocument extends Document {
   render() {
     const setting = this.props.setting;
     return (
-      <Html lang="en">
+      <Html lang="pt">
         <Head>
-          <link rel="icon" href={setting?.favicon || "/favicon.png"} />
+          <link rel="icon" href={setting?.favicon || "/favicon.ico"} />
           <meta
             property="og:title"
             content={
@@ -39,7 +39,7 @@ class MyDocument extends Document {
           <meta
             property="og:url"
             content={
-              setting?.meta_url || "https://kachabazar-store.vercel.app/"
+              setting?.meta_url || "https://japizza-loja.vercel.app/"
             }
           />
           <meta

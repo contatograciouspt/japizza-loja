@@ -144,7 +144,7 @@ const NavbarPromo = () => {
                     )}
 
                     <Popover className="relative font-serif">
-                      <Popover.Button className="group inline-flex items-center py-2 text-sm font-medium hover:text-emerald-600 focus:outline-none">
+                      {/* <Popover.Button className="group inline-flex items-center py-2 text-sm font-medium hover:text-emerald-600 focus:outline-none">
                         <span>
                           {showingTranslateValue(
                             storeCustomizationSetting?.navbar?.pages
@@ -154,7 +154,7 @@ const NavbarPromo = () => {
                           className="ml-1 h-3 w-3 group-hover:text-emerald-600"
                           aria-hidden="true"
                         />
-                      </Popover.Button>
+                      </Popover.Button> */}
                       <Transition
                         as={Fragment}
                         enter="transition ease-out duration-200"
