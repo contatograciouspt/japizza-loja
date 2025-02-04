@@ -45,15 +45,10 @@ const Navbar = () => {
     }
   };
 
-  // console.log(
-  //   "storeCustomizationSetting?.navbar?.header_logo",
-  //   storeCustomizationSetting?.navbar?.logo
-  // );
-
   return (
     <>
       <CartDrawer />
-      <div className="bg-emerald-500 sticky top-0 z-20">
+      <div className="bg-customRed sticky top-0 z-20">
         <div className="max-w-screen-2xl mx-auto px-3 sm:px-10">
           <div className="top-bar h-16 lg:h-auto flex items-center justify-between py-4 mx-auto">
             <Link
@@ -64,13 +59,15 @@ const Navbar = () => {
                 <Image
                   width="0"
                   height="0"
-                  sizes="100vw"
+                  sizes="100%"
+                  quality={100}
                   className="w-full h-auto"
                   priority
-                  src={
-                    storeCustomizationSetting?.navbar?.logo ||
-                    "/logo/logo-light.svg"
-                  }
+                  // src={
+                  //   storeCustomizationSetting?.navbar?.logo ||
+                  //   "/logo/logo-light.svg"
+                  // }
+                  src="/logo_japizza.png"
                   alt="logo"
                 />
               </div>
@@ -119,7 +116,6 @@ const Navbar = () => {
                 <FiShoppingCart className="w-6 h-6 drop-shadow-xl" />
               </button>
               {/* Profile dropdown */}
-
               <button
                 className="pl-5 text-white text-2xl font-bold"
                 aria-label="Login"

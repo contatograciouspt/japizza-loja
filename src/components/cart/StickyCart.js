@@ -13,7 +13,7 @@ const StickyCart = () => {
 
   const { globalSetting } = useGetSetting();
 
-  const currency = globalSetting?.default_currency || "$";
+  const currency = globalSetting?.default_currency || "€";
 
   return (
     <button aria-label="Cart" onClick={toggleCartDrawer} className="absolute">
@@ -23,7 +23,7 @@ const StickyCart = () => {
             <IoBagHandleOutline />
           </span>
           <span className="px-2 text-sm font-serif font-medium">
-            {totalItems} Items
+            {totalItems} Itens
           </span>
         </div>
         <div className="flex flex-col items-center justify-center bg-emerald-700 p-2 text-white text-base font-serif font-medium rounded-bl-lg mx-auto">

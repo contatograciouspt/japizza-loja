@@ -16,12 +16,12 @@ class MyDocument extends Document {
     return (
       <Html lang="pt">
         <Head>
-          <link rel="icon" href={setting?.favicon || "/favicon.ico"} />
+          <link rel="icon" href="favicon.ico" />
           <meta
             property="og:title"
             content={
               setting?.meta_title ||
-              "KachaBazar - React Grocery & Organic Food Store e-commerce Template"
+              "jápizza - A Melhor Pizza em Mexilhoeira"
             }
           />
           <meta property="og:type" content="eCommerce Website" />
@@ -29,12 +29,12 @@ class MyDocument extends Document {
             property="og:description"
             content={
               setting?.meta_description ||
-              "React Grocery & Organic Food Store e-commerce Template"
+              "Descubra as pizzas mais saborosas de Mexilhoeira! Ingredientes frescos, massa artesanal e um serviço de entrega rápido. Faça já o seu pedido!"
             }
           />
           <meta
             name="keywords"
-            content={setting?.meta_keywords || "ecommenrce online store"}
+            content={setting?.meta_keywords || "pizza em Mexilhoeira, melhor pizzaria, entrega de pizza, pizza artesanal"}
           />
           <meta
             property="og:url"

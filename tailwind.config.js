@@ -1,4 +1,4 @@
-const colors = require("tailwindcss/colors");
+import colors from "tailwindcss/colors"
 module.exports = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx}",
@@ -15,6 +15,10 @@ module.exports = {
     extend: {
       height: {
         header: "560px",
+      },
+      // cor customizada
+      colors: {
+        customRed: "#E80F32",
       },
       backgroundImage: {
         "page-header": "url('/page-header-bg.jpg')",

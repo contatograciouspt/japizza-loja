@@ -136,7 +136,7 @@ const MainCarousel = () => {
                 width={950}
                 height={400}
                 src={item.image || "/slider/slider-1.jpg"}
-                alt={item.title}
+                alt={item.title || "slider"}
                 className="object-cover"
                 priority
               />

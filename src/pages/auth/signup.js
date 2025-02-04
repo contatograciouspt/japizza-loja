@@ -29,9 +29,9 @@ const SignUp = () => {
             <div className="mx-auto text-left justify-center rounded-md w-full max-w-lg px-4 py-8 sm:p-10 overflow-hidden align-middle transition-all transform bg-white shadow-xl rounded-2x">
               <div className="overflow-hidden mx-auto">
                 <div className="text-center mb-6">
-                  <h2 className="text-3xl font-bold font-serif">Signing Up</h2>
+                  <h2 className="text-3xl font-bold font-serif">Inscrever-se</h2>
                   <p className="text-sm md:text-base text-gray-500 mt-2 mb-8 sm:mb-10">
-                    Create an account by sign up with provider.
+                    Crie sua conta agora mesmo!
                   </p>
                 </div>
                 <form
@@ -94,7 +94,7 @@ const SignUp = () => {
                           href="/auth/forget-password"
                           className="text-end text-sm text-heading ps-3 underline hover:no-underline focus:outline-none"
                         >
-                          Forgot password?
+                          Esqueceu a senha?
                         </Link>
                       </div>
                     </div>

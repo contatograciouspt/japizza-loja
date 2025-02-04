@@ -28,10 +28,8 @@ const ProductModal = ({
   const router = useRouter();
   const { setIsLoading, isLoading } = useContext(SidebarContext);
   const { t } = useTranslation("ns1");
-
   const { handleAddItem, setItem, item } = useAddToCart();
-  const { lang, showingTranslateValue, getNumber, getNumberTwo } =
-    useUtilsFunction();
+  const { lang, showingTranslateValue, getNumber, getNumberTwo } = useUtilsFunction();
 
   // react hook
   const [value, setValue] = useState("");
@@ -149,11 +147,88 @@ const ProductModal = ({
     setVariantTitle(varTitle?.sort());
   }, [variants, attributes]);
 
+
+  useEffect(() => {
+    let initialPrice = product?.prices?.price || 0;
+    // Iterar sobre cada atributo de variante
+    variantTitle.forEach(title => {
+      if (product?.variants[0]?.price) {
+        return
+      }
+      const attributeValue = selectVariant[title._id];
+      if (!attributeValue) return;
+
+
+      // Se for um checkbox (multi-select)
+      if (title.option === "Checkbox") {
+        if (Array.isArray(attributeValue)) {
+          attributeValue.forEach(selectedVariantId => {
+            const variant = product.variants.find(v => v[title._id] === selectedVariantId);
+            if (variant && variant.price) {
+              initialPrice += variant.price;
+            }
+          });
+        }
+      } else {
+
+        //Lógica para quando for radio ou select e possuir preço
+        if (product.variants.map(el => el[title._id])) {
+
+          variantTitle.map((vr) => {
+            vr?.variants?.map(
+              (el) =>
+                vr?._id === title._id &&
+                vr?.variants?.map(
+                  (element) =>
+                    element?._id === attributeValue && (
+                      initialPrice += element.price
+                    )
+                )
+            )
+          })
+        }
+
+      }
+    });
+    setPrice(initialPrice);
+
+  }, [selectVariant]);
+
+
+  const handleVariantChange = (attribute, newValue) => {
+
+    setSelectVariant(prev => ({ ...prev, [attribute]: newValue }));
+    setSelectVa(prev => ({ ...prev, [attribute]: newValue }));
+    setValue(newValue); // Isso pode precisar ser ajustado dependendo do seu caso de uso
+
+  };
+
+  const handleCheckboxChange = (attribute, newValue) => {
+    handleVariantChange(attribute, newValue);
+  };
+
+
+
   const handleAddToCart = (p) => {
     if (p.variants.length === 1 && p.variants[0].quantity < 1)
-      return notifyError("Insufficient stock");
+      return notifyError("Estoque insuficiente");
 
-    if (stock <= 0) return notifyError("Insufficient stock");
+    if (stock <= 0) return notifyError("Estoque insuficiente");
+
+    const variantId = variantTitle?.map((att) => selectVariant[att._id]).join("-");
+
+
+    const selectedVariantsString = variantTitle
+      ?.map(
+        (att) =>
+          att.variants?.find((v) => v._id === selectVariant[att._id])?.name || null
+      )
+      .filter(Boolean) // Filter out any null values if a variant isn't found
+      .map(showingTranslateValue) // Translate the found variant name
+      .join("-"); // Join with a hyphen
+
+    // Log the selectedVariantsString and selectVariant objects
+
 
     if (
       product?.variants.map(
@@ -165,24 +240,17 @@ const ProductModal = ({
       const { variants, categories, description, ...updatedProduct } = product;
       const newItem = {
         ...updatedProduct,
-        id: `${
-          p?.variants.length <= 0
-            ? p._id
-            : p._id +
-              "-" +
-              variantTitle?.map((att) => selectVariant[att._id]).join("-")
-        }`,
-        title: `${
-          p?.variants.length <= 0
-            ? showingTranslateValue(p.title)
-            : showingTranslateValue(p.title) +
-              "-" +
-              variantTitle
-                ?.map((att) =>
-                  att.variants?.find((v) => v._id === selectVariant[att._id])
-                )
-                .map((el) => showingTranslateValue(el?.name))
-        }`,
+        id: `${p?.variants.length <= 0
+          ? p._id
+          : p._id +
+          "-" +
+          variantId
+          }`,
+        title: `${p?.variants.length <= 0
+          ? showingTranslateValue(p.title)
+          : showingTranslateValue(p.title) +
+          "-" +
+          variantId}`,
         image: img,
         variant: selectVariant || {},
         price:
@@ -195,11 +263,10 @@ const ProductModal = ({
             : getNumber(originalPrice),
       };
 
-      // console.log("newItem", newItem);
 
       handleAddItem(newItem);
     } else {
-      return notifyError("Please select all variant first!");
+      return notifyError("Selecione primeiro todas as variantes!");
     }
   };
 
@@ -214,8 +281,6 @@ const ProductModal = ({
   const category_name = showingTranslateValue(product?.category?.name)
     ?.toLowerCase()
     ?.replace(/[^A-Z0-9]+/gi, "-");
-
-  // console.log("product", product, "stock", stock);
 
   return (
     <>
@@ -259,9 +324,8 @@ const ProductModal = ({
                   </h1>
                 </Link>
                 <div
-                  className={`${
-                    stock <= 0 ? "relative py-1 mb-2" : "relative"
-                  }`}
+                  className={`${stock <= 0 ? "relative py-1 mb-2" : "relative"
+                    }`}
                 >
                   <Stock stock={stock} />
                 </div>
@@ -295,6 +359,7 @@ const ProductModal = ({
                         setSelectVa={setSelectVa}
                         selectVariant={selectVariant}
                         setSelectVariant={setSelectVariant}
+                        onChangeMultiSelect={handleCheckboxChange}
                       />
                     </div>
                   </span>
@@ -373,9 +438,9 @@ const ProductModal = ({
               </div>
               <div className="flex justify-end mt-2">
                 <p className="text-xs sm:text-sm text-gray-600">
-                  Call Us To Order By Mobile Number :{" "}
+                  Precisa de ajuda? Ligue-nos :{" "}
                   <span className="text-emerald-700 font-semibold">
-                    +0044235234
+                    +351 912 827 537
                   </span>{" "}
                 </p>
               </div>

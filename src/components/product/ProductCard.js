@@ -25,12 +25,12 @@ const ProductCard = ({ product, attributes }) => {
   const { globalSetting } = useGetSetting();
   const { showingTranslateValue } = useUtilsFunction();
 
-  const currency = globalSetting?.default_currency || "$";
+  const currency = globalSetting?.default_currency || "€";
 
   // console.log('attributes in product cart',attributes)
 
   const handleAddItem = (p) => {
-    if (p.stock < 1) return notifyError("Insufficient stock!");
+    if (p.stock < 1) return notifyError("Estoque insuficiente!");
 
     if (p?.variants?.length > 0) {
       setModalOpen(!modalOpen);

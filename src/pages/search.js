@@ -30,12 +30,12 @@ const Search = ({ products, attributes }) => {
         <div className="flex py-10 lg:py-12">
           <div className="flex w-full">
             <div className="w-full">
-              <div className="w-full grid grid-col gap-4 grid-cols-1 2xl:gap-6 xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2">
+              {/* <div className="w-full grid grid-col gap-4 grid-cols-1 2xl:gap-6 xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2">
                 <Card />
-              </div>
-              <div className="relative">
+              </div> */}
+              {/* <div className="relative">
                 <CategoryCarousel />
-              </div>
+              </div> */}
               {productData?.length === 0 ? (
                 <div className="mx-auto p-5 my-5">
                   <Image

@@ -14,16 +14,15 @@ const Layout = ({ title, description, children }) => {
   return (
     <>
       <ToastContainer />
-
       <div className="font-sans">
         <Head>
           <title>
             {title
-              ? `KachaBazar | ${title}`
-              : "KachaBazar - React Grocery & Organic Food Store e-commerce Template"}
+              ? `jápizza | ${title}`
+              : "jápizza - A Melhor Pizza em Mexilhoeira"}
           </title>
           {description && <meta name="description" content={description} />}
-          <link ref="icon" href="/favicon.png" />
+          <link ref="icon" href="favicon.ico" />
         </Head>
         <NavBarTop />
         <Navbar />

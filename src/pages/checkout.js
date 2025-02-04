@@ -324,15 +324,15 @@ const Checkout = () => {
                         type="button"
                         onClick={getGeolocation}
                         disabled={loading}
-                        className="mt-4 mb-4 bg-emerald-500 hover:bg-emerald-600 border border-emerald-500  text-white px-4 py-2 rounded"
+                        className="mt-4 mb-4 bg-customRed hover:bg-red-500 border border-customRed  text-white px-4 py-2 rounded"
                       >
                         <p className="text-sm font-semibold">
                           {loading ? "Carregando..." : "Preencher com minha localização"}
                         </p>
                       </button>
-                      <div className="mt-4 flex row items-center mb-4 bg-emerald-500 border border-emerald-500 text-sm text-white px-4 py-2 rounded">
+                      <div className="mt-4 flex row items-center mb-4 bg-customRed border border-customRed text-sm text-white px-4 py-2 rounded">
                         <IoMapSharp style={{ width: 25, height: 25 }} />
-                        <p className="col-span-6 sm:col-span-3 ml-2 bg-emerald-500">
+                        <p className="col-span-6 sm:col-span-3 ml-2 bg-customRed">
                           {coordenadas}
                         </p>
                       </div>

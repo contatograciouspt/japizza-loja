@@ -30,17 +30,8 @@ const NavBarTop = () => {
   useEffect(() => {
     if (userInfo) {
       const decoded = jwtDecode(userInfo?.token);
-
       const expireTime = new Date(decoded?.exp * 1000);
       const currentTime = new Date();
-
-      // console.log(
-      //   // decoded,
-      //   "expire",
-      //   dayjs(expireTime).format("DD, MMM, YYYY, h:mm A"),
-      //   "currentTime",
-      //   dayjs(currentTime).format("DD, MMM, YYYY, h:mm A")
-      // );
       if (currentTime >= expireTime) {
         console.log("token expire, should sign out now..");
         handleLogOut();
@@ -67,7 +58,6 @@ const NavBarTop = () => {
                 {storeCustomizationSetting?.navbar?.phone || "+099949343"}
               </a>
             </span>
-
             <div className="lg:text-right flex items-center navBar">
               {storeCustomizationSetting?.navbar?.about_menu_status && (
                 <div>

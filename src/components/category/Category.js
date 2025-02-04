@@ -13,8 +13,7 @@ import CategoryCard from "@components/category/CategoryCard";
 import useUtilsFunction from "@hooks/useUtilsFunction";
 
 const Category = () => {
-  const { categoryDrawerOpen, closeCategoryDrawer } =
-    useContext(SidebarContext);
+  const { categoryDrawerOpen, closeCategoryDrawer } = useContext(SidebarContext);
   const { showingTranslateValue } = useUtilsFunction();
 
   const { data, error, isLoading, isFetched } = useQuery({
@@ -33,7 +32,7 @@ const Category = () => {
               <Image
                 width={100}
                 height={38}
-                src="/logo/logo-color.svg"
+                src="/logo_japizza.png"
                 alt="logo"
               />
             </Link>
@@ -50,7 +49,7 @@ const Category = () => {
       <div className="w-full max-h-full">
         {categoryDrawerOpen && (
           <h2 className="font-semibold font-serif text-lg m-0 text-heading flex align-center border-b px-8 py-3">
-            All Categories
+            Todas as categorias
           </h2>
         )}
         {isLoading ? (
@@ -61,7 +60,7 @@ const Category = () => {
           </p>
         ) : (
           <div className="relative grid gap-2 p-6">
-            {data[0]?.children?.map((category) => (
+           {data[0]?.children?.map((category) => (
               <CategoryCard
                 key={category._id}
                 id={category._id}
@@ -72,11 +71,10 @@ const Category = () => {
             ))}
           </div>
         )}
-
         {categoryDrawerOpen && (
           <div className="relative grid gap-2 mt-5">
             <h3 className="font-semibold font-serif text-lg m-0 text-heading flex align-center border-b px-8 py-3">
-              Pages
+              Páginas
             </h3>
             <div className="relative grid gap-1 p-6">
               {pages.map((item) => (

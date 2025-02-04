@@ -33,14 +33,13 @@ const ContactUs = () => {
   };
 
   return (
-    <Layout title="Contact Us" description="This is contact us page">
+    <Layout title="Contato" description="This is contact us page">
       <PageHeader
         headerBg={storeCustomizationSetting?.contact_us?.header_bg}
         title={showingTranslateValue(
           storeCustomizationSetting?.contact_us?.title
         )}
       />
-
       <div className="bg-white">
         <div className="max-w-screen-2xl mx-auto lg:py-20 py-10 px-4 sm:px-10">
           {/* contact promo */}

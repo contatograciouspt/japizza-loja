@@ -140,7 +140,7 @@ const Coupon = ({ couponInHome }) => {
                     </div>
                   </div>
                   <p className="text-xs leading-4 text-gray-500 mt-2">
-                    * This coupon apply when shopping more then{" "}
+                    * Este cupom é válido para compras acima de {" "}
                     <span className="font-bold">
                       {currency}
                       {coupon.minimumAmount}

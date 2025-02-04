@@ -26,7 +26,7 @@ const BottomNavigation = ({ or, route, desc, pageName, loginTitle }) => {
     <>
       {or && (
         <div className="my-4 text-center font-medium">
-          <div className="after:bg-gray-100 before:bg-gray-100">OR</div>
+          <div className="after:bg-gray-100 before:bg-gray-100">Ou</div>
         </div>
       )}
 
@@ -85,7 +85,7 @@ const BottomNavigation = ({ or, route, desc, pageName, loginTitle }) => {
 
       <div className="text-center text-sm text-gray-900 mt-4">
         <div className="text-gray-500 mt-2.5">
-          {desc ? "Already have an account?" : "Don't have an account?"}
+          {desc ? "Já possui conta?" : "Ainda não possui conta?"}
           <Link
             href={route}
             className="text-gray-800 hover:text-cyan-500 font-bold mx-2"

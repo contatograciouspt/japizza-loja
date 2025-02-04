@@ -18,7 +18,7 @@ const NotFound = () => {
   return (
     <>
       <Head>
-        <title>KachaBazar | 404</title>
+        <title>jápizza | 404</title>
         <meta name="description" content="This is page not found 404 page" />
         <link rel="icon" href="/favicon.png" />
       </Head>
@@ -26,7 +26,7 @@ const NotFound = () => {
         <div className="block justify-items-stretch mx-auto items-center text-center">
           <Image width={650} height={450} src="/404.svg" alt="logo" />
           <h2 className="font-bold font-serif font-2xl lg:text-4xl leading-6 mb-4">
-            Page is not found!
+            Página não encontrada
           </h2>
           <p className="block text-center text-base font-sans text-gray-600">
             Sorry! This page is not found! Please try again later.

@@ -27,9 +27,7 @@ const NavbarPromo = () => {
   const { t } = useTranslation();
   const { lang, storeCustomizationSetting } = useGetSetting();
   const { isLoading, setIsLoading } = useContext(SidebarContext);
-
   const { showingTranslateValue } = useUtilsFunction();
-
   const currentLanguageCookie = Cookies.get("_curr_lang");
 
   let currentLang = {};
@@ -37,14 +35,11 @@ const NavbarPromo = () => {
     try {
       currentLang = JSON.parse(currentLanguageCookie);
     } catch (error) {
-      // console.error("Error parsing current language cookie:", error);
-      currentLang = {}; // Fallback to an empty object or handle as necessary
+      currentLang = {};
     }
   } else {
     currentLang = null;
   }
-  // const translation = t("common:search-placeholder");
-  // console.log("Translated title:", translation, router, router.pathname);
 
   const handleLanguage = (lang) => {
     Cookies.set("_lang", lang?.iso_code, {
@@ -70,7 +65,6 @@ const NavbarPromo = () => {
       sameSite: "None",
       secure: true,
     });
-    // console.log("result", result);
   }
 
   return (
@@ -142,7 +136,6 @@ const NavbarPromo = () => {
                         )}
                       </Link>
                     )}
-
                     <Popover className="relative font-serif">
                       {/* <Popover.Button className="group inline-flex items-center py-2 text-sm font-medium hover:text-emerald-600 focus:outline-none">
                         <span>
@@ -200,7 +193,6 @@ const NavbarPromo = () => {
                                   </Link>
                                 </div>
                               </span>
-
                               {storeCustomizationSetting?.navbar
                                 ?.faq_status && (
                                 <span className="p-2 font-serif items-center rounded-md hover:bg-gray-50 w-full hover:text-emerald-600">
@@ -218,7 +210,6 @@ const NavbarPromo = () => {
                                   </div>
                                 </span>
                               )}
-
                               {storeCustomizationSetting?.navbar
                                 ?.about_menu_status && (
                                 <span className="p-2  font-serif items-center rounded-md hover:bg-gray-50 w-full hover:text-emerald-600">
@@ -237,7 +228,6 @@ const NavbarPromo = () => {
                                   </div>
                                 </span>
                               )}
-
                               {storeCustomizationSetting?.navbar
                                 ?.contact_menu_status && (
                                 <span className="p-2  font-serif items-center rounded-md hover:bg-gray-50 w-full hover:text-emerald-600">
@@ -256,7 +246,6 @@ const NavbarPromo = () => {
                                   </div>
                                 </span>
                               )}
-
                               {storeCustomizationSetting?.navbar
                                 ?.privacy_policy_status && (
                                 <span className="p-2  font-serif items-center rounded-md hover:bg-gray-50 w-full hover:text-emerald-600">
@@ -275,7 +264,6 @@ const NavbarPromo = () => {
                                   </div>
                                 </span>
                               )}
-
                               {storeCustomizationSetting?.navbar
                                 ?.term_and_condition_status && (
                                 <span className="p-2  font-serif items-center rounded-md hover:bg-gray-50 w-full hover:text-emerald-600">
@@ -294,7 +282,6 @@ const NavbarPromo = () => {
                                   </div>
                                 </span>
                               )}
-
                               <span className="p-2  font-serif items-center rounded-md hover:bg-gray-50 w-full hover:text-emerald-600">
                                 <div className="w-full flex">
                                   <FiAlertCircle className="my-auto" />
@@ -312,7 +299,6 @@ const NavbarPromo = () => {
                         </Popover.Panel>
                       </Transition>
                     </Popover>
-
                     {storeCustomizationSetting?.navbar?.offers_menu_status && (
                       <Link
                         href="/offer"
@@ -363,7 +349,6 @@ const NavbarPromo = () => {
                 })}
               </div>
             </div>
-
             {storeCustomizationSetting?.navbar?.privacy_policy_status && (
               <Link
                 onClick={() => setIsLoading(!isLoading)}

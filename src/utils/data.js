@@ -25,45 +25,45 @@ const pages = [
   //   icon: FiUser,
   // },
   {
-    title: "offer-page",
+    title: "Ofertas",
     href: "/offer",
     icon: FiGift,
   },
   {
-    title: "checkout-page",
+    title: "Checkout",
     href: "/checkout",
     icon: FiShoppingBag,
   },
+  // {
+  //   title: "faq-page",
+  //   href: "/faq",
+  //   icon: FiHelpCircle,
+  // },
   {
-    title: "faq-page",
-    href: "/faq",
-    icon: FiHelpCircle,
-  },
-  {
-    title: "about-us-page",
+    title: "Sobre nós",
     href: "/about-us",
     icon: FiUsers,
   },
   {
-    title: "contact-us-page",
+    title: "Contate-nos",
     href: "/contact-us",
     icon: FiPhoneIncoming,
   },
   {
-    title: "privacy-policy-page",
+    title: "Política de Privacidade",
     href: "/privacy-policy",
     icon: FiPocket,
   },
   {
-    title: "terms-and-conditions-page",
+    title: "Termos e Condições",
     href: "/terms-and-conditions",
     icon: FiFileText,
   },
-  {
-    title: "not-found-page",
-    href: "/404",
-    icon: FiAlertCircle,
-  },
+  // {
+  //   title: "not-found-page",
+  //   href: "/404",
+  //   icon: FiAlertCircle,
+  // },
 ];
 
 const userSidebar = [
