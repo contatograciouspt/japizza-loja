@@ -47,7 +47,7 @@ const CardTwo = () => {
             </p>
             <Link
               href={`${storeCustomizationSetting?.home?.quick_delivery_link}`}
-              className="lg:w-1/3  text-xs font-serif font-medium inline-block mt-5 px-8 py-3 bg-emerald-500 text-center text-white rounded-full hover:text-white contact-btn"
+              className="lg:w-1/3  text-xs font-serif font-medium inline-block mt-5 px-8 py-3 bg-customRed text-center text-white rounded-full hover:text-white contact-btn"
               target="_blank"
             >
               {showingTranslateValue(

@@ -53,7 +53,7 @@ const NavBarTop = () => {
                 href={`tel:${
                   storeCustomizationSetting?.navbar?.phone || "+099949343"
                 }`}
-                className="font-bold text-emerald-500 ml-1"
+                className="font-bold text-customRed ml-1"
               >
                 {storeCustomizationSetting?.navbar?.phone || "+099949343"}
               </a>
@@ -63,7 +63,7 @@ const NavBarTop = () => {
                 <div>
                   <Link
                     href="/about-us"
-                    className="font-medium hover:text-emerald-600"
+                    className="font-medium hover:text-customRed"
                   >
                     {showingTranslateValue(
                       storeCustomizationSetting?.navbar?.about_us
@@ -76,7 +76,7 @@ const NavBarTop = () => {
                 <div>
                   <Link
                     href="/contact-us"
-                    className="font-medium hover:text-emerald-600"
+                    className="font-medium hover:text-customRed"
                   >
                     {showingTranslateValue(
                       storeCustomizationSetting?.navbar?.contact_us
@@ -87,7 +87,7 @@ const NavBarTop = () => {
               )}
               <Link
                 href="/user/my-account"
-                className="font-medium hover:text-emerald-600"
+                className="font-medium hover:text-customRed"
               >
                 {showingTranslateValue(
                   storeCustomizationSetting?.navbar?.my_account
@@ -97,7 +97,7 @@ const NavBarTop = () => {
               {userInfo?.email ? (
                 <button
                   onClick={handleLogOut}
-                  className="flex items-center font-medium hover:text-emerald-600"
+                  className="flex items-center font-medium hover:text-customRed"
                 >
                   <span className="mr-1">
                     <IoLockOpenOutline />
@@ -109,7 +109,7 @@ const NavBarTop = () => {
               ) : (
                 <Link
                   href="/auth/login"
-                  className="flex items-center font-medium hover:text-emerald-600"
+                  className="flex items-center font-medium hover:text-customRed"
                 >
                   <span className="mr-1">
                     <FiUser />

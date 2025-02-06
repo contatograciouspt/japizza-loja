@@ -7,7 +7,6 @@ import useGetSetting from "@hooks/useGetSetting";
 import PageHeader from "@components/header/PageHeader";
 import CMSkeleton from "@components/preloader/CMSkeleton";
 import useUtilsFunction from "@hooks/useUtilsFunction";
-import useTranslation from "next-translate/useTranslation";
 
 const AboutUs = () => {
   const { storeCustomizationSetting, loading, error } = useGetSetting();

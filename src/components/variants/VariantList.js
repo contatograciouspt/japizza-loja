@@ -195,15 +195,12 @@ const VariantList = ({
     selectVariant[att] ? selectVariant[att] : []
   ); // Inicializa com os valores pré-selecionados.
 
-
   useEffect(() => {
     setSelectedCheckboxes(selectVariant[att] ? selectVariant[att] : []);
   }, [selectVariant[att]]);
 
-
   const handleCheckboxChange = (value) => {
     let updatedCheckboxes = [...selectedCheckboxes];
-
 
     if (selectedCheckboxes.includes(value)) {
       updatedCheckboxes = updatedCheckboxes.filter((item) => item !== value);
@@ -211,14 +208,11 @@ const VariantList = ({
       updatedCheckboxes.push(value);
     }
 
-
     setSelectedCheckboxes(updatedCheckboxes);
-
 
     onChangeMultiSelect(att, updatedCheckboxes);
     setValue(updatedCheckboxes);
   };
-
 
   const handleRadioChange = (value) => {
     onChangeMultiSelect(att, value)
@@ -271,7 +265,7 @@ const VariantList = ({
                       <label key={el._id} className="inline-flex items-center mt-3">
                         <input
                           type="checkbox"
-                          className="form-checkbox h-5 w-5 text-emerald-600 rounded focus:ring-emerald-500"
+                          className="form-checkbox h-5 w-5 text-customRed rounded focus:ring-customRed"
                           value={vl[att]}
                           checked={selectedCheckboxes.includes(vl[att])}
                           onChange={() => handleCheckboxChange(vl[att])}
@@ -301,7 +295,7 @@ const VariantList = ({
                         <label key={el._id} className="inline-flex items-center mt-3">
                           <input
                             type="radio"
-                            className="form-radio h-5 w-5 text-emerald-600 rounded focus:ring-emerald-500"
+                            className="form-radio h-5 w-5 text-customRed rounded focus:ring-customRed"
                             value={vl[att]}
                             checked={selectVariant[att] === vl[att]}
                             onChange={() => handleRadioChange(vl[att])}
@@ -332,7 +326,7 @@ const VariantList = ({
                             onClick={() => onChangeMultiSelect(att, vl[att])}
                             key={i + 1}
                             className={`${Object?.values(selectVariant).includes(vl[att])
-                              ? "bg-emerald-500 text-white mr-2 border-0 rounded-full inline-flex items-center justify-center px-3 py-1 text-xs font-serif mt-2 focus:outline-none"
+                              ? "bg-customRed text-white mr-2 border-0 rounded-full inline-flex items-center justify-center px-3 py-1 text-xs font-serif mt-2 focus:outline-none"
                               : "bg-gray-100 mr-2 border-0 text-gray-600 rounded-full inline-flex items-center justify-center px-3 py-1 text-xs font-serif mt-2 focus:outline-none"
                               }`}
                           >

@@ -60,7 +60,7 @@ const Cart = () => {
             <div className="flex flex-col h-full justify-center">
               <div className="flex flex-col items-center">
                 <div className="flex justify-center items-center w-20 h-20 rounded-full bg-emerald-100">
-                  <span className="text-emerald-600 text-4xl block">
+                  <span className="text-customRed text-4xl block">
                     <IoBagHandle />
                   </span>
                 </div>
@@ -81,12 +81,12 @@ const Cart = () => {
         <div className="mx-5 my-3">
           <button
             onClick={handleCheckout}
-            className="w-full py-3 px-3 rounded-lg bg-emerald-500 hover:bg-emerald-600 flex items-center justify-between bg-heading text-sm sm:text-base text-white focus:outline-none transition duration-300"
+            className="w-full py-3 px-3 rounded-lg bg-customRed hover:bg-red-500 flex items-center justify-between bg-heading text-sm sm:text-base text-white focus:outline-none transition duration-300"
           >
             <span className="align-middle font-medium">
               Processar pagamento
             </span>
-            <span className="rounded-lg font-bold py-2 px-3 bg-white text-emerald-600">
+            <span className="rounded-lg font-bold py-2 px-3 bg-white text-customRed">
               {currency}
               {cartTotal.toFixed(2)}
             </span>

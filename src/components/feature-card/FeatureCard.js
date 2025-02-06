@@ -51,7 +51,7 @@ const FeatureCard = () => {
         >
           <div className="mr-3">
             <promo.icon
-              className="flex-shrink-0 h-4 w-4 text-emerald-600"
+              className="flex-shrink-0 h-4 w-4 text-customRed"
               aria-hidden="true"
             />
           </div>

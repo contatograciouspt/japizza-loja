@@ -40,7 +40,7 @@ const InputShipping = ({
               type="radio"
               value={value}
               checked={checked}
-              className="form-radio outline-none focus:ring-0 text-emerald-500"
+              className="form-radio outline-none focus:ring-0 text-customRed"
             />
           </div>
         </label>

@@ -1,7 +1,7 @@
 import Link from "next/link";
-import PhoneInput, { formatPhoneNumberIntl } from "react-phone-number-input";
 import phone from "phone";
 import { Controller } from "react-hook-form";
+import PhoneInput, { formatPhoneNumberIntl } from "react-phone-number-input";
 
 //internal import
 import Layout from "@layout/Layout";
@@ -10,8 +10,7 @@ import useLoginSubmit from "@hooks/useLoginSubmit";
 import BottomNavigation from "@components/login/BottomNavigation";
 
 const PhoneSignup = () => {
-  const { errors, control, loading, handleSubmit, submitHandler } =
-    useLoginSubmit();
+  const { errors, control, loading, handleSubmit, submitHandler } = useLoginSubmit();
 
   const name = "phone";
 

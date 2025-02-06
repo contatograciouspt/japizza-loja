@@ -200,7 +200,7 @@ const Coupon = ({ couponInHome }) => {
                   {showingTranslateValue(coupon?.title)}
                 </h2>
                 <h2 className="pl-1 text-base font-medium text-gray-600">
-                  <span className="text-lg md:text-xl lg:text-xl text-red-500 font-bold">
+                  <span className="text-lg md:text-xl lg:text-xl text-customRed font-bold">
                     {coupon?.discountType?.type === "fixed" ? (
                       <span>${coupon?.discountType?.value}</span>
                     ) : (
@@ -219,7 +219,7 @@ const Coupon = ({ couponInHome }) => {
                       <span>Coupon</span>
                       <div className="ml-2">
                         {dayjs().isAfter(dayjs(coupon.endTime)) ? (
-                          <span className="text-red-600 inline-block">
+                          <span className="text-customRed inline-block">
                             Inactive
                           </span>
                         ) : (
@@ -230,7 +230,7 @@ const Coupon = ({ couponInHome }) => {
                       </div>
                     </div>
 
-                    <div className="font-serif border border-dashed bg-emerald-50 py-2 border-emerald-300 rounded-lg text-center block">
+                    <div className="font-serif border border-dashed bg-emerald-50 py-2 border-customRed rounded-lg text-center block">
                       <CopyToClipboard
                         text={coupon.couponCode}
                         onCopy={() => handleCopied(coupon.couponCode)}

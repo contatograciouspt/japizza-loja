@@ -44,7 +44,7 @@ const Footer = () => {
                 <li className="flex items-baseline">
                   <Link
                     href={`${storeCustomizationSetting?.footer?.block1_sub_link1}`}
-                    className="text-gray-600 inline-block w-full hover:text-emerald-500"
+                    className="text-gray-600 inline-block w-full hover:text-customRed"
                   >
                     <CMSkeleton
                       count={1}
@@ -59,7 +59,7 @@ const Footer = () => {
                 <li className="flex items-baseline">
                   <Link
                     href={`${storeCustomizationSetting?.footer?.block1_sub_link2}`}
-                    className="text-gray-600 inline-block w-full hover:text-emerald-500"
+                    className="text-gray-600 inline-block w-full hover:text-customRed"
                   >
                     <CMSkeleton
                       count={1}
@@ -74,7 +74,7 @@ const Footer = () => {
                 <li className="flex items-baseline">
                   <Link
                     href={`${storeCustomizationSetting?.footer?.block1_sub_link3}`}
-                    className="text-gray-600 inline-block w-full hover:text-emerald-500"
+                    className="text-gray-600 inline-block w-full hover:text-customRed"
                   >
                     {showingTranslateValue(
                       storeCustomizationSetting?.footer_block_one_link_three_title
@@ -92,7 +92,7 @@ const Footer = () => {
                 <li className="flex items-baseline">
                   <Link
                     href={`${storeCustomizationSetting?.footer?.block1_sub_link4}`}
-                    className="text-gray-600 inline-block w-full hover:text-emerald-500"
+                    className="text-gray-600 inline-block w-full hover:text-customRed"
                   >
                     <CMSkeleton
                       count={1}
@@ -121,7 +121,7 @@ const Footer = () => {
                 <li className="flex items-baseline">
                   <Link
                     href={`${storeCustomizationSetting?.footer?.block2_sub_link1}`}
-                    className="text-gray-600 inline-block w-full hover:text-emerald-500"
+                    className="text-gray-600 inline-block w-full hover:text-customRed"
                   >
                     <CMSkeleton
                       count={1}
@@ -137,7 +137,7 @@ const Footer = () => {
                 <li className="flex items-baseline">
                   <Link
                     href={`${storeCustomizationSetting?.footer?.block2_sub_link2}`}
-                    className="text-gray-600 inline-block w-full hover:text-emerald-500"
+                    className="text-gray-600 inline-block w-full hover:text-customRed"
                   >
                     <CMSkeleton
                       count={1}
@@ -152,7 +152,7 @@ const Footer = () => {
                 <li className="flex items-baseline">
                   <Link
                     href={`${storeCustomizationSetting?.footer?.block2_sub_link3}`}
-                    className="text-gray-600 inline-block w-full hover:text-emerald-500"
+                    className="text-gray-600 inline-block w-full hover:text-customRed"
                   >
                     <CMSkeleton
                       count={1}
@@ -167,7 +167,7 @@ const Footer = () => {
                 <li className="flex items-baseline">
                   <Link
                     href={`${storeCustomizationSetting?.footer?.block2_sub_link4}`}
-                    className="text-gray-600 inline-block w-full hover:text-emerald-500"
+                    className="text-gray-600 inline-block w-full hover:text-customRed"
                   >
                     <CMSkeleton
                       count={1}
@@ -200,7 +200,7 @@ const Footer = () => {
                         ? storeCustomizationSetting?.footer?.block3_sub_link1
                         : "#"
                     }`}
-                    className="text-gray-600 inline-block w-full hover:text-emerald-500"
+                    className="text-gray-600 inline-block w-full hover:text-customRed"
                   >
                     <CMSkeleton
                       count={1}
@@ -219,7 +219,7 @@ const Footer = () => {
                         ? storeCustomizationSetting?.footer?.block3_sub_link2
                         : "#"
                     }`}
-                    className="text-gray-600 inline-block w-full hover:text-emerald-500"
+                    className="text-gray-600 inline-block w-full hover:text-customRed"
                   >
                     <CMSkeleton
                       count={1}
@@ -238,7 +238,7 @@ const Footer = () => {
                         ? storeCustomizationSetting?.footer?.block3_sub_link3
                         : "#"
                     }`}
-                    className="text-gray-600 inline-block w-full hover:text-emerald-500"
+                    className="text-gray-600 inline-block w-full hover:text-customRed"
                   >
                     <CMSkeleton
                       count={1}
@@ -257,7 +257,7 @@ const Footer = () => {
                         ? storeCustomizationSetting?.footer?.block3_sub_link4
                         : "#"
                     }`}
-                    className="text-gray-600 inline-block w-full hover:text-emerald-500"
+                    className="text-gray-600 inline-block w-full hover:text-customRed"
                   >
                     <CMSkeleton
                       count={1}
@@ -409,7 +409,7 @@ const Footer = () => {
                   <p className="text-base leading-7 font-medium block">
                     {t("common:footer-call-us")}
                   </p>
-                  <h5 className="text-2xl font-bold text-emerald-500 leading-7">
+                  <h5 className="text-2xl font-bold text-customRed leading-7">
                     {/* +012345-67900 */}
                     {storeCustomizationSetting?.footer?.bottom_contact}
                   </h5>
@@ -445,7 +445,7 @@ const Footer = () => {
             href="#"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-emerald-500"
+            className="text-customRed"
           >
             jápizza
           </Link>

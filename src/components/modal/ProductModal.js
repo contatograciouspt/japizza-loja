@@ -396,7 +396,7 @@ const ProductModal = ({
                   <button
                     onClick={() => handleAddToCart(product)}
                     disabled={product.quantity < 1}
-                    className="text-sm leading-4 inline-flex items-center cursor-pointer transition ease-in-out duration-300 font-semibold font-serif text-center justify-center border-0 border-transparent rounded-md focus-visible:outline-none focus:outline-none text-white px-4 ml-4 md:px-6 lg:px-8 py-4 md:py-3.5 lg:py-4 hover:text-white bg-emerald-500 hover:bg-emerald-600 w-full h-12"
+                    className="text-sm leading-4 inline-flex items-center cursor-pointer transition ease-in-out duration-300 font-semibold font-serif text-center justify-center border-0 border-transparent rounded-md focus-visible:outline-none focus:outline-none text-white px-4 ml-4 md:px-6 lg:px-8 py-4 md:py-3.5 lg:py-4 hover:text-white bg-customRed0 hover:bg-red-500 w-full h-12"
                   >
                     {t("common:addToCart")}
                   </button>
@@ -415,7 +415,7 @@ const ProductModal = ({
                       >
                         <button
                           type="button"
-                          className="text-gray-600 font-serif font-medium underline ml-2 hover:text-teal-600"
+                          className="text-gray-600 font-serif font-medium underline ml-2 hover:text-red-500"
                           onClick={() => setIsLoading(!isLoading)}
                         >
                           {category_name}
@@ -439,7 +439,7 @@ const ProductModal = ({
               <div className="flex justify-end mt-2">
                 <p className="text-xs sm:text-sm text-gray-600">
                   Precisa de ajuda? Ligue-nos :{" "}
-                  <span className="text-emerald-700 font-semibold">
+                  <span className="text-customRed font-semibold">
                     +351 912 827 537
                   </span>{" "}
                 </p>

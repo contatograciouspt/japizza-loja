@@ -1,20 +1,12 @@
 import React from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import {
-  IoReturnUpBackOutline,
-  IoArrowForward,
-  IoBagHandle,
-  IoWalletSharp,
-  IoMapSharp
-} from "react-icons/io5";
 import { useQueryClient } from "@tanstack/react-query";
-import { ImCreditCard } from "react-icons/im";
 import { FaHome } from "react-icons/fa";
 import useTranslation from "next-translate/useTranslation";
+import { IoReturnUpBackOutline, IoArrowForward, IoBagHandle, IoMapSharp } from "react-icons/io5";
 
 //internal import
-
 import Layout from "@layout/Layout";
 import Label from "@components/form/Label";
 import Error from "@components/form/Error";
@@ -22,7 +14,6 @@ import CartItem from "@components/cart/CartItem";
 import InputArea from "@components/form/InputArea";
 import useGetSetting from "@hooks/useGetSetting";
 import InputShipping from "@components/form/InputShipping";
-import InputPayment from "@components/form/InputPayment";
 import useCheckoutSubmit from "@hooks/useCheckoutSubmit";
 import useUtilsFunction from "@hooks/useUtilsFunction";
 import SettingServices from "@services/SettingServices";
@@ -39,7 +30,7 @@ const Checkout = () => {
   const [selectedOption, setSelectedOption] = React.useState(null); // Novo estado
   const [isOptionSelected , setIsOptionSelected] = React.useState(false);
 
-  const { data: storeSetting } = useQueryClient({
+  const {  } = useQueryClient({
     queryKey: ["storeSetting"],
     queryFn: async () => await SettingServices.getStoreSetting(),
     staleTime: 4 * 60 * 1000, // Api request after 4 minutes
@@ -105,8 +96,6 @@ const Checkout = () => {
   };
 
   const {
-    error,
-    stripe,
     couponInfo,
     couponRef,
     total,
@@ -116,7 +105,6 @@ const Checkout = () => {
     currency,
     register,
     errors,
-    showCard,
     setShowCard,
     handleSubmit,
     submitHandler,
@@ -403,7 +391,7 @@ const Checkout = () => {
                       <button
                         type="submit"
                         disabled={isEmpty || isCheckoutSubmit}
-                        className="bg-emerald-500 hover:bg-emerald-600 border border-emerald-500 transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
+                        className="bg-customRed hover:bg-red-500 border border-customRed transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
                       >
                         {isCheckoutSubmit ? (
                           <span className="flex justify-center text-center">
@@ -467,7 +455,7 @@ const Checkout = () => {
                     {couponInfo.couponCode ? (
                       <span className="bg-emerald-50 px-4 py-3 leading-tight w-full rounded-md flex justify-between">
                         {" "}
-                        <p className="text-emerald-600">Coupon Applied </p>{" "}
+                        <p className="text-customRed">Coupon Applied </p>{" "}
                         <span className="text-red-500 text-right">
                           {couponInfo.couponCode}
                         </span>
@@ -478,13 +466,13 @@ const Checkout = () => {
                           ref={couponRef}
                           type="text"
                           placeholder={t("common:couponCode")}
-                          className="form-input py-2 px-3 md:px-4 w-full appearance-none transition ease-in-out border text-input text-sm rounded-md h-12 duration-200 bg-white border-gray-200 focus:ring-0 focus:outline-none focus:border-emerald-500 placeholder-gray-500 placeholder-opacity-75"
+                          className="form-input py-2 px-3 md:px-4 w-full appearance-none transition ease-in-out border text-input text-sm rounded-md h-12 duration-200 bg-white border-gray-200 focus:ring-0 focus:outline-none focus:border-customRed placeholder-gray-500 placeholder-opacity-75"
                         />
                         {isCouponAvailable ? (
                           <button
                             disabled={isCouponAvailable}
                             type="submit"
-                            className="md:text-sm leading-4 inline-flex items-center cursor-pointer transition ease-in-out duration-300 font-semibold text-center justify-center border border-gray-200 rounded-md placeholder-white focus-visible:outline-none focus:outline-none px-5 md:px-6 lg:px-8 py-3 md:py-3.5 lg:py-3 mt-3 sm:mt-0 sm:ml-3 md:mt-0 md:ml-3 lg:mt-0 lg:ml-3 hover:text-white hover:bg-emerald-500 h-12 text-sm lg:text-base w-full sm:w-auto"
+                            className="md:text-sm leading-4 inline-flex items-center cursor-pointer transition ease-in-out duration-300 font-semibold text-center justify-center border border-gray-200 rounded-md placeholder-white focus-visible:outline-none focus:outline-none px-5 md:px-6 lg:px-8 py-3 md:py-3.5 lg:py-3 mt-3 sm:mt-0 sm:ml-3 md:mt-0 md:ml-3 lg:mt-0 lg:ml-3 hover:text-white hover:bg-customRed h-12 text-sm lg:text-base w-full sm:w-auto"
                           >
                             <img
                               src="/loader/spinner.gif"
@@ -498,7 +486,7 @@ const Checkout = () => {
                           <button
                             disabled={isCouponAvailable}
                             onClick={handleCouponCode}
-                            className="md:text-sm leading-4 inline-flex items-center cursor-pointer transition ease-in-out duration-300 font-semibold text-center justify-center border border-gray-200 rounded-md placeholder-white focus-visible:outline-none focus:outline-none px-5 md:px-6 lg:px-8 py-3 md:py-3.5 lg:py-3 mt-3 sm:mt-0 sm:ml-3 md:mt-0 md:ml-3 lg:mt-0 lg:ml-3 hover:text-white hover:bg-emerald-500 h-12 text-sm lg:text-base w-full sm:w-auto"
+                            className="md:text-sm leading-4 inline-flex items-center cursor-pointer transition ease-in-out duration-300 font-semibold text-center justify-center border border-gray-200 rounded-md placeholder-white focus-visible:outline-none focus:outline-none px-5 md:px-6 lg:px-8 py-3 md:py-3.5 lg:py-3 mt-3 sm:mt-0 sm:ml-3 md:mt-0 md:ml-3 lg:mt-0 lg:ml-3 hover:text-white hover:bg-customRed h-12 text-sm lg:text-base w-full sm:w-auto"
                           >
                             {showingTranslateValue(
                               storeCustomizationSetting?.checkout?.apply_button

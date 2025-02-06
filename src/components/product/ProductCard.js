@@ -166,7 +166,7 @@ const ProductCard = ({ product, attributes }) => {
               <button
                 onClick={() => handleAddItem(product)}
                 aria-label="cart"
-                className="h-9 w-9 flex items-center justify-center border border-gray-200 rounded text-emerald-500 hover:border-emerald-500 hover:bg-emerald-500 hover:text-white transition-all"
+                className="h-9 w-9 flex items-center justify-center border border-gray-200 rounded text-customRed hover:border-customRed hover:bg-red-500 hover:text-white transition-all"
               >
                 {" "}
                 <span className="text-xl">

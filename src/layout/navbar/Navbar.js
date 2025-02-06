@@ -22,14 +22,7 @@ const Navbar = () => {
   const { toggleCartDrawer } = useContext(SidebarContext);
   const { totalItems } = useCart();
   const router = useRouter();
-
   const userInfo = getUserSession();
-
-  const { storeCustomizationSetting } = useGetSetting();
-
-  // console.log("storeCustomizationSetting", storeCustomizationSetting);
-
-  // console.log("t", t, "lang::::", lang);
 
   const handleSubmit = (e) => {
     e.preventDefault();
