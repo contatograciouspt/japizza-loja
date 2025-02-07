@@ -148,7 +148,7 @@ const Checkout = () => {
                     <div className="flex justify-end my-2">
                       <SwitchToggle
                         id="shipping-address"
-                        title="Use Default Shipping Address"
+                        title="Usar endereço de entrega padrão"
                         processOption={useExistingAddress}
                         handleProcess={handleDefaultShippingAddress}
                       />

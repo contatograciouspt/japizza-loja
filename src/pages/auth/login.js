@@ -12,7 +12,7 @@ const Login = () => {
   const { user, handleSubmit, submitHandler, setUser, showPass, setShowPass, register, errors, loading } = useLoginSubmit();
 
   return (
-    <Layout title="Login" description="This is login page">
+    <Layout title="Login" description="Página de Login">
       <div className="mx-auto max-w-screen-2xl px-3 sm:px-10">
         <div className="py-4 flex flex-col lg:flex-row w-full">
           <div className="w-full sm:p-5 lg:p-8">

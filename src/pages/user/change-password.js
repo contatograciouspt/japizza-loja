@@ -136,7 +136,7 @@ const ChangePassword = () => {
                 width={20}
                 height={10}
               />
-              <span className="font-serif ml-2 font-light">Processing</span>
+              <span className="font-serif ml-2 font-light">Processando</span>
             </button>
           ) : (
             <button

@@ -45,7 +45,7 @@ const RecentOrder = ({ data, loading, error }) => {
                         <IoBagHandle />
                       </span>
                       <h2 className="font-medium text-md my-4 text-gray-600">
-                        You Have no order Yet!
+                      Ainda não fez nenhum pedido!
                       </h2>
                     </div>
                   ) : (
@@ -62,14 +62,14 @@ const RecentOrder = ({ data, loading, error }) => {
                             scope="col"
                             className="text-center text-xs font-serif font-semibold px-6 py-2 text-gray-700 uppercase tracking-wider"
                           >
-                            OrderTime
+                            Tempo do pedido
                           </th>
 
                           <th
                             scope="col"
                             className="text-center text-xs font-serif font-semibold px-6 py-2 text-gray-700 uppercase tracking-wider"
                           >
-                            Method
+                            Método
                           </th>
                           <th
                             scope="col"
@@ -87,7 +87,7 @@ const RecentOrder = ({ data, loading, error }) => {
                             scope="col"
                             className="text-right text-xs font-serif font-semibold px-6 py-2 text-gray-700 uppercase tracking-wider"
                           >
-                            Action
+                            Ação
                           </th>
                         </tr>
                       </thead>
@@ -100,7 +100,7 @@ const RecentOrder = ({ data, loading, error }) => {
                                 className="px-3 py-1 bg-emerald-100 text-xs text-emerald-600 hover:bg-emerald-500 hover:text-white transition-all font-semibold rounded-full"
                                 href={`/order/${order._id}`}
                               >
-                                Details
+                                Detalhes
                               </Link>
                             </td>
                           </tr>

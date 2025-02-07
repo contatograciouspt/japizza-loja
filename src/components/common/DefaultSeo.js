@@ -11,15 +11,15 @@ const DefaultSeo = () => {
     <NextSeo
       title={
         globalSetting?.meta_title ||
-        "KachaBazar - React Grocery & Organic Food Store e-commerce Template"
+        "jáPizza - React Grocery & Organic Food Store e-commerce Template"
       }
       openGraph={{
         type: "website",
         locale: "en_IE",
-        url: globalSetting?.meta_url || "https://kachabazar-store.vercel.app/",
+        url: globalSetting?.meta_url || "https://japizza-loja.vercel.app/",
         site_name:
           globalSetting?.meta_title ||
-          "KachaBazar - React Grocery & Organic Food Store e-commerce Template",
+          "jápizza - A Melhor Pizza em Mexilhoeira",
       }}
       twitter={{
         handle: "@handle",

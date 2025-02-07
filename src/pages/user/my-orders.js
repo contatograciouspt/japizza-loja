@@ -55,7 +55,7 @@ const MyOrders = () => {
           <div className="overflow-hidden rounded-md font-serif">
             <div className="flex flex-col">
               <h2 className="text-xl font-serif font-semibold mb-5">
-                My Orders
+                Meus Pedidos
               </h2>
               <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div className="align-middle inline-block border border-gray-100 rounded-md min-w-full pb-2 sm:px-6 lg:px-8">
@@ -73,7 +73,7 @@ const MyOrders = () => {
                           <IoBagHandle />
                         </span>
                         <h2 className="font-medium text-md my-4 text-gray-600">
-                          You Have no order Yet!
+                        Ainda não fez nenhum pedido!
                         </h2>
                       </div>
                     ) : (
@@ -90,14 +90,14 @@ const MyOrders = () => {
                               scope="col"
                               className="text-center text-xs font-serif font-semibold px-6 py-2 text-gray-700 uppercase tracking-wider"
                             >
-                              OrderTime
+                              Tempo do pedido
                             </th>
 
                             <th
                               scope="col"
                               className="text-center text-xs font-serif font-semibold px-6 py-2 text-gray-700 uppercase tracking-wider"
                             >
-                              Method
+                              Método
                             </th>
                             <th
                               scope="col"
@@ -115,7 +115,7 @@ const MyOrders = () => {
                               scope="col"
                               className="text-right text-xs font-serif font-semibold px-6 py-2 text-gray-700 uppercase tracking-wider"
                             >
-                              Action
+                              Ação
                             </th>
                           </tr>
                         </thead>
@@ -128,7 +128,7 @@ const MyOrders = () => {
                                   className="px-3 py-1 bg-emerald-100 text-xs text-emerald-600 hover:bg-emerald-500 hover:text-white transition-all font-semibold rounded-full"
                                   href={`/order/${order._id}`}
                                 >
-                                  Details
+                                  Detalhes
                                 </Link>
                               </td>
                             </tr>

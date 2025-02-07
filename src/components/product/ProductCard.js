@@ -125,7 +125,6 @@ const ProductCard = ({ product, attributes }) => {
                   : product?.prices?.originalPrice
               }
             />
-
             {inCart(product._id) ? (
               <div>
                 {items.map(

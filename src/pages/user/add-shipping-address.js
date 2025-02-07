@@ -37,7 +37,7 @@ const AddShippingAddress = () => {
           <div className="md:col-span-1">
             <div className="px-4 sm:px-0">
               <h2 className="text-xl font-semibold mb-5">
-                Add Shipping Address
+                Adicionar endereço de entrega
               </h2>
             </div>
           </div>
@@ -162,7 +162,7 @@ const AddShippingAddress = () => {
                             width={20}
                             height={10}
                           />
-                          <span className=" ml-2 font-light">Processing</span>
+                          <span className=" ml-2 font-light">Processando</span>
                         </button>
                       ) : (
                         <button
@@ -170,7 +170,7 @@ const AddShippingAddress = () => {
                           type="submit"
                           className="md:text-sm leading-5 inline-flex items-center cursor-pointer transition ease-in-out duration-300 font-medium text-center justify-center border-0 border-transparent rounded-md placeholder-white focus-visible:outline-none focus:outline-none bg-cyan-600 text-white px-5 md:px-6 lg:px-8 py-2 md:py-3 lg:py-3 hover:text-white hover:bg-cyan-700 h-12 mt-1 text-sm lg:text-sm w-full sm:w-auto"
                         >
-                          Add Shipping Address
+                          Adicionar Endereço
                         </button>
                       )}
                     </div>
