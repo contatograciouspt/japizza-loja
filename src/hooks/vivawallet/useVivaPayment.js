@@ -2,17 +2,13 @@ import React from 'react'
 import axios from 'axios'
 import { useCart } from 'react-use-cart'
 
-const urlDevelopment = process.env.NEXT_PUBLIC_DEV_URL_PAYMENT
 const urlProduction = process.env.NEXT_PUBLIC_PRODUCTION_URL_PAYMENT
-const orderCodeUrl = process.env.NEXT_PUBLIC_ORDERCODE_URL
-const customerEmailUrl = process.env.NEXT_PUBLIC_CUSTOMER_EMAIL_URL
-
 
 export default function usePaymentVivaWallet() {
     const [error, setError] = React.useState(null)
     const { emptyCart } = useCart()
 
-    // Função para gerar o token no servidor e gerar o pagamento
+    // Função para gerar o ordercode no servidor e gerar o pagamento
     const useVivaPayment = async (vivaPaymentData) => {
         try {
             // Realizar a requisição de pagamento
