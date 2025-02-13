@@ -36,7 +36,7 @@ const CustomerServices = {
     return requests.post("/customer/change-password", body);
   },
 
-  updateCustomer: async (id, email, body) => {
+  updateCustomer: async (email, body) => {
     return requests.put(`/customer/${email}`, body);
   },
 
