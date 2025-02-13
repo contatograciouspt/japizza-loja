@@ -45,7 +45,6 @@ const useShippingAddressSubmit = (id) => {
     try {
       const res = await CustomerServices.addShippingAddress({
         userId: userInfo?.id,
-        email: userInfo?.email,
         shippingAddressData: {
           ...data,
           country: selectedValue.country,

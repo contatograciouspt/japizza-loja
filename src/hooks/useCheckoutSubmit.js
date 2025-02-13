@@ -194,7 +194,6 @@ const useCheckoutSubmit = (storeSetting) => {
 
       await CustomerServices.addShippingAddress({
         userId: userInfo?.id,
-        email: userInfo?.email,
         shippingAddressData: {
           name: data.firstName + " " + data.lastName,
           contact: data.contact,
