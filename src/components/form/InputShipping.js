@@ -1,3 +1,4 @@
+// InputShipping.js
 import React from "react";
 import { FiTruck } from "react-icons/fi";
 
@@ -10,7 +11,9 @@ const InputShipping = ({
   description,
   checked,
   handleShippingCost,
+  onOpenModal
 }) => {
+
   return (
     <div>
       <div className="p-3 card border border-gray-200 bg-white rounded-md">
@@ -35,7 +38,7 @@ const InputShipping = ({
             </div>
             <input
               {...register("shippingOption")}
-              onClick={() => handleShippingCost('shipping', cost)}
+              onClick={() => handleShippingCost(value, cost)} // changed 'Frete' to value
               name="shippingOption"
               type="radio"
               value={value}
@@ -45,6 +48,18 @@ const InputShipping = ({
           </div>
         </label>
       </div>
+      {checked && value === 'Frete' && (
+        <button
+          type="button"
+          onClick={() => {
+            console.log('Button Selecionar Região de Entrega clicked - onOpenModal:', onOpenModal); // Debug log
+            onOpenModal();
+          }}
+          className="mt-2 w-full py-2.5 px-4 rounded border font-semibold text-gray-700 bg-white hover:bg-gray-100"
+        >
+          Selecionar Região de Entrega
+        </button>
+      )}
     </div>
   );
 };

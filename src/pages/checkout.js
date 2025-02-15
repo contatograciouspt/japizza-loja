@@ -19,6 +19,7 @@ import useUtilsFunction from "@hooks/useUtilsFunction";
 import SettingServices from "@services/SettingServices";
 import SwitchToggle from "@components/form/SwitchToggle";
 import InputDelivery from "@components/form/InputDelivery";
+import MapCheckoutModal from "@components/modal/MapCheckoutModal";
 
 const Checkout = () => {
   const { t } = useTranslation();
@@ -28,9 +29,21 @@ const Checkout = () => {
   const [errorMessage, setErrorMessage] = React.useState("");
   const [address, setAddress] = React.useState({ street: "", city: "", country: "", zipCode: "", additionalInformation: "" });
   const [selectedOption, setSelectedOption] = React.useState(null); // Novo estado
-  const [isOptionSelected , setIsOptionSelected] = React.useState(false);
+  const [isOptionSelected, setIsOptionSelected] = React.useState(false);
+  const [isMapModalOpen, setIsMapModalOpen] = React.useState(false);
+  const [selectedMapShippingCost, setSelectedMapShippingCost] = React.useState(0); // Start with 0 or default
 
-  const {  } = useQueryClient({
+  const handleMapRegionSelect = (cost) => {
+    setSelectedMapShippingCost(cost);
+    handleShippingCost(cost);
+    setIsMapModalOpen(false);
+  };
+
+  const handleOpenMapModal = () => { // Function to open modal
+    setIsMapModalOpen(true);
+  };
+
+  const { } = useQueryClient({
     queryKey: ["storeSetting"],
     queryFn: async () => await SettingServices.getStoreSetting(),
     staleTime: 4 * 60 * 1000, // Api request after 4 minutes
@@ -132,9 +145,17 @@ const Checkout = () => {
     }
     if (option === 'shipping') {
       setPagamentoNaEntrega(false);
-      handleShippingCost(shippingCost);
+      handleShippingCost(selectedMapShippingCost);
     }
   };
+
+  React.useEffect(() => {
+    if (selectedOption === 'Frete') {
+      handleShippingCost(selectedMapShippingCost); // Ensure shippingCost is updated if option is shipping
+    } else if (selectedOption === 'delivery') {
+      handleShippingCost(0);
+    }
+  }, [selectedOption, selectedMapShippingCost, handleShippingCost]); // Depend on selectedMapShippingCost
 
   return (
     <>
@@ -290,22 +311,22 @@ const Checkout = () => {
                         />
                         <Error errorName={errors.zipCode} />
                       </div>
-                        {/* informações adicionais */}
-                        <div className="col-span-6">
-                            <InputArea
-                                register={register}
-                                label="Informações adicionais"
-                                name="additionalInformation"
-                                type="textarea"
-                                rows={4}
-                                placeholder="Informações adicionais"
-                                value={address.additionalInformation || ""}
-                                onChange={(e) => {
-                                    setAddress({ ...address, additionalInformation: e.target.value });
-                                }}
-                            />
-                            <Error errorName={errors.additionalInformation} />
-                        </div>
+                      {/* informações adicionais */}
+                      <div className="col-span-6">
+                        <InputArea
+                          register={register}
+                          label="Informações adicionais"
+                          name="additionalInformation"
+                          type="textarea"
+                          rows={4}
+                          placeholder="Informações adicionais"
+                          value={address.additionalInformation || ""}
+                          onChange={(e) => {
+                            setAddress({ ...address, additionalInformation: e.target.value });
+                          }}
+                        />
+                        <Error errorName={errors.additionalInformation} />
+                      </div>
                     </div>
                     <div className="flex row max-[768px]:flex-col gap-2 justify-between items-center">
                       <button
@@ -337,21 +358,12 @@ const Checkout = () => {
                           currency={currency}
                           handleShippingCost={handleOptionChange}
                           register={register}
-                          // value="FedEx"
-                          checked={selectedOption === 'shipping'}
-                          value="shipping"
-                          description={showingTranslateValue(
-                            storeCustomizationSetting?.checkout
-                              ?.shipping_one_desc
-                          )}
-                          // time="Today"
-                          cost={
-                            Number(
-                              storeCustomizationSetting?.checkout
-                                ?.shipping_one_cost
-                            ) || 60
-                          }
+                          checked={selectedOption === 'Frete'}
+                          value="Frete"
+                          time="Today"
+                          cost={selectedMapShippingCost}
                           disabled={isOptionSelected}
+                          onOpenModal={handleOpenMapModal}
                         />
                         <Error errorName={errors.shippingOption} />
                       </div>
@@ -372,7 +384,12 @@ const Checkout = () => {
                     </div>
                   </div>
 
-
+                  {/* Modal Component */}
+                  <MapCheckoutModal
+                    isOpen={isMapModalOpen}
+                    onClose={() => setIsMapModalOpen(false)}
+                    onSelectRegion={handleMapRegionSelect}
+                  />
                   <div className="grid grid-cols-6 gap-4 lg:gap-6 mt-10">
                     <div className="col-span-6 sm:col-span-3">
                       <Link
@@ -444,7 +461,7 @@ const Checkout = () => {
                         <IoBagHandle />
                       </span>
                       <h2 className="font-medium font-serif text-sm pt-2 text-gray-600">
-                        No Item Added Yet!
+                        Nenhum item adicionado ainda!
                       </h2>
                     </div>
                   )}
@@ -455,7 +472,7 @@ const Checkout = () => {
                     {couponInfo.couponCode ? (
                       <span className="bg-emerald-50 px-4 py-3 leading-tight w-full rounded-md flex justify-between">
                         {" "}
-                        <p className="text-customRed">Coupon Applied </p>{" "}
+                        <p className="text-customRed">Cupom aplicado </p>{" "}
                         <span className="text-red-500 text-right">
                           {couponInfo.couponCode}
                         </span>
