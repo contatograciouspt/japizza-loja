@@ -1,30 +1,46 @@
-import React from 'react';
+// components/form/InputDelivery.js
+import React from "react";
 
-const InputDelivery = ({ onChange, checked, register, Icon, name, value, type }) => {
+const InputDelivery = ({
+    register,
+    value,
+    checked,
+    onChange,
+    type = 'checkbox',
+    name,
+    Icon,
+    disabled = false,
+}) => {
     return (
-        <div className="px-3 py-4 card border border-gray-200 bg-white rounded-md">
-            <label className="cursor-pointer label">
-                <div className="flex item-center justify-between">
-                    <div className="flex items-center">
-                        <span className="text-xl mr-3 text-gray-400">
-                            <Icon />
-                        </span>
-                        <h6 className="font-serif font-medium text-sm text-gray-600">
-                            {name}
-                        </h6>
+        <div>
+            <div className="p-3 card border border-gray-200 bg-white rounded-md">
+                <label className="cursor-pointer label">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                            {Icon && (
+                                <span className="text-2xl mr-3 text-gray-400">
+                                    <Icon />
+                                </span>
+                            )}
+                            <div>
+                                <h6 className="font-serif font-medium text-sm text-gray-600">
+                                    {name || "Pagamento na Entrega"}
+                                </h6>
+                            </div>
+                        </div>
+                        <input
+                            {...register(name || "pagamentoNaEntrega")}
+                            type={type}
+                            name={name || "pagamentoNaEntrega"}
+                            checked={checked}
+                            onChange={onChange}
+                            className="form-checkbox outline-none focus:ring-0 text-customRed"
+                            disabled={disabled}
+                            value={value}
+                        />
                     </div>
-                    <input
-                        {...register('paymentMethod')}
-                        type={type}
-                        style={{ width: '20px', height: '20px', marginLeft: '10px' }}
-                        value={value}
-                        checked={checked}
-                        onClick={onChange}
-                        name="paymentMethod"
-                        className="form-radio outline-none focus:ring-0 text-customRed"
-                    />
-                </div>
-            </label>
+                </label>
+            </div>
         </div>
     );
 };
