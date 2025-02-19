@@ -1,31 +1,29 @@
-import React from "react";
-import Image from "next/image";
-import { useForm } from "react-hook-form";
-import useTranslation from "next-translate/useTranslation";
-import { FiMail, FiMapPin, FiBell } from "react-icons/fi";
+import React from "react"
+import Image from "next/image"
+import { useForm } from "react-hook-form"
+import useTranslation from "next-translate/useTranslation"
+import { FiMail, FiMapPin, FiBell } from "react-icons/fi"
 
 //internal import
-import Layout from "@layout/Layout";
-import Label from "@components/form/Label";
-import Error from "@components/form/Error";
-import { notifySuccess } from "@utils/toast";
-import useGetSetting from "@hooks/useGetSetting";
-import InputArea from "@components/form/InputArea";
-import PageHeader from "@components/header/PageHeader";
-import CMSkeleton from "@components/preloader/CMSkeleton";
-import useUtilsFunction from "@hooks/useUtilsFunction";
+import Layout from "@layout/Layout"
+import Label from "@components/form/Label"
+import Error from "@components/form/Error"
+import { notifySuccess } from "@utils/toast"
+import useGetSetting from "@hooks/useGetSetting"
+import InputArea from "@components/form/InputArea"
+import PageHeader from "@components/header/PageHeader"
+import CMSkeleton from "@components/preloader/CMSkeleton"
+import useUtilsFunction from "@hooks/useUtilsFunction"
 
 const ContactUs = () => {
-  const { t } = useTranslation();
-  const { register, handleSubmit, formState: { errors }, } = useForm();
-  const { showingTranslateValue } = useUtilsFunction();
-  const { storeCustomizationSetting, loading, error } = useGetSetting();
+  const { t } = useTranslation()
+  const { register, handleSubmit, formState: { errors }, } = useForm()
+  const { showingTranslateValue } = useUtilsFunction()
+  const { storeCustomizationSetting, loading, error } = useGetSetting()
 
   const submitHandler = () => {
-    notifySuccess(
-      "A sua mensagem foi enviada com sucesso. Entraremos em contacto consigo em breve!"
-    );
-  };
+    notifySuccess("A sua mensagem foi enviada com sucesso. Entraremos em contato o mais breve possível!")
+  }
 
   return (
     <Layout title="Contato" description="This is contact us page">
@@ -256,7 +254,7 @@ const ContactUs = () => {
         </div>
       </div>
     </Layout>
-  );
-};
+  )
+}
 
-export default ContactUs;
+export default ContactUs

@@ -24,10 +24,19 @@ const OrderServices = {
     return requests.get(`/order/${id}`, body);
   },
 
+  getOrderByEmail: async (email) => {
+    return requests.get(`/order/email/${email}`);
+  },
+
   //for sending email invoice to customer
   sendEmailInvoiceToCustomer: async (body) => {
     return requests.post("/order/customer/invoice", body);
   },
+
+  // buscar todos os pedidos feitos do cliente
+  getAllCustomOrdersForCustomer: async () => {
+    return requests.get("/order/customer/all");
+  }
 };
 
 export default OrderServices;

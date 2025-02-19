@@ -1,6 +1,5 @@
 import Cookies from "js-cookie";
 import dayjs from "dayjs";
-import useRazorpay from "react-razorpay";
 import { useForm } from "react-hook-form";
 import { useCart } from "react-use-cart";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -36,7 +35,6 @@ const useCheckoutSubmit = (storeSetting) => {
   const [coordenadas, setCoordenadas] = useState("");
 
   const couponRef = useRef("");
-  const [Razorpay] = useRazorpay();
   const { isEmpty, items, cartTotal, emptyCart, updateItem } = useCart();
   const router = useRouter();
 
@@ -110,6 +108,7 @@ const useCheckoutSubmit = (storeSetting) => {
         country: data.country,
         city: data.city,
         zipCode: data.zipCode,
+        nif: data.nif,
         additionalInformation: data.additionalInformation,
       };
 
@@ -156,7 +155,7 @@ const useCheckoutSubmit = (storeSetting) => {
       }
       const orderVivaPaymentData = {
         "amount": totalPrice,
-        "customerTrns": userDetails.additionalInformation,
+        "customerTrns": "Total: ",
         "customer": {
           "email": userDetails.email,
           "fullName": userDetails.name,

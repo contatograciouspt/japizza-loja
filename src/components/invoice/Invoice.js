@@ -45,7 +45,8 @@ const Invoice = ({ data, printRef, globalSetting, currency }) => {
                 <Image
                   width={110}
                   height={40}
-                  src="/logo/logo-color.svg"
+                  quality={100}
+                  src="/logo_japizza.png"
                   alt="logo"
                 />
               </Link>
@@ -121,7 +122,6 @@ const Invoice = ({ data, printRef, globalSetting, currency }) => {
                   >
                     Item Price
                   </th>
-
                   <th
                     scope="col"
                     className="font-serif font-semibold px-6 py-2 text-gray-700 uppercase tracking-wider text-right"
@@ -135,7 +135,6 @@ const Invoice = ({ data, printRef, globalSetting, currency }) => {
           </div>
         </div>
       </div>
-
       <div className="border-t border-b border-gray-100 p-10 bg-emerald-50">
         <div className="flex lg:flex-row md:flex-row flex-col justify-between pt-4">
           <div className="mb-3 md:mb-0 lg:mb-0  flex flex-col sm:flex-wrap">

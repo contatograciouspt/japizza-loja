@@ -6,10 +6,9 @@ import { useQuery } from "@tanstack/react-query";
 import SettingServices from "@services/SettingServices";
 import { storeCustomization } from "@utils/storeCustomizationSetting";
 
-const useGetSetting = () => {
+export default function useGetSetting() {
   const lang = Cookies.get("_lang");
-  const [storeCustomizationSetting, setStoreCustomizationSetting] =
-    useState(storeCustomization);
+  const [storeCustomizationSetting, setStoreCustomizationSetting] = useState(storeCustomization);
 
   const { data: globalSetting } = useQuery({
     queryKey: ["globalSetting"],
@@ -18,12 +17,7 @@ const useGetSetting = () => {
     gcTime: 15 * 60 * 1000,
   });
 
-  const {
-    data,
-    error,
-    isFetched,
-    isLoading: loading,
-  } = useQuery({
+  const { data, error, isFetched, isLoading: loading } = useQuery({
     queryKey: ["storeCustomization"],
     queryFn: async () => await SettingServices.getStoreCustomizationSetting(),
     staleTime: 20 * 60 * 1000, //cache for 20 minutes,
@@ -56,5 +50,3 @@ const useGetSetting = () => {
     storeCustomizationSetting,
   };
 };
-
-export default useGetSetting;

@@ -85,7 +85,6 @@ const Order = ({ params }) => {
                     )
                   }
                 </PDFDownloadLink>
-
                 <ReactToPrint
                   trigger={() => (
                     <button className="mb-3 sm:mb-0 md:mb-0 lg:mb-0 flex items-center justify-center bg-emerald-500  text-white transition-all font-serif text-sm font-semibold h-10 py-2 px-5 rounded-md">

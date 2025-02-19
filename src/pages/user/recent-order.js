@@ -1,8 +1,7 @@
-import React, { useContext } from "react";
+// RecentOrder Component (RecentOrder.js)
+import React from "react";
 import { IoBagHandle } from "react-icons/io5";
-import ReactPaginate from "react-paginate";
 import Link from "next/link";
-import { SidebarContext } from "@context/SidebarContext";
 
 //internal import
 
@@ -11,13 +10,10 @@ import useUtilsFunction from "@hooks/useUtilsFunction";
 import OrderHistory from "@components/order/OrderHistory";
 import CMSkeletonTwo from "@components/preloader/CmSkeletonTwo";
 
-const RecentOrder = ({ data, loading, error }) => {
-  const { handleChangePage, currentPage } = useContext(SidebarContext);
+const RecentOrder = ({ orders, loading, error }) => {
 
   const { storeCustomizationSetting } = useGetSetting();
   const { showingTranslateValue } = useUtilsFunction();
-
-  const pageCount = Math.ceil(data?.totalDoc / 10);
 
   return (
     <>
@@ -39,13 +35,13 @@ const RecentOrder = ({ data, loading, error }) => {
                       error={error}
                       loading={loading}
                     />
-                  ) : data?.orders?.length === 0 ? (
+                  ) : orders?.length === 0 ? (
                     <div className="text-center">
                       <span className="flex justify-center my-30 pt-16 text-emerald-500 font-semibold text-6xl">
                         <IoBagHandle />
                       </span>
                       <h2 className="font-medium text-md my-4 text-gray-600">
-                      Ainda não fez nenhum pedido!
+                        Ainda não fez nenhum pedido!
                       </h2>
                     </div>
                   ) : (
@@ -62,15 +58,15 @@ const RecentOrder = ({ data, loading, error }) => {
                             scope="col"
                             className="text-center text-xs font-serif font-semibold px-6 py-2 text-gray-700 uppercase tracking-wider"
                           >
-                            Tempo do pedido
+                            Data do Pedido
                           </th>
 
-                          <th
+                          {/* <th
                             scope="col"
                             className="text-center text-xs font-serif font-semibold px-6 py-2 text-gray-700 uppercase tracking-wider"
                           >
                             Método
-                          </th>
+                          </th> */}
                           <th
                             scope="col"
                             className="text-center text-xs font-serif font-semibold px-6 py-2 text-gray-700 uppercase tracking-wider"
@@ -92,7 +88,7 @@ const RecentOrder = ({ data, loading, error }) => {
                         </tr>
                       </thead>
                       <tbody className="bg-white divide-y divide-gray-200">
-                        {data?.orders?.map((order) => (
+                        {orders?.map((order) => (
                           <tr key={order._id}>
                             <OrderHistory order={order} />
                             <td className="px-5 py-3 whitespace-nowrap text-right text-sm">
@@ -107,30 +103,6 @@ const RecentOrder = ({ data, loading, error }) => {
                         ))}
                       </tbody>
                     </table>
-                  )}
-                  {data?.totalDoc > 10 && (
-                    <div className="paginationOrder">
-                      <ReactPaginate
-                        breakLabel="..."
-                        nextLabel="Next"
-                        onPageChange={(e) => handleChangePage(e.selected + 1)}
-                        pageRangeDisplayed={3}
-                        pageCount={pageCount}
-                        previousLabel="Previous"
-                        renderOnZeroPageCount={null}
-                        pageClassName="page--item"
-                        pageLinkClassName="page--link"
-                        previousClassName="page-item"
-                        previousLinkClassName="page-previous-link"
-                        nextClassName="page-item"
-                        nextLinkClassName="page-next-link"
-                        breakClassName="page--item"
-                        breakLinkClassName="page--link"
-                        containerClassName="pagination"
-                        activeClassName="activePagination"
-                        forcePage={currentPage - 1} // Sync UI with currentPage
-                      />
-                    </div>
                   )}
                 </div>
               </div>

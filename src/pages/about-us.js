@@ -7,27 +7,29 @@ import useGetSetting from "@hooks/useGetSetting";
 import PageHeader from "@components/header/PageHeader";
 import CMSkeleton from "@components/preloader/CMSkeleton";
 import useUtilsFunction from "@hooks/useUtilsFunction";
+import useTranslation from "next-translate/useTranslation";
 
 const AboutUs = () => {
   const { storeCustomizationSetting, loading, error } = useGetSetting();
   const { showingTranslateValue } = useUtilsFunction();
+  const { t } = useTranslation();
+
+  const handleLog = () => {
+    console.log("storeCustomizationSetting", storeCustomizationSetting);
+  }
 
   return (
     <Layout title="About Us" description="This is about us page">
       <PageHeader
         headerBg={storeCustomizationSetting?.about_us?.header_bg}
-        title={showingTranslateValue(
-          storeCustomizationSetting?.about_us?.title
-        )}
+        title={storeCustomizationSetting?.about_us?.title?.pt}
       />
-
       <div className="bg-white">
         <div className="max-w-screen-2xl mx-auto lg:py-20 py-10 px-4 sm:px-10">
           <div className="grid grid-flow-row lg:grid-cols-2 gap-4 lg:gap-16 items-center">
             <div className="">
               <h3 className="text-xl lg:text-3xl mb-2 font-serif font-semibold">
-                
-
+                {/* {t("common:about-section-title")} */}
                 <CMSkeleton
                   count={1}
                   height={50}
@@ -106,7 +108,6 @@ const AboutUs = () => {
                 </div>
               </div>
             </div>
-
             <div className="mt-10 lg:mt-0">
               <img
                 width={920}
@@ -130,7 +131,6 @@ const AboutUs = () => {
                 }
               />
             </p>
-
             <p>
               <CMSkeleton
                 count={8}

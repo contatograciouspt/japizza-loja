@@ -1,3 +1,4 @@
+// Dashboard Component (Dashboard.js)
 import Cookies from "js-cookie";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -16,37 +17,63 @@ import {
   FiUser,
 } from "react-icons/fi";
 import { signOut } from "next-auth/react";
-import { useQuery } from "@tanstack/react-query";
 
 //internal import
 import Layout from "@layout/Layout";
 import Card from "@components/order-card/Card";
-import OrderServices from "@services/OrderServices";
 import RecentOrder from "@pages/user/recent-order";
 import { SidebarContext } from "@context/SidebarContext";
 import Loading from "@components/preloader/Loading";
 import useGetSetting from "@hooks/useGetSetting";
 import useUtilsFunction from "@hooks/useUtilsFunction";
+import axios from "axios";
 
 const Dashboard = ({ title, description, children }) => {
   const router = useRouter();
-  const { isLoading, setIsLoading, currentPage } = useContext(SidebarContext);
-
+  const { isLoading, setIsLoading } = useContext(SidebarContext);
   const { storeCustomizationSetting } = useGetSetting();
   const { showingTranslateValue } = useUtilsFunction();
+  const [orders, setOrders] = useState([]);
+  const [totalOrders, setTotalOrders] = useState(0);
+  const [pendingOrders, setPendingOrders] = useState(0);
+  const [completeOrders, setCompleteOrders] = useState(0);
+  const [loadingOrders, setLoadingOrders] = useState(false);
 
-  const {
-    data,
-    error,
-    isLoading: loading,
-  } = useQuery({
-    queryKey: ["orders", { currentPage }],
-    queryFn: async () =>
-      await OrderServices.getOrderCustomer({
-        page: currentPage,
-        limit: 10,
-      }),
-  });
+  const handleGetOrders = async () => {
+    setLoadingOrders(true);
+    try {
+      const email = localStorage.getItem("email");
+      const response = await axios.get(`http://localhost:5055/api/orders/order/${email}`);
+      if (response.status === 200) {
+
+        // Assuming the API returns an *array* of orders, even if example showed one order object
+        if (Array.isArray(response.data)) {
+          const allOrders = response.data;
+          setOrders(allOrders); // Set all orders for RecentOrder table
+          setTotalOrders(allOrders.length); // Total orders count is array length
+          setPendingOrders(allOrders.filter(order => order?.status === "Pending").length); // Count "Pending" status
+          setCompleteOrders(allOrders.filter(order => order?.status === "Pago").length); // Count "Pago" (Completed) status
+        } else if (response.data) {
+          // If API returns a single order object (as per your example, although it's less likely for a dashboard)
+          // You might need to adjust the backend to return an array of orders for a user dashboard scenario
+          setOrders([response.data]); // Set as an array of one order for RecentOrder table
+          setTotalOrders(1); // If single object, assume it's one order
+          setPendingOrders(response.data?.status === "Pending" ? 1 : 0);
+          setCompleteOrders(response.data?.status === "Pago" ? 1 : 0);
+        } else {
+          setOrders([]);
+          setTotalOrders(0);
+          setPendingOrders(0);
+          setCompleteOrders(0);
+        }
+
+      }
+    } catch (error) {
+      console.log("Erro ao obter pedidos:", error);
+    } finally {
+      setLoadingOrders(false);
+    }
+  };
 
   const handleLogOut = () => {
     signOut();
@@ -56,6 +83,7 @@ const Dashboard = ({ title, description, children }) => {
 
   useEffect(() => {
     setIsLoading(false);
+    handleGetOrders();
   }, []);
 
   const userSidebar = [
@@ -66,20 +94,11 @@ const Dashboard = ({ title, description, children }) => {
       href: "/user/dashboard",
       icon: FiGrid,
     },
-
     {
-      title: showingTranslateValue(
-        storeCustomizationSetting?.dashboard?.my_order
-      ),
-      href: "/user/my-orders",
-      icon: FiList,
-    },
-    {
-      title: "My Account",
+      title: "Minha Conta",
       href: "/user/my-account",
       icon: FiUser,
     },
-
     {
       title: showingTranslateValue(
         storeCustomizationSetting?.dashboard?.update_profile
@@ -149,13 +168,13 @@ const Dashboard = ({ title, description, children }) => {
                         storeCustomizationSetting?.dashboard?.dashboard_title
                       )}
                     </h2>
-                    <div className="grid gap-4 mb-8 md:grid-cols-2 xl:grid-cols-4">
+                    <div className="grid gap-4 mb-8 md:grid-cols-2 xl:grid-cols-3">
                       <Card
                         title={showingTranslateValue(
                           storeCustomizationSetting?.dashboard?.total_order
                         )}
                         Icon={FiShoppingCart}
-                        quantity={data?.totalDoc}
+                        quantity={totalOrders}
                         className="text-red-600  bg-red-200"
                       />
                       <Card
@@ -163,27 +182,19 @@ const Dashboard = ({ title, description, children }) => {
                           storeCustomizationSetting?.dashboard?.pending_order
                         )}
                         Icon={FiRefreshCw}
-                        quantity={data?.pending}
+                        quantity={pendingOrders}
                         className="text-orange-600 bg-orange-200"
-                      />
-                      <Card
-                        title={showingTranslateValue(
-                          storeCustomizationSetting?.dashboard?.processing_order
-                        )}
-                        Icon={FiTruck}
-                        quantity={data?.processing}
-                        className="text-indigo-600 bg-indigo-200"
                       />
                       <Card
                         title={showingTranslateValue(
                           storeCustomizationSetting?.dashboard?.complete_order
                         )}
                         Icon={FiCheck}
-                        quantity={data?.delivered}
+                        quantity={completeOrders}
                         className="text-emerald-600 bg-emerald-200"
                       />
                     </div>
-                    <RecentOrder data={data} loading={loading} error={error} />
+                    <RecentOrder orders={orders} loading={loadingOrders} error={null} />
                   </div>
                 )}
                 {children}

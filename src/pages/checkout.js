@@ -597,7 +597,14 @@ const Checkout = () => {
   const { showingTranslateValue } = useUtilsFunction()
   const [loading, setLoading] = React.useState(false)
   const [errorMessage, setErrorMessage] = React.useState("")
-  const [address, setAddress] = React.useState({ street: "", city: "", country: "", zipCode: "", additionalInformation: "" })
+  const [address, setAddress] = React.useState({
+    street: "",
+    city: "",
+    country: "",
+    zipCode: "",
+    additionalInformation: "",
+    nif: 0,
+  })
   const [selectedOption, setSelectedOption] = React.useState(null)
   const [isOptionSelected, setIsOptionSelected] = React.useState(false)
   const [selectedMapShippingCost, setSelectedMapShippingCost] = React.useState(0)
@@ -876,6 +883,18 @@ const Checkout = () => {
                         />
                         <Error errorName={errors.contact} />
                       </div>
+                      <div className="col-span-6 sm:col-span-3">
+                        <InputArea
+                          required={true}
+                          register={register}
+                          label="NIF"
+                          name="nif"
+                          type="number"
+                          placeholder="Digite seu NIF"
+                          value={address.nif || ""}
+                          onChange={(e) => setAddress({ ...address, nif: e.target.value })}
+                        />
+                      </div>
                     </div>
                   </div>
 
@@ -948,11 +967,12 @@ const Checkout = () => {
                         />
                         <Error errorName={errors.zipCode} />
                       </div>
-                      {/* informações adicionais */}
+                      {/* informações adicionais | observações */}
                       <div className="col-span-6">
                         <InputArea
+                          required={false}
                           register={register}
-                          label="Informações adicionais"
+                          label="Observações"
                           name="additionalInformation"
                           type="textarea"
                           rows={4}
