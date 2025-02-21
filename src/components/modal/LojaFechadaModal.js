@@ -13,10 +13,10 @@ export default function LojaFechadaModal({ isOpen, onClose }) {
                     <FaStore className="mx-auto text-red-500 text-5xl" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">
-                    Estamos fechados hoje
+                    Estamos fechados agora!
                 </h3>
                 <p className="text-gray-600 mb-6">
-                    Agende seu pedido para outro dia da semana
+                    Agende seu pedido
                 </p>
                 <div className="flex justify-center gap-4">
                     <button
