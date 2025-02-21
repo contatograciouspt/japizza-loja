@@ -202,38 +202,38 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
       <div className="inline-block overflow-y-auto h-full align-middle transition-all transform bg-white shadow-xl rounded-2xl">
         <div className="flex flex-col lg:flex-row md:flex-row w-full max-w-4xl overflow-hidden">
           {/* <Link href={`/product/${product.slug}`} passHref> */}
-            <div
-              onClick={() => setModalOpen(false)}
-              className="flex-shrink-0 flex items-center justify-center h-auto cursor-pointer"
-            >
-              <Discount product={product} discount={discount} modal />
-              {product.image[0] ? (
-                <Image
-                  src={img || product.image[0]}
-                  width={420}
-                  height={420}
-                  alt="product"
-                />
-              ) : (
-                <Image
-                  src="https://res.cloudinary.com/ahossain/image/upload/v1655097002/placeholder_kvepfp.png"
-                  width={420}
-                  height={420}
-                  alt="product Image"
-                />
-              )}
-            </div>
+          <div
+            onClick={() => setModalOpen(false)}
+            className="flex-shrink-0 flex items-center justify-center h-auto cursor-pointer"
+          >
+            <Discount product={product} discount={discount} modal />
+            {product.image[0] ? (
+              <Image
+                src={img || product.image[0]}
+                width={420}
+                height={420}
+                alt="product"
+              />
+            ) : (
+              <Image
+                src="https://res.cloudinary.com/ahossain/image/upload/v1655097002/placeholder_kvepfp.png"
+                width={420}
+                height={420}
+                alt="product Image"
+              />
+            )}
+          </div>
           {/* </Link> */}
 
           <div className="w-full flex flex-col p-5 md:p-8 text-left">
             <div className="mb-2 md:mb-2.5 block -mt-1.5">
               {/* <Link href={`/product/${product.slug}`} passHref> */}
-                <h1
-                  onClick={() => setModalOpen(false)}
-                  className="text-heading text-lg md:text-xl lg:text-2xl font-semibold font-serif hover:text-black cursor-pointer"
-                >
-                  {showingTranslateValue(product?.title)}
-                </h1>
+              <h1
+                onClick={() => setModalOpen(false)}
+                className="text-heading text-lg md:text-xl lg:text-2xl font-semibold font-serif hover:text-black cursor-pointer"
+              >
+                {showingTranslateValue(product?.title)}
+              </h1>
               {/* </Link> */}
             </div>
 
@@ -326,7 +326,6 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
                 </div>
               </div>
             </div>
-
             <div className="flex justify-end mt-2">
               <p className="text-xs sm:text-sm text-gray-600">
                 Precisa de ajuda? ligue neste número :

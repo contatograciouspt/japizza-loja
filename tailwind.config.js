@@ -19,6 +19,7 @@ module.exports = {
       // cor customizada
       colors: {
         customRed: "#E80F32",
+        customBrown: "#F5CDA9"
       },
       backgroundImage: {
         "page-header": "url('/page-header-bg.jpg')",

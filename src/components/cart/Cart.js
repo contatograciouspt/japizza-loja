@@ -26,7 +26,8 @@ const Cart = () => {
         // console.log("userInfo::", userInfo, "history");
 
         // Redirect to login page with returnUrl query parameter
-        router.push(`/auth/login?redirectUrl=checkout`);
+        // router.push(`/auth/login?redirectUrl=checkout`);
+        router.push("/checkout");
         closeCartDrawer();
       } else {
         router.push("/checkout");

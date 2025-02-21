@@ -1,4 +1,4 @@
-// components/form/InputShipping.js
+// InputShipping.js
 import React from "react";
 import { FiTruck } from "react-icons/fi";
 import { FaStoreAlt } from "react-icons/fa";
@@ -15,7 +15,15 @@ const InputShipping = ({
   type = 'radio',
   name = "shippingOption",
   Icon = FiTruck,
+  onOpenModal // new prop to handle modal opening
 }) => {
+
+  const handleClick = () => {
+    if (value === 'Delivery' && onOpenModal) { // Open modal only for 'Delivery'
+      onOpenModal();
+    }
+    handleShippingCost(value, cost);
+  };
 
   return (
     <div>
@@ -43,7 +51,7 @@ const InputShipping = ({
             </div>
             <input
               {...register(name)}
-              onClick={() => handleShippingCost(value, cost)}
+              onClick={handleClick} // Use handleClick function
               name={name}
               type={type}
               value={value}

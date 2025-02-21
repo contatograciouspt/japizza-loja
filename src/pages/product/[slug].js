@@ -181,31 +181,29 @@ const ProductScreen = ({ product, attributes, relatedProducts }) => {
       const { variants, categories, description, ...updatedProduct } = product;
       const newItem = {
         ...updatedProduct,
-        id: `${
-          p.variants.length <= 1
+        id: `${p.variants.length <= 1
             ? p._id
             : p._id +
-              variantTitle
-                ?.map(
-                  // (att) => selectVariant[att.title.replace(/[^a-zA-Z0-9]/g, '')]
-                  (att) => selectVariant[att._id]
-                )
-                .join("-")
-        }`,
+            variantTitle
+              ?.map(
+                // (att) => selectVariant[att.title.replace(/[^a-zA-Z0-9]/g, '')]
+                (att) => selectVariant[att._id]
+              )
+              .join("-")
+          }`,
 
-        title: `${
-          p.variants.length <= 1
+        title: `${p.variants.length <= 1
             ? showingTranslateValue(product?.title)
             : showingTranslateValue(product?.title) +
-              "-" +
-              variantTitle
-                ?.map(
-                  // (att) => selectVariant[att.title.replace(/[^a-zA-Z0-9]/g, '')]
-                  (att) =>
-                    att.variants?.find((v) => v._id === selectVariant[att._id])
-                )
-                .map((el) => showingTranslateValue(el?.name))
-        }`,
+            "-" +
+            variantTitle
+              ?.map(
+                // (att) => selectVariant[att.title.replace(/[^a-zA-Z0-9]/g, '')]
+                (att) =>
+                  att.variants?.find((v) => v._id === selectVariant[att._id])
+              )
+              .map((el) => showingTranslateValue(el?.name))
+          }`,
         image: img,
         variant: selectVariant,
         price: price,
@@ -356,31 +354,31 @@ const ProductScreen = ({ product, attributes, relatedProducts }) => {
                           <div className="text-sm leading-6 text-gray-500 md:leading-7">
                             {isReadMore
                               ? showingTranslateValue(
-                                  product?.description
-                                )?.slice(0, 230)
+                                product?.description
+                              )?.slice(0, 230)
                               : showingTranslateValue(product?.description)}
                             <br />
                             {Object?.keys(product?.description)?.includes(lang)
                               ? product?.description[lang]?.length > 230 && (
-                                  <span
-                                    onClick={() => setIsReadMore(!isReadMore)}
-                                    className="read-or-hide"
-                                  >
-                                    {isReadMore
-                                      ? t("common:moreInfo")
-                                      : t("common:showLess")}
-                                  </span>
-                                )
+                                <span
+                                  onClick={() => setIsReadMore(!isReadMore)}
+                                  className="read-or-hide"
+                                >
+                                  {isReadMore
+                                    ? t("common:moreInfo")
+                                    : t("common:showLess")}
+                                </span>
+                              )
                               : product?.description?.en?.length > 230 && (
-                                  <span
-                                    onClick={() => setIsReadMore(!isReadMore)}
-                                    className="read-or-hide"
-                                  >
-                                    {isReadMore
-                                      ? t("common:moreInfo")
-                                      : t("common:showLess")}
-                                  </span>
-                                )}
+                                <span
+                                  onClick={() => setIsReadMore(!isReadMore)}
+                                  className="read-or-hide"
+                                >
+                                  {isReadMore
+                                    ? t("common:moreInfo")
+                                    : t("common:showLess")}
+                                </span>
+                              )}
                           </div>
 
                           <div className="flex items-center mt-4">
@@ -457,7 +455,7 @@ const ProductScreen = ({ product, attributes, relatedProducts }) => {
                             <ul className="flex mt-4">
                               <li className="flex items-center text-center border border-gray-100 rounded-full hover:bg-emerald-500  mr-2 transition ease-in-out duration-500">
                                 <FacebookShareButton
-                                  url={`https://jáPizza-store-nine.vercel.app/product/${router.query.slug}`}
+                                  url={`https://kachabazar-store-nine.vercel.app/product/${router.query.slug}`}
                                   quote=""
                                 >
                                   <FacebookIcon size={32} round />
@@ -465,7 +463,7 @@ const ProductScreen = ({ product, attributes, relatedProducts }) => {
                               </li>
                               <li className="flex items-center text-center border border-gray-100 rounded-full hover:bg-emerald-500  mr-2 transition ease-in-out duration-500">
                                 <TwitterShareButton
-                                  url={`https://jáPizza-store-nine.vercel.app/product/${router.query.slug}`}
+                                  url={`https://kachabazar-store-nine.vercel.app/product/${router.query.slug}`}
                                   quote=""
                                 >
                                   <TwitterIcon size={32} round />
@@ -473,7 +471,7 @@ const ProductScreen = ({ product, attributes, relatedProducts }) => {
                               </li>
                               <li className="flex items-center text-center border border-gray-100 rounded-full hover:bg-emerald-500  mr-2 transition ease-in-out duration-500">
                                 <RedditShareButton
-                                  url={`https://jáPizza-store-nine.vercel.app/product/${router.query.slug}`}
+                                  url={`https://kachabazar-store-nine.vercel.app/product/${router.query.slug}`}
                                   quote=""
                                 >
                                   <RedditIcon size={32} round />
@@ -481,7 +479,7 @@ const ProductScreen = ({ product, attributes, relatedProducts }) => {
                               </li>
                               <li className="flex items-center text-center border border-gray-100 rounded-full hover:bg-emerald-500  mr-2 transition ease-in-out duration-500">
                                 <WhatsappShareButton
-                                  url={`https://jáPizza-store-nine.vercel.app/product/${router.query.slug}`}
+                                  url={`https://kachabazar-store-nine.vercel.app/product/${router.query.slug}`}
                                   quote=""
                                 >
                                   <WhatsappIcon size={32} round />
@@ -489,7 +487,7 @@ const ProductScreen = ({ product, attributes, relatedProducts }) => {
                               </li>
                               <li className="flex items-center text-center border border-gray-100 rounded-full hover:bg-emerald-500  mr-2 transition ease-in-out duration-500">
                                 <LinkedinShareButton
-                                  url={`https://jáPizza-store-nine.vercel.app/product/${router.query.slug}`}
+                                  url={`https://kachabazar-store-nine.vercel.app/product/${router.query.slug}`}
                                   quote=""
                                 >
                                   <LinkedinIcon size={32} round />
@@ -563,8 +561,8 @@ export const getServerSideProps = async (context) => {
   return {
     props: {
       product,
-      attributes,
       relatedProducts: data?.relatedProducts,
+      attributes,
     },
   };
 };

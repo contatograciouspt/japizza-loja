@@ -6,8 +6,7 @@ import Category from "@components/category/Category";
 import { SidebarContext } from "@context/SidebarContext";
 
 const CategoryDrawer = () => {
-  const { categoryDrawerOpen, closeCategoryDrawer } =
-    useContext(SidebarContext);
+  const { categoryDrawerOpen, closeCategoryDrawer } = useContext(SidebarContext);
 
   return (
     <Drawer

@@ -1,0 +1,317 @@
+Arquivo [slug].js:
+
+Vou tentar ser o mais detalhista possível, pois esse arquivo realmente está com várias lógicas que podem confundir e fazer com que sempre retorne o mesmo atributo/variante. Vamos por partes.
+
+---
+
+## O problema em resumo
+
+1. **Você tem um array product.variants** (cada objeto representa uma combinação de atributos do produto, por exemplo: “Mini 23cm Proteína” etc.).  
+2. *Você tem estados* como selectVariant, selectVa, value, price, originalPrice etc.  
+3. **O código no useEffect** que começa lá pela linha *43* (aproximadamente) faz uma lógica para encontrar a “variante selecionada” com base em selectVa e em value.  
+4. **Se a condição if (value) não for satisfeita**, ele cai no else if (product?.variants?.length > 0) e *pega sempre a primeira variante* (product.variants[0]). Isso pode explicar por que está sempre vindo a mesma (“Mini 23cm Proteína”).  
+5. **Talvez o value nunca seja atualizado** ou seja atualizado com o mesmo valor, e a lógica para “filtrar a variante” não funciona, caindo no “pegar a primeira”.  
+
+Em outras palavras, a parte do código que decide *qual* variante fica selecionada está usando condições que podem nunca mudar, ou podem sempre cair na “variante 0”. Por isso sempre aparece a mesma.
+
+---
+
+## Passo 1: Verificar se realmente precisa da variável value
+
+No seu código, há um if (value) { ... } else if (...) { ... } else { ... }. Ele está no useEffect:
+
+jsx
+useEffect(() => {
+  if (value) {
+    // faz uma lógica bem complexa, filtrando "result" e achando "result2"
+    // ...
+  } else if (product?.variants?.length > 0) {
+    // Pega sempre a primeira variante => product.variants[0]
+    // ...
+  } else {
+    // Produto sem variants
+    // ...
+  }
+}, [
+  product?.prices?.discount,
+  product?.prices?.originalPrice,
+  product?.prices?.price,
+  product?.stock,
+  product.variants,
+  selectVa,
+  selectVariant,
+  value,
+]);
+
+
+### Por que isso é suspeito?
+- Se value for vazio ou undefined (ou seja, se nunca setou value), **o código vai cair sempre no else if** e pegar product.variants[0].  
+- Isso explica o comportamento de sempre mostrar a mesma combinação.  
+
+### Possível correção rápida
+- *Remover* essa condição que depende de value.  
+- Ou então *garantir* que quando o usuário escolhe um tamanho ou extra, essa value seja *de fato* preenchida e *diferente* para cada escolha (o que nem sempre é o caso).  
+
+Como você disse que não sabe programar muito, a forma mais simples pode ser *eliminar* a lógica que depende de value e usar só o selectVa como referência de “o que o usuário selecionou”.  
+
+---
+
+## Passo 2: Simplificar o useEffect que escolhe a variante
+
+Atualmente, entre as linhas ~45 e ~88, você tem um bloco grande de if/else. Vamos mostrar um *exemplo* de como ficaria um useEffect mais simples, que:
+
+1. Verifica se *não existem variants* no produto (caso de produto sem combinações).  
+2. Senão, *tenta filtrar* product.variants para achar a que bate com o que o usuário selecionou em selectVa.  
+3. Se não achar nenhuma que bata, define stock = 0 (ou exibe mensagem de “sem estoque”).  
+4. Se achar, pega a primeira e seta selectVariant, stock, price, etc.
+
+> *Atenção: este é só um **exemplo* de como você *poderia* simplificar. Você terá que adaptar conforme sua necessidade.
+
+jsx
+useEffect(() => {
+  // 1) Se não há variants, cai no else e define tudo com base no produto simples
+  if (!product?.variants || product?.variants.length === 0) {
+    setStock(product?.stock || 0);
+    setImg(product?.image?.[0] || "");
+    const price = getNumber(product?.prices?.price);
+    const originalPrice = getNumber(product?.prices?.originalPrice);
+    const discountPercentage = getNumber(
+      ((originalPrice - price) / originalPrice) * 100
+    );
+    setDiscount(discountPercentage);
+    setPrice(price);
+    setOriginalPrice(originalPrice);
+    return; // sai do useEffect
+  }
+
+  // 2) Se existem variants, vamos tentar achar uma que combine com selectVa
+  // Exemplo: selectVa = { "63f078f54b86ed26b05281b6": "63f078f54b86ed26b05281b8" }
+  // ou seja, "Size": "Medium"
+  const matchedVariants = product.variants.filter((variant) =>
+    Object.keys(selectVa).every((attrId) => selectVa[attrId] === variant[attrId])
+  );
+
+  // 3) Se não achou nada que combine, definimos stock = 0
+  if (!matchedVariants || matchedVariants.length === 0) {
+    setStock(0);
+    return;
+  }
+
+  // 4) Se achou, pega a primeira e define os estados
+  const foundVariant = matchedVariants[0];
+  setVariants(matchedVariants);
+  setSelectVariant(foundVariant);
+  setSelectVa(foundVariant); // se quiser
+  setImg(foundVariant?.image);
+  setStock(foundVariant?.quantity);
+
+  const price = getNumber(foundVariant?.price);
+  const originalPrice = getNumber(foundVariant?.originalPrice);
+  const discountPercentage = getNumber(
+    ((originalPrice - price) / originalPrice) * 100
+  );
+  setDiscount(discountPercentage);
+  setPrice(price);
+  setOriginalPrice(originalPrice);
+}, [product, selectVa]); // reexecuta toda vez que "product" ou "selectVa" mudam
+
+
+Note que nesse código *não existe* a variável value. Com isso, você não corre o risco de cair num else que sempre seleciona a primeira variante.
+
+---
+
+## Passo 3: Ajustar como você “seta” selectVa
+
+No seu código, lá embaixo, você renderiza:
+
+jsx
+{variantTitle?.map((a, i) => (
+  <span key={i + 1}>
+    <h4 className="text-sm py-1">
+      {showingTranslateValue(a?.name)}:
+    </h4>
+    <div className="flex flex-row mb-3">
+      <VariantList
+        att={a._id}
+        lang={lang}
+        option={a.option}
+        setValue={setValue}                // <== Provavelmente não vamos mais usar
+        varTitle={variantTitle}
+        setSelectVa={setSelectVa}          // <== ESSENCIAL
+        variants={product.variants}
+        selectVariant={selectVariant}
+        setSelectVariant={setSelectVariant}
+      />
+    </div>
+  </span>
+))}
+
+
+Você passa setSelectVa={setSelectVa} para o componente VariantList.  
+*Dentro* do VariantList, você precisa ter algo assim (pseudo-código):
+
+jsx
+// Supondo que 'att' é o _id do atributo, e 'variantId' é o valor escolhido
+onChange={(variantId) => {
+  setSelectVa((prev) => ({
+    ...prev,
+    [att]: variantId, // Exemplo: { "63f078f54b86ed26b05281b6": "63f078f54b86ed26b05281b8" }
+  }));
+}}
+
+
+Isso faz com que, ao clicar num radio ou checkbox do tamanho 23cm, ele *guarde* no estado selectVa algo como:  
+js
+{
+  "idDoAtributoTamanho": "idDoValorEscolhido"
+}
+
+
+Depois, o useEffect lá de cima vai filtrar product.variants procurando uma que tenha variant["idDoAtributoTamanho"] === "idDoValorEscolhido". Assim, você acha a variante correta.
+
+---
+
+## Passo 4: Conferir se seus product.variants realmente têm campos com o _id do atributo
+
+Seus variants precisam ter algo como:
+
+js
+{
+  "63f078f54b86ed26b05281b6": "63f078f54b86ed26b05281b8", // por ex. Size = Medium
+  "63f078f54b86ed26b05281b2": "63f078f54b86ed26b05281b3", // por ex. Color = Red
+  originalPrice: 10,
+  price: 8,
+  quantity: 100,
+  // etc.
+}
+
+
+Se, por acaso, seus variants estiverem salvos de outra forma (por exemplo, variant.size = 'Medium' ou variant.sizeId = '63f078...'), então o código que faz:
+
+js
+Object.keys(selectVa).every((k) => selectVa[k] === variant[k])
+
+
+*não* vai funcionar. Precisaria adaptar para bater exatamente com o que está salvo no variant.
+
+---
+
+## Passo 5: Ajustar (ou remover) o bloco de código que “map” e “find” dentro do if (value)
+
+Na versão original, você tem esse trecho (por volta da linha 50 a 65):
+
+js
+// ...
+const res = result?.map(
+  ({
+    originalPrice,
+    price,
+    discount,
+    quantity,
+    barcode,
+    sku,
+    productId,
+    image,
+    ...rest
+  }) => ({ ...rest })
+);
+
+const filterKey = Object.keys(Object.assign({}, ...res));
+const selectVar = filterKey?.reduce(
+  (obj, key) => ({ ...obj, [key]: selectVariant[key] }),
+  {}
+);
+
+const newObj = Object.entries(selectVar).reduce(
+  (a, [k, v]) => (v ? ((a[k] = v), a) : a),
+  {}
+);
+
+const result2 = result?.find((v) =>
+  Object.keys(newObj).every((k) => newObj[k] === v[k])
+);
+// ...
+
+
+*Esse código é muito complexo* para algo que poderia ser feito de forma mais simples (como mostrei no “Passo 2”). Ele tenta remover algumas chaves (originalPrice, price etc.) e ficar só com as chaves de atributo, depois tenta achar uma variante que combine com selectVariant.  
+
+Se você não tem muita experiência, recomendo *remover* toda essa parte e substituir pela lógica simples do “Passo 2”, usando apenas:
+
+js
+const matchedVariants = product.variants.filter((variant) =>
+  Object.keys(selectVa).every((k) => selectVa[k] === variant[k])
+);
+
+
+E pronto. Fica mais fácil de entender e manter.
+
+---
+
+## Passo 6: Ajustar a dependência do useEffect
+
+Na sua versão original, o useEffect tem algo como:
+
+js
+}, [
+  product?.prices?.discount,
+  product?.prices?.originalPrice,
+  product?.prices?.price,
+  product?.stock,
+  product.variants,
+  selectVa,
+  selectVariant,
+  value,
+]);
+
+
+- Se você *remover* a lógica de value, pode tirar value desse array.  
+- Também não é muito comum depender de selectVariant se você já depende de selectVa. Geralmente, você só depende de product e selectVa.  
+
+Ficaria, por exemplo:
+
+js
+}, [product, selectVa]);
+
+
+---
+
+## Passo 7: Confirmar se VariantList realmente chama setSelectVa corretamente
+
+No final, nada disso adianta se, dentro do componente VariantList, você não estiver realmente chamando setSelectVa com o ID certo. Por exemplo:
+
+jsx
+// Exemplo de onChange para radio
+<input
+  type="radio"
+  name={att} // att = "63f078f54b86ed26b05281b6"
+  value={variantId} // "63f078f54b86ed26b05281b8"
+  onChange={() => {
+    setSelectVa((prev) => ({ ...prev, [att]: variantId }));
+  }}
+/>
+
+
+Aí, sim, quando o usuário clicar em outro radio, selectVa muda e o useEffect recalcula a variante.
+
+---
+
+## Conclusão
+
+1. **Sim, o arquivo [slug].js é onde está o problema** de lógica (não é o controller do back-end).  
+2. *A principal falha* é que o código está “sempre pegando a mesma variante” porque cai no else if (product?.variants?.length > 0) e pega product.variants[0]. Isso ocorre quando value está vazio.  
+3. *A solução* é remover ou reformular a condição if (value) e usar uma lógica mais simples, baseada em selectVa, para encontrar a variante escolhida.  
+4. *Verifique* se, nos seus product.variants, as chaves que representam o atributo realmente correspondem ao _id do atributo. Se estiver diferente, o filter/find nunca vai funcionar.  
+
+### Exemplo de linhas que podem ser removidas ou alteradas
+
+- *Linhas ~45 a ~88* no seu useEffect: troque por uma lógica mais simples (como demonstrei no Passo 2).  
+- *Linha ~50*: const res = result?.map(...) => ... pode remover.  
+- *Linha ~53*: const filterKey = Object.keys(Object.assign({}, ...res)) pode remover.  
+- *Linha ~58*: const selectVar = filterKey?.reduce(...) pode remover.  
+- *Linha ~60*: const newObj = Object.entries(selectVar)... pode remover.  
+- *Linha ~65*: const result2 = result?.find(...) pode remover, substituindo por matchedVariants[0].  
+- *Linha ~45*: if (value) { ... } else if (...) { ... } else { ... } => eliminar o if (value) e ficar só com a lógica de “se existe variant => filtra e acha a combinada, senão => stock=0”.  
+
+Com isso, você torna o código mais direto, e evita ficar “preso” sempre na mesma variante.
+
+Espero que ajude! Se você seguir esses passos e adaptar a forma como os atributos são armazenados e selecionados, deve parar de “pegar sempre a mesma variante”. Qualquer dúvida adicional, basta perguntar. Boa sorte!

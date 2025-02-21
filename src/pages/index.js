@@ -1,36 +1,72 @@
-import { SidebarContext } from "@context/SidebarContext";
-import { useContext, useEffect } from "react";
-import { useRouter } from "next/router";
+import { SidebarContext } from "@context/SidebarContext"
+import React, { useContext, useEffect } from "react"
+import { useRouter } from "next/router"
 
 //internal import
-import Layout from "@layout/Layout";
-import Banner from "@components/banner/Banner";
-import useGetSetting from "@hooks/useGetSetting";
-import CardTwo from "@components/cta-card/CardTwo";
-import OfferCard from "@components/offer/OfferCard";
-import StickyCart from "@components/cart/StickyCart";
-import Loading from "@components/preloader/Loading";
-import ProductServices from "@services/ProductServices";
-import ProductCard from "@components/product/ProductCard";
-import MainCarousel from "@components/carousel/MainCarousel";
-import FeatureCategory from "@components/category/FeatureCategory";
-import AttributeServices from "@services/AttributeServices";
-import CMSkeleton from "@components/preloader/CMSkeleton";
+import Layout from "@layout/Layout"
+import Banner from "@components/banner/Banner"
+import useGetSetting from "@hooks/useGetSetting"
+import CardTwo from "@components/cta-card/CardTwo"
+import OfferCard from "@components/offer/OfferCard"
+import StickyCart from "@components/cart/StickyCart"
+import Loading from "@components/preloader/Loading"
+import ProductServices from "@services/ProductServices"
+import ProductCard from "@components/product/ProductCard"
+import MainCarousel from "@components/carousel/MainCarousel"
+import FeatureCategory from "@components/category/FeatureCategory"
+import AttributeServices from "@services/AttributeServices"
+import CMSkeleton from "@components/preloader/CMSkeleton"
+import RedirecionarLojas from "@components/modal/RedirecionarLojas"
+import LojaFechadaModal from "@components/modal/LojaFechadaModal"
 
 const Home = ({ popularProducts, discountProducts, attributes }) => {
-  const router = useRouter();
-  const { isLoading, setIsLoading } = useContext(SidebarContext);
-  const { loading, error, storeCustomizationSetting } = useGetSetting();
+  const router = useRouter()
+  const { isLoading, setIsLoading } = useContext(SidebarContext)
+  const { loading, error, storeCustomizationSetting } = useGetSetting()
+  const [lojaFechadaModal, setLojaFechadaModal] = React.useState(false)
+  const [showRedirecionarLojas, setShowRedirecionarLojas] = React.useState(true);
 
-  // console.log("storeCustomizationSetting", storeCustomizationSetting);
+  // console.log("storeCustomizationSetting", storeCustomizationSetting)
 
   useEffect(() => {
     if (router.asPath === "/") {
-      setIsLoading(false);
+      setIsLoading(false)
     } else {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  }, [router]);
+  }, [router])
+
+  // Verificar se o dia da semana é segunda e exibir o modal de loja fechada
+  useEffect(() => {
+    const verificarHorarioFuncionamento = () => {
+      const now = new Date();
+      const diaSemanaAtual = now.getDay();
+      const tempoAtualEmMinutos = now.getHours() * 60 + now.getMinutes();
+
+      const horarioAbertura = diaSemanaAtual === 0 || diaSemanaAtual === 2 || diaSemanaAtual === 3
+        ? 17 * 60 + 30 // 17:30
+        : 17 * 60;     // 17:00
+
+      const horarioFechamento = 22 * 60; // 22:00
+      const isDentroHorario = tempoAtualEmMinutos >= horarioAbertura && tempoAtualEmMinutos < horarioFechamento;
+      const isDiaAberto = diaSemanaAtual >= 2 && diaSemanaAtual <= 6 && isDentroHorario;
+
+      // Only show LojaFechadaModal if RedirecionarLojas is closed
+      const hasSelectedStore = localStorage.getItem('selectedStore');
+      if (hasSelectedStore) {
+        setShowRedirecionarLojas(false);
+        setLojaFechadaModal(!isDiaAberto);
+      } else {
+        setShowRedirecionarLojas(true);
+        setLojaFechadaModal(false);
+      }
+    };
+
+    verificarHorarioFuncionamento();
+    const interval = setInterval(verificarHorarioFuncionamento, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>
@@ -57,7 +93,13 @@ const Home = ({ popularProducts, discountProducts, attributes }) => {
                 )}
               </div>
             </div>
-
+            {showRedirecionarLojas && <RedirecionarLojas />}
+            {!showRedirecionarLojas && (
+              <LojaFechadaModal
+                isOpen={lojaFechadaModal}
+                onClose={() => setLojaFechadaModal(false)}
+              />
+            )}
             {/* feature category's */}
             {storeCustomizationSetting?.home?.featured_status && (
               <div className="bg-gray-100 lg:py-16 py-10">
@@ -226,12 +268,12 @@ const Home = ({ popularProducts, discountProducts, attributes }) => {
         </Layout>
       )}
     </>
-  );
-};
+  )
+}
 
 export const getServerSideProps = async (context) => {
-  const { cookies } = context.req;
-  const { query, _id } = context.query;
+  const { cookies } = context.req
+  const { query, _id } = context.query
 
   const [data, attributes] = await Promise.all([
     ProductServices.getShowingStoreProducts({
@@ -240,7 +282,7 @@ export const getServerSideProps = async (context) => {
     }),
 
     AttributeServices.getShowingAttributes(),
-  ]);
+  ])
 
   return {
     props: {
@@ -249,7 +291,7 @@ export const getServerSideProps = async (context) => {
       popularProducts: data.popularProducts,
       discountProducts: data.discountedProducts,
     },
-  };
-};
+  }
+}
 
-export default Home;
+export default Home

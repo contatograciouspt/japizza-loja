@@ -1,4 +1,4 @@
-import Switch from "react-switch";
+import Switch from "react-switch"
 
 const SwitchToggle = ({ id, title, handleProcess, processOption }) => {
   return (
@@ -8,7 +8,6 @@ const SwitchToggle = ({ id, title, handleProcess, processOption }) => {
           <label className="text-sm font-semibold text-gray-600 mr-1">
             {title}
           </label>
-
           <Switch
             id={id || title || ""}
             onChange={handleProcess}
@@ -27,7 +26,7 @@ const SwitchToggle = ({ id, title, handleProcess, processOption }) => {
                   paddingTop: 1,
                 }}
               >
-                No
+                Não
               </div>
             }
             width={80}
@@ -48,14 +47,14 @@ const SwitchToggle = ({ id, title, handleProcess, processOption }) => {
                   paddingTop: 1,
                 }}
               >
-                Yes
+                Sim
               </div>
             }
           />
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default SwitchToggle;
+export default SwitchToggle
