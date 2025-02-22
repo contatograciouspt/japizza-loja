@@ -120,7 +120,8 @@ const Checkout = () => {
     setScheduledDelivery,
     setSelectedOption,
     selectedOption,
-    scheduledDelivery
+    scheduledDelivery,
+    formaDePagamento
   } = useCheckoutSubmit()
 
   const queryClient = useQueryClient()
@@ -144,7 +145,9 @@ const Checkout = () => {
   const checkEnableOrderButton = () => {
     const hasValidShipping = selectedMapShippingCost > 0
     const hasValidSchedule = scheduledDelivery !== null
-    setIsOrderButtonEnabled(hasValidShipping && hasValidSchedule)
+    const hasValidPayment = pagamentoNaEntrega ? formaDePagamento !== null : true
+  
+    setIsOrderButtonEnabled(hasValidShipping && hasValidSchedule && hasValidPayment)
   }
 
   const handleOpenMapModal = () => {
@@ -254,7 +257,7 @@ const Checkout = () => {
 
   React.useEffect(() => {
     checkEnableOrderButton()
-  }, [selectedMapShippingCost, scheduledDelivery])
+}, [selectedMapShippingCost, scheduledDelivery, pagamentoNaEntrega, formaDePagamento])
 
   return (
     <>

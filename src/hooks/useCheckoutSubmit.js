@@ -33,7 +33,7 @@ const useCheckoutSubmit = (storeSetting) => {
   const [isCouponAvailable, setIsCouponAvailable] = useState(false)
   const [lojaSelecionada, setLojaSelecionada] = useState("")
   const [coordenadas, setCoordenadas] = useState("")
-  const [formaDePagamento, setFormaDePagamento] = useState(null) // New state for payment method
+  const [formaDePagamento, setFormaDePagamento] = useState({ method: null, troco: null }) // New state for payment method
   const [trocoPara, setTrocoPara] = useState("") // New state for cash change
   const [scheduledDelivery, setScheduledDelivery] = useState(null)
   const [selectedOption, setSelectedOption] = useState(null)
@@ -99,15 +99,17 @@ const useCheckoutSubmit = (storeSetting) => {
   const productName = items.map((item) => item.title)
 
   const submitHandler = async (data) => {
+    // Initial validations
+    if (!scheduledDelivery || !shippingCost) {
+      notifyError("Selecione data de agendamento e região de entrega")
+    } else {
+      notifySuccess("Data e região selecionadas com sucesso!")
+    }
 
-    // if (!selectedOption || !shippingCost) {
-    //   notifyError("Selecione um método de entrega e região de envio")
-    //   return
-    // }
-
-    if (pagamentoNaEntrega && !formaDePagamento) {
+    if (pagamentoNaEntrega && !formaDePagamento.method) {
       notifyError("Selecione uma forma de pagamento")
-      return
+    } else {
+      notifySuccess("Forma de pagamento selecionada com sucesso!")
     }
 
     try {
@@ -126,102 +128,95 @@ const useCheckoutSubmit = (storeSetting) => {
         additionalInformation: data.additionalInformation,
       }
 
-      let orderInfo = {
+      const baseOrderInfo = {
         user_info: userDetails,
         shippingOption: data.shippingOption,
-        paymentMethod: pagamentoNaEntrega ? "Pagamento na Entrega" : "Online", // Indicate "Pagamento na Entrega" as payment method
-        paymentDetails: pagamentoNaEntrega ? { method: formaDePagamento, changeFor: trocoPara } : {}, // Include payment details
-        status: "Pending",
+        status: "Pendente",
         cart: items,
         subTotal: cartTotal,
         shippingCost: shippingCost,
+        additionalInformation: userDetails.additionalInformation,
         discount: discountAmount,
-        agendamento: scheduledDelivery,
-        total: total,
-      }
-
-      const orderDelivery = {
-        "amount": totalPrice,
-        "customerTrns": "Total: ",
-        "customer": {
-          "email": userDetails.email,
-          "fullName": userDetails.name,
-          "phone": userDetails.contact,
-          "requestLang": "pt",
-        },
-        "dynamicDescriptor": `${productName}`,
-        "paymentTimeout": 65535,
-        "preauth": false,
-        "allowRecurring": false,
-        "maxInstallments": 12,
-        "merchantTrns": `${productName}`,
-        "paymentNotification": true,
-        "tipAmount": 0,
-        "disableExactAmount": false,
-        "disableCash": false,
-        "disableWallet": true,
-        "sourceCode": "Default",
-        "status": "Pendente",
-        "cart": orderInfo,
-        "pagamentoNaEntrega": pagamentoNaEntrega,
-        "paymentMethodDetails": pagamentoNaEntrega ? { method: formaDePagamento?.method, changeFor: formaDePagamento?.troco } : {},
-        "localizacao": {
-          "latitude": coordenadas.latitude,
-          "longitude": coordenadas.longitude,
-        },
-        "agendamento": scheduledDelivery ? {
+        agendamento: scheduledDelivery ? {
           data: scheduledDelivery.date,
           horario: scheduledDelivery.time
-        } : null
-      }
-
-      const orderVivaPaymentData = {
-        "amount": totalPrice,
-        "customerTrns": "Total: ",
-        "customer": {
-          "email": userDetails.email,
-          "fullName": userDetails.name,
-          "phone": userDetails.contact,
-          "requestLang": "pt",
-        },
-        "dynamicDescriptor": `${productName}`,
-        "paymentTimeout": 65535,
-        "preauth": false,
-        "allowRecurring": false,
-        "maxInstallments": 12,
-        "merchantTrns": `${productName}`,
-        "paymentNotification": true,
-        "tipAmount": 0,
-        "disableExactAmount": false,
-        "disableCash": false,
-        "disableWallet": false,
-        "sourceCode": "Default",
-        "cart": orderInfo,
-        "pagamentoNaEntrega": pagamentoNaEntrega,
-        "paymentMethodDetails": pagamentoNaEntrega ? { method: formaDePagamento?.method, changeFor: formaDePagamento?.troco } : {},
-        "localizacao": {
-          "latitude": coordenadas.latitude,
-          "longitude": coordenadas.longitude,
-        },
-        "agendamento": scheduledDelivery ? {
-          "data": scheduledDelivery.date,
-          "horario": scheduledDelivery.time
-        } : null
+        } : null,
+        total: total,
+        localizacao: {
+          latitude: coordenadas.latitude,
+          longitude: coordenadas.longitude,
+        }
       }
 
       if (pagamentoNaEntrega) {
+        const orderDelivery = {
+          ...baseOrderInfo,
+          amount: totalPrice,
+          customerTrns: "Total: ",
+          customer: {
+            email: userDetails.email,
+            fullName: userDetails.name,
+            phone: userDetails.contact,
+            requestLang: "pt",
+          },
+          dynamicDescriptor: `${productName}`,
+          paymentMethod: "Pagamento na Entrega",
+          paymentMethodDetails: {
+            method: formaDePagamento.method,
+            changeFor: formaDePagamento.troco
+          },
+          paymentTimeout: 65535,
+          preauth: false,
+          allowRecurring: false,
+          maxInstallments: 12,
+          merchantTrns: `${productName}`,
+          paymentNotification: true,
+          tipAmount: 0,
+          disableExactAmount: false,
+          disableCash: false,
+          disableWallet: true,
+          sourceCode: "Default",
+          additionalInformation: userDetails.additionalInformation,
+        }
+
         const response = await axios.post(deliveryUrl, orderDelivery)
         if (response.status === 200) {
           notifySuccess("Pedido confirmado com sucesso!")
           emptyCart()
           router.push("/delivery")
         } else {
-          notifyError("Erro ao salvar o pedido.")
+          throw new Error("Erro ao salvar o pedido.")
         }
       } else {
-        await useVivaPayment(orderVivaPaymentData, orderInfo)
+        const orderVivaPaymentData = {
+          ...baseOrderInfo,
+          amount: totalPrice,
+          customerTrns: "Total: ",
+          customer: {
+            email: userDetails.email,
+            fullName: userDetails.name,
+            phone: userDetails.contact,
+            requestLang: "pt",
+          },
+          dynamicDescriptor: `${productName}`,
+          paymentMethod: "Online",
+          paymentTimeout: 65535,
+          preauth: false,
+          allowRecurring: false,
+          maxInstallments: 12,
+          merchantTrns: `${productName}`,
+          paymentNotification: true,
+          tipAmount: 0,
+          disableExactAmount: false,
+          disableCash: false,
+          disableWallet: false,
+          sourceCode: "Default"
+        }
+
+        await useVivaPayment(orderVivaPaymentData)
       }
 
+      // Save shipping address
       await CustomerServices.addShippingAddress({
         userId: userInfo?.id,
         shippingAddressData: {
@@ -231,16 +226,16 @@ const useCheckoutSubmit = (storeSetting) => {
           address: data.address,
           country: data.country,
           city: data.city,
-          // area: data.area,
           zipCode: data.zipCode,
         },
       })
 
     } catch (err) {
-      notifyError(err ? err?.response?.data?.message : err?.message)
+      notifyError(err?.response?.data?.message || err?.message)
       setIsCheckoutSubmit(false)
     }
   }
+
 
   const handleShippingCost = (value) => {
     // console.log("handleShippingCost", value)
@@ -358,7 +353,8 @@ const useCheckoutSubmit = (storeSetting) => {
     scheduledDelivery,
     setScheduledDelivery,
     setSelectedOption,
-    selectedOption
+    selectedOption,
+    formaDePagamento
   }
 }
 
