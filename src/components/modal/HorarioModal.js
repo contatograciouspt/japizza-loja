@@ -20,10 +20,11 @@ const HorarioModal = ({ isOpen, onClose }) => {
         return "17:00 - 22:00"
     }
 
-    const now = new Date()
-    const diaSemanaAtual = now.getDay()
-    const horaAtual = now.getHours()
-    const minutosAtual = now.getMinutes()
+    const now = new Date().toLocaleString("pt-PT", { timeZone: "Europe/Lisbon" })
+    const portugaltime = new Date(now)
+    const diaSemanaAtual = portugaltime.getDay()
+    const horaAtual = portugaltime.getHours()
+    const minutosAtual = portugaltime.getMinutes()
     const tempoAtualEmMinutos = horaAtual * 60 + minutosAtual
 
     const getHorarioAbertura = (dia) => {

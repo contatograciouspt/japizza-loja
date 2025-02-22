@@ -35,6 +35,8 @@ const useCheckoutSubmit = (storeSetting) => {
   const [coordenadas, setCoordenadas] = useState("")
   const [formaDePagamento, setFormaDePagamento] = useState(null) // New state for payment method
   const [trocoPara, setTrocoPara] = useState("") // New state for cash change
+  const [scheduledDelivery, setScheduledDelivery] = useState(null)
+  const [selectedOption, setSelectedOption] = useState(null)
 
   const couponRef = useRef("")
   const { isEmpty, items, cartTotal, emptyCart } = useCart()
@@ -47,6 +49,7 @@ const useCheckoutSubmit = (storeSetting) => {
   const userInfo = getUserSession()
 
   const { data, loading } = useAsync(() => CustomerServices.getShippingAddress({ userId: userInfo?.id }))
+  // const { data, loading } = useAsync(() => CustomerServices.getShippingAddress({ userId: userInfo?.id }), ['shippingAddress', userInfo?.id])
 
   const hasShippingAddress = !loading && data?.shippingAddress && Object.keys(data?.shippingAddress)?.length > 0
 
@@ -55,7 +58,7 @@ const useCheckoutSubmit = (storeSetting) => {
   useEffect(() => {
     if (Cookies.get("couponInfo")) {
       const coupon = JSON.parse(Cookies.get("couponInfo"))
-      // console.log('coupon information',coupon)
+      // console.log("coupon information",coupon)
       setCouponInfo(coupon)
       setDiscountPercentage(coupon.discountType)
       setMinimumAmount(coupon.minimumAmount)
@@ -97,6 +100,16 @@ const useCheckoutSubmit = (storeSetting) => {
 
   const submitHandler = async (data) => {
 
+    // if (!selectedOption || !shippingCost) {
+    //   notifyError("Selecione um método de entrega e região de envio")
+    //   return
+    // }
+
+    if (pagamentoNaEntrega && !formaDePagamento) {
+      notifyError("Selecione uma forma de pagamento")
+      return
+    }
+
     try {
       setIsCheckoutSubmit(true)
       setError("")
@@ -116,13 +129,14 @@ const useCheckoutSubmit = (storeSetting) => {
       let orderInfo = {
         user_info: userDetails,
         shippingOption: data.shippingOption,
-        paymentMethod: pagamentoNaEntrega ? 'Pagamento na Entrega' : 'Online', // Indicate "Pagamento na Entrega" as payment method
+        paymentMethod: pagamentoNaEntrega ? "Pagamento na Entrega" : "Online", // Indicate "Pagamento na Entrega" as payment method
         paymentDetails: pagamentoNaEntrega ? { method: formaDePagamento, changeFor: trocoPara } : {}, // Include payment details
         status: "Pending",
         cart: items,
         subTotal: cartTotal,
         shippingCost: shippingCost,
         discount: discountAmount,
+        agendamento: scheduledDelivery,
         total: total,
       }
 
@@ -140,16 +154,25 @@ const useCheckoutSubmit = (storeSetting) => {
         "preauth": false,
         "allowRecurring": false,
         "maxInstallments": 12,
-        "merchantTrns": `${coordenadas}`,
+        "merchantTrns": `${productName}`,
         "paymentNotification": true,
         "tipAmount": 0,
         "disableExactAmount": false,
         "disableCash": false,
         "disableWallet": true,
         "sourceCode": "Default",
+        "status": "Pendente",
         "cart": orderInfo,
         "pagamentoNaEntrega": pagamentoNaEntrega,
         "paymentMethodDetails": pagamentoNaEntrega ? { method: formaDePagamento?.method, changeFor: formaDePagamento?.troco } : {},
+        "localizacao": {
+          "latitude": coordenadas.latitude,
+          "longitude": coordenadas.longitude,
+        },
+        "agendamento": scheduledDelivery ? {
+          data: scheduledDelivery.date,
+          horario: scheduledDelivery.time
+        } : null
       }
 
       const orderVivaPaymentData = {
@@ -166,7 +189,7 @@ const useCheckoutSubmit = (storeSetting) => {
         "preauth": false,
         "allowRecurring": false,
         "maxInstallments": 12,
-        "merchantTrns": `${coordenadas}`,
+        "merchantTrns": `${productName}`,
         "paymentNotification": true,
         "tipAmount": 0,
         "disableExactAmount": false,
@@ -174,17 +197,26 @@ const useCheckoutSubmit = (storeSetting) => {
         "disableWallet": false,
         "sourceCode": "Default",
         "cart": orderInfo,
-        "pagamentoNaEntrega": pagamentoNaEntrega
+        "pagamentoNaEntrega": pagamentoNaEntrega,
+        "paymentMethodDetails": pagamentoNaEntrega ? { method: formaDePagamento?.method, changeFor: formaDePagamento?.troco } : {},
+        "localizacao": {
+          "latitude": coordenadas.latitude,
+          "longitude": coordenadas.longitude,
+        },
+        "agendamento": scheduledDelivery ? {
+          "data": scheduledDelivery.date,
+          "horario": scheduledDelivery.time
+        } : null
       }
 
       if (pagamentoNaEntrega) {
         const response = await axios.post(deliveryUrl, orderDelivery)
         if (response.status === 200) {
-          notifySuccess('Pedido confirmado com sucesso!')
+          notifySuccess("Pedido confirmado com sucesso!")
           emptyCart()
-          router.push('/delivery')
+          router.push("/delivery")
         } else {
-          notifyError('Erro ao salvar o pedido.')
+          notifyError("Erro ao salvar o pedido.")
         }
       } else {
         await useVivaPayment(orderVivaPaymentData, orderInfo)
@@ -319,10 +351,14 @@ const useCheckoutSubmit = (storeSetting) => {
     pagamentoNaEntrega,
     setPagamentoNaEntrega,
     handleDefaultShippingAddress,
-    formaDePagamento, // Expose formaDePagamento state
-    setFormaDePagamento, // Expose setFormaDePagamento function
+    formaDePagamento,
+    setFormaDePagamento,
     trocoPara,
     setTrocoPara,
+    scheduledDelivery,
+    setScheduledDelivery,
+    setSelectedOption,
+    selectedOption
   }
 }
 

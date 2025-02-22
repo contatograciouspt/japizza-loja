@@ -78,11 +78,12 @@ const NavbarPromo = () => {
     setIsHorarioModalOpen(false)
   }
 
-  const now = new Date();
-  const diaSemanaAtual = now.getDay();
-  const tempoAtualEmMinutos = now.getHours() * 60 + now.getMinutes();
-  const horarioAbertura = diaSemanaAtual === 0 || diaSemanaAtual === 2 || diaSemanaAtual === 3 ? 17 * 60 + 30 : 17 * 60;
-  const horarioFechamento = 22 * 60;
+  const now = new Date().toLocaleString("en-US", { timeZone: "Europe/Lisbon" })
+  const portugalTime = new Date(now)
+  const diaSemanaAtual = portugalTime.getDay()
+  const tempoAtualEmMinutos = portugalTime.getHours() * 60 + portugalTime.getMinutes()
+  const horarioAbertura = diaSemanaAtual === 0 || diaSemanaAtual === 2 || diaSemanaAtual === 3 ? 17 * 60 + 30 : 17 * 60
+  const horarioFechamento = 22 * 60
 
   const isDentroHorario = tempoAtualEmMinutos >= horarioAbertura && tempoAtualEmMinutos < horarioFechamento;
   const isDiaAberto = diaSemanaAtual >= 2 && diaSemanaAtual <= 6 && isDentroHorario;
@@ -337,7 +338,7 @@ const NavbarPromo = () => {
                       <button
                         type="button"
                         onClick={handleOpenHorarioModal} // Make sure this is correctly connected
-                        className="relative inline-flex items-center bg-red-100 font-serif ml-2 py-0 px-2 rounded text-sm font-medium text-red-500 hover:text-customRed focus:outline-none"
+                        className={`relative inline-flex items-center ${isDiaAberto ? 'bg-green-100' : 'bg-red-100'} font-serif ml-2 py-0 px-2 rounded text-sm font-medium text-${isDiaAberto ? 'green-500' : 'red-500'} hover:text-customRed focus:outline-none`}
                       >
                         <span className={`relative flex h-2 w-2 mr-1`}>
                           <span className={`animate-ping absolute inline-flex -top-2.5 -right-16 h-full w-full rounded-full ${isDiaAberto ? 'bg-green-500' : 'bg-red-500'} opacity-75`}></span>

@@ -14,7 +14,7 @@ const PaymentMethodModal = ({ isOpen, onClose, onPaymentMethodSelect }) => {
 
     const handleConfirmPayment = () => {
         if (selectedPayment) {
-            onPaymentMethodSelect({ method: selectedPayment, troco: selectedPayment === 'cash' ? troco : null })
+            onPaymentMethodSelect({ method: selectedPayment, troco: selectedPayment === 'dinheiro' ? troco : null })
             onClose()
         } else {
             alert("Por favor, selecione uma forma de pagamento.")
@@ -32,7 +32,7 @@ const PaymentMethodModal = ({ isOpen, onClose, onPaymentMethodSelect }) => {
                 <div className="px-4 pb-4 pt-2">
                     <ul className="grid grid-cols-2 gap-4">
                         <li>
-                            <label className={`flex p-4 border rounded-md cursor-pointer transition-all duration-200 ${selectedPayment === 'cash'
+                            <label className={`flex p-4 border rounded-md cursor-pointer transition-all duration-200 ${selectedPayment === 'dinheiro'
                                     ? 'border-customRed bg-red-50 shadow-md'
                                     : 'border-gray-200 bg-white hover:bg-gray-50'
                                 }`}>
@@ -40,20 +40,20 @@ const PaymentMethodModal = ({ isOpen, onClose, onPaymentMethodSelect }) => {
                                     type="radio"
                                     className="form-radio hidden"
                                     name="paymentMethod"
-                                    value="cash"
-                                    checked={selectedPayment === 'cash'}
-                                    onChange={() => handlePaymentSelect('cash')}
+                                    value="dinheiro"
+                                    checked={selectedPayment === 'dinheiro'}
+                                    onChange={() => handlePaymentSelect('dinheiro')}
                                 />
                                 <span className="flex items-center w-full">
-                                    <span className={`text-2xl mr-2 ${selectedPayment === 'cash' ? 'text-customRed' : 'text-gray-400'}`}>
+                                    <span className={`text-2xl mr-2 ${selectedPayment === 'dinheiro' ? 'text-customRed' : 'text-gray-400'}`}>
                                         <FaMoneyBill />
                                     </span>
-                                    <span className={selectedPayment === 'cash' ? 'font-medium text-customRed' : ''}>Dinheiro</span>
+                                    <span className={selectedPayment === 'dinheiro' ? 'font-medium text-customRed' : ''}>Dinheiro</span>
                                 </span>
                             </label>
                         </li>
                         <li>
-                            <label className={`flex p-4 border rounded-md cursor-pointer transition-all duration-200 ${selectedPayment === 'card'
+                            <label className={`flex p-4 border rounded-md cursor-pointer transition-all duration-200 ${selectedPayment === 'cartao'
                                     ? 'border-customRed bg-red-50 shadow-md'
                                     : 'border-gray-200 bg-white hover:bg-gray-50'
                                 }`}>
@@ -61,20 +61,20 @@ const PaymentMethodModal = ({ isOpen, onClose, onPaymentMethodSelect }) => {
                                     type="radio"
                                     className="form-radio hidden"
                                     name="paymentMethod"
-                                    value="card"
-                                    checked={selectedPayment === 'card'}
-                                    onChange={() => handlePaymentSelect('card')}
+                                    value="cartao"
+                                    checked={selectedPayment === 'cartao'}
+                                    onChange={() => handlePaymentSelect('cartao')}
                                 />
                                 <span className="flex items-center w-full">
-                                    <span className={`text-2xl mr-2 ${selectedPayment === 'card' ? 'text-customRed' : 'text-gray-400'}`}>
+                                    <span className={`text-2xl mr-2 ${selectedPayment === 'cartao' ? 'text-customRed' : 'text-gray-400'}`}>
                                         <FaCreditCard />
                                     </span>
-                                    <span className={selectedPayment === 'card' ? 'font-medium text-customRed' : ''}>Cartão</span>
+                                    <span className={selectedPayment === 'cartao' ? 'font-medium text-customRed' : ''}>Cartão</span>
                                 </span>
                             </label>
                         </li>
                     </ul>
-                    {selectedPayment === 'cash' && (
+                    {selectedPayment === 'dinheiro' && (
                         <div className="mt-4">
                             <label htmlFor="troco" className="block text-sm font-medium text-gray-700">Precisa de troco?</label>
                             <div className="mt-1">
@@ -83,7 +83,7 @@ const PaymentMethodModal = ({ isOpen, onClose, onPaymentMethodSelect }) => {
                                     name="troco"
                                     id="troco"
                                     className="shadow-sm focus:ring-customRed focus:border-customRed block w-full sm:text-sm border-gray-300 rounded-md"
-                                    placeholder="Valor do troco (opcional)"
+                                    placeholder="Valor do troco"
                                     value={troco}
                                     onChange={(e) => setTroco(e.target.value)}
                                 />

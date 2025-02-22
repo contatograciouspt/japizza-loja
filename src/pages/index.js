@@ -39,13 +39,14 @@ const Home = ({ popularProducts, discountProducts, attributes }) => {
   // Verificar se o dia da semana é segunda e exibir o modal de loja fechada
   useEffect(() => {
     const verificarHorarioFuncionamento = () => {
-      const now = new Date();
-      const diaSemanaAtual = now.getDay();
-      const tempoAtualEmMinutos = now.getHours() * 60 + now.getMinutes();
+      const now = new Date().toLocaleString("pt-PT", { timeZone: "Europe/Lisbon" })
+      const portugalTime = new Date(now)
+      const diaSemanaAtual = portugalTime.getDay()
+      const tempoAtualEmMinutos = portugalTime.getHours() * 60 + portugalTime.getMinutes()
 
       const horarioAbertura = diaSemanaAtual === 0 || diaSemanaAtual === 2 || diaSemanaAtual === 3
         ? 17 * 60 + 30 // 17:30
-        : 17 * 60;     // 17:00
+        : 17 * 60      // 17:00
 
       const horarioFechamento = 22 * 60; // 22:00
       const isDentroHorario = tempoAtualEmMinutos >= horarioAbertura && tempoAtualEmMinutos < horarioFechamento;

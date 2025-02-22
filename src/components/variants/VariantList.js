@@ -1,4 +1,5 @@
-import useUtilsFunction from "@hooks/useUtilsFunction";
+import React, { useState } from "react"
+import useUtilsFunction from "@hooks/useUtilsFunction"
 
 const VariantList = ({
   att,
@@ -9,32 +10,38 @@ const VariantList = ({
   selectVariant,
   setSelectVariant,
   setSelectVa,
+  onChangeMultiSelect
 }) => {
-  const { showingTranslateValue } = useUtilsFunction();
+  const { showingTranslateValue } = useUtilsFunction()
+  const [selectedCheckboxes, setSelectedCheckboxes] = useState([])
 
   const handleChangeVariant = (v) => {
-    setValue(v);
-    setSelectVariant({
-      ...selectVariant,
-      [att]: v,
-    });
-    setSelectVa({ [att]: v });
-  };
-  // console.log("option", );
+    if (option === "Checkbox") {
+      const updatedSelection = selectedCheckboxes.includes(v)
+        ? selectedCheckboxes.filter(item => item !== v)
+        : [...selectedCheckboxes, v]
+
+      setSelectedCheckboxes(updatedSelection)
+      onChangeMultiSelect(updatedSelection, att)
+    } else {
+      setValue(v)
+      setSelectVariant(prev => ({
+        ...prev,
+        [att]: v
+      }))
+      setSelectVa({ [att]: v })
+    }
+  }
 
   return (
     <>
-      {option === "Dropdown" ? (
+      {option === "Dropdown" && (
         <select
           onChange={(e) => handleChangeVariant(e.target.value)}
           className="focus:shadow-none w-1/2 px-2 py-1 form-select outline-none h-10 text-sm focus:outline-none block rounded-md bg-gray-100 border-transparent focus:bg-white border-emerald-600 focus:border-emerald-400 focus:ring focus:ring-emerald-200"
           name="parent"
         >
-          {[
-            ...new Map(
-              variants.map((v) => [v[att], v].filter(Boolean))
-            ).values(),
-          ]
+          {[...new Map(variants.map((v) => [v[att], v].filter(Boolean))).values()]
             .filter(Boolean)
             .map(
               (vl, i) =>
@@ -53,16 +60,10 @@ const VariantList = ({
                           {showingTranslateValue(el.name)}
                         </option>
                       )
-                    // console.log('el', el._id === v[att] && el.name)
                   )
                 )
             )}
-
-          {[
-            ...new Map(
-              variants.map((v) => [v[att], v].filter(Boolean))
-            ).values(),
-          ]
+          {[...new Map(variants.map((v) => [v[att], v].filter(Boolean))).values()]
             .filter(Boolean)
             .map((vl, i) =>
               varTitle.map((vr) =>
@@ -78,13 +79,10 @@ const VariantList = ({
               )
             )}
         </select>
-      ) : (
-        <div className="grid lg:grid-cols-3 grid-cols-2">
-          {[
-            ...new Map(
-              variants?.map((v) => [v[att], v].filter(Boolean))
-            ).values(),
-          ]
+      )}
+      {option === "Checkbox" && (
+        <div className="grid lg:grid-cols-3 grid-cols-2 gap-2">
+          {[...new Map(variants?.map((v) => [v[att], v].filter(Boolean))).values()]
             .filter(Boolean)
             .map((vl, i) =>
               varTitle.map((vr) =>
@@ -92,16 +90,57 @@ const VariantList = ({
                   (el) =>
                     vr?._id === att &&
                     el?._id === vl[att] && (
-                      <button
-                        onClick={(e) => handleChangeVariant(vl[att])}
+                      <label
                         key={i + 1}
-                        className={`${Object?.values(selectVariant).includes(vl[att])
-                            ? "bg-emerald-500 text-white mr-2 border-0 rounded-full inline-flex items-center justify-center px-3 py-1 text-xs font-serif mt-2 focus:outline-none"
-                            : "bg-gray-100 mr-2 border-0 text-gray-600 rounded-full inline-flex items-center justify-center px-3 py-1 text-xs font-serif mt-2 focus:outline-none"
-                          }`}
+                        className="flex items-center space-x-2 cursor-pointer p-2 rounded hover:bg-gray-50"
                       >
-                        {showingTranslateValue(el.name)}
-                      </button>
+                        <input
+                          type="checkbox"
+                          checked={selectedCheckboxes.includes(vl[att])}
+                          onChange={() => handleChangeVariant(vl[att])}
+                          className="form-checkbox h-4 w-4 text-emerald-500"
+                        />
+                        <span className={`text-sm ${selectedCheckboxes.includes(vl[att])
+                          ? "text-emerald-500 font-medium"
+                          : "text-gray-600"
+                          }`}>
+                          {showingTranslateValue(el.name)}
+                        </span>
+                      </label>
+                    )
+                )
+              )
+            )}
+        </div>
+      )}
+      {option === "Radio" && (
+        <div className="flex flex-wrap">
+          {[...new Map(variants?.map((v) => [v[att], v].filter(Boolean))).values()]
+            .filter(Boolean)
+            .map((vl, i) =>
+              varTitle.map((vr) =>
+                vr?.variants?.map(
+                  (el) =>
+                    vr?._id === att &&
+                    el?._id === vl[att] && (
+                      <label
+                        key={i + 1}
+                        className="mr-4 mb-2"
+                      >
+                        <input
+                          type="radio"
+                          name={att}
+                          checked={Object.values(selectVariant).includes(vl[att])}
+                          onChange={() => handleChangeVariant(vl[att])}
+                          className="hidden"
+                        />
+                        <span className={`px-4 py-2 rounded-full cursor-pointer inline-block ${Object.values(selectVariant).includes(vl[att])
+                          ? "bg-emerald-500 text-white"
+                          : "bg-gray-100 text-gray-600"
+                          }`}>
+                          {showingTranslateValue(el.name)}
+                        </span>
+                      </label>
                     )
                 )
               )
@@ -109,7 +148,7 @@ const VariantList = ({
         </div>
       )}
     </>
-  );
-};
+  )
+}
 
-export default VariantList;
+export default VariantList

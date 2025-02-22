@@ -3,9 +3,9 @@ import React from "react"
 import dynamic from "next/dynamic"
 import Link from "next/link"
 import { useQueryClient } from "@tanstack/react-query"
-import { FaHome, FaMoneyBill, FaCreditCard } from "react-icons/fa"
+import { FaHome } from "react-icons/fa"
 import useTranslation from "next-translate/useTranslation"
-import { IoReturnUpBackOutline, IoArrowForward, IoBagHandle, IoMapSharp } from "react-icons/io5"
+import { IoReturnUpBackOutline, IoArrowForward, IoBagHandle, IoMapSharp, IoCalendarOutline } from "react-icons/io5"
 
 //internal import
 import Layout from "@layout/Layout"
@@ -21,7 +21,8 @@ import SettingServices from "@services/SettingServices"
 import SwitchToggle from "@components/form/SwitchToggle"
 import InputDelivery from "@components/form/InputDelivery"
 import MapCheckoutModal from "@components/modal/MapCheckoutModal"
-import PaymentMethodModal from "@components/modal/PaymentMethodModal" // Import PaymentMethodModal
+import PaymentMethodModal from "@components/modal/PaymentMethodModal"
+import AgendamentoModal from "@components/modal/AgendamentoModal"
 
 const Checkout = () => {
   const { t } = useTranslation()
@@ -32,42 +33,62 @@ const Checkout = () => {
   const [address, setAddress] = React.useState({
     street: "", city: "", country: "", zipCode: "", additionalInformation: "", nif: "", email: "",
   })
-  const [selectedOption, setSelectedOption] = React.useState(null)
   const [isMapModalOpen, setIsMapModalOpen] = React.useState(false)
   const [selectedMapShippingCost, setSelectedMapShippingCost] = React.useState(0)
   const [freteCoordenadas, setFreteCoordenadas] = React.useState("")
-  const [isPickupActive, setIsPickupActive] = React.useState(false) // State for "Retirada na Loja?" switch
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = React.useState(false) // State for PaymentMethodModal
-
+  const [isPickupActive, setIsPickupActive] = React.useState(false)
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = React.useState(false)
+  const [isAgendamentoModalOpen, setIsAgendamentoModalOpen] = React.useState(false)
   const [textoBotao, setTextoBotao] = React.useState("Confirmar Pedido")
+
+  const checkStoreStatus = () => {
+    const now = new Date().toLocaleString("pt-PT", { timeZone: "Europe/Lisbon" })
+    const portugalTime = new Date(now)
+    const diaSemanaAtual = portugalTime.getDay()
+    const tempoAtualEmMinutos = portugalTime.getHours() * 60 + portugalTime.getMinutes()
+
+    const horarioAbertura = diaSemanaAtual === 0 || diaSemanaAtual === 2 || diaSemanaAtual === 3
+      ? 17 * 60 + 30  // 17:30
+      : 17 * 60       // 17:00
+
+    const horarioFechamento = 22 * 60 // 22:00
+    const isDentroHorario = tempoAtualEmMinutos >= horarioAbertura && tempoAtualEmMinutos < horarioFechamento
+    const isDiaAberto = diaSemanaAtual >= 2 && diaSemanaAtual <= 6 && isDentroHorario
+
+    return {
+      isOpen: isDiaAberto,
+      isClosed: !isDiaAberto,
+      isClosedDay: diaSemanaAtual === 1
+    }
+  }
 
   React.useEffect(() => {
     const verificarHorarioFuncionamento = () => {
-      const now = new Date();
-      const diaSemanaAtual = now.getDay();
-      const tempoAtualEmMinutos = now.getHours() * 60 + now.getMinutes();
+      const now = new Date().toLocaleString("pt-PT", { timeZone: "Europe/Lisbon" })
+      const portugalTime = new Date(now)
+      const diaSemanaAtual = portugalTime.getDay()
+      const tempoAtualEmMinutos = portugalTime.getHours() * 60 + portugalTime.getMinutes()
 
       const horarioAbertura = diaSemanaAtual === 0 || diaSemanaAtual === 2 || diaSemanaAtual === 3
         ? 17 * 60 + 30  // 17:30
-        : 17 * 60;      // 17:00
+        : 17 * 60      // 17:00
 
-      const horarioFechamento = 22 * 60; // 22:00
-      const isDentroHorario = tempoAtualEmMinutos >= horarioAbertura && tempoAtualEmMinutos < horarioFechamento;
-      const isDiaAberto = diaSemanaAtual >= 2 && diaSemanaAtual <= 6 && isDentroHorario;
+      const horarioFechamento = 22 * 60 // 22:00
+      const isDentroHorario = tempoAtualEmMinutos >= horarioAbertura && tempoAtualEmMinutos < horarioFechamento
+      const isDiaAberto = diaSemanaAtual >= 2 && diaSemanaAtual <= 6 && isDentroHorario
 
-      // Set button text based on store hours and day
       if (diaSemanaAtual === 1 || !isDiaAberto) {
-        setTextoBotao("Agendar Pedido");
+        setTextoBotao("Agendar Pedido")
       } else {
-        setTextoBotao("Confirmar Pedido");
+        setTextoBotao("Confirmar Pedido")
       }
-    };
+    }
 
-    verificarHorarioFuncionamento();
-    const interval = setInterval(verificarHorarioFuncionamento, 60000);
+    verificarHorarioFuncionamento()
+    const interval = setInterval(verificarHorarioFuncionamento, 60000)
 
-    return () => clearInterval(interval);
-  }, []);
+    return () => clearInterval(interval)
+  }, [])
 
   const {
     couponInfo,
@@ -94,15 +115,17 @@ const Checkout = () => {
     pagamentoNaEntrega,
     setPagamentoNaEntrega,
     handleDefaultShippingAddress,
-    setFormaDePagamento, // Function to set formaDePagamento
+    setFormaDePagamento,
+    setScheduledDelivery,
+    setSelectedOption,
+    selectedOption
   } = useCheckoutSubmit()
 
   const queryClient = useQueryClient()
 
-
   React.useEffect(() => {
     queryClient.prefetchQuery(
-      ["storeSetting"],
+      ["storeSetting"], // Changed from "storeSetting" to ["storeSetting"]
       async () => await SettingServices.getStoreSetting(),
       { staleTime: 4 * 60 * 1000 }
     )
@@ -157,14 +180,13 @@ const Checkout = () => {
 
           const data = await response.json()
 
-          const novoEndereco = {
+          setAddress(prevAddress => ({
+            ...prevAddress,
             street: data.address?.road || "",
             city: data.address?.city || "",
             country: data.address?.country || "",
             zipCode: data.address?.postcode || "",
-          }
-
-          setAddress(novoEndereco)
+          }))
 
         } catch (error) {
           console.error("Erro detalhado:", error)
@@ -188,12 +210,15 @@ const Checkout = () => {
 
   const handleOptionChange = (option) => {
     setSelectedOption(option)
-    if (option === 'delivery') {
-      setPagamentoNaEntrega(true) //open payment method modal when "Pagamento na Entrega" is selected
-      handleOpenPaymentModal()
+    if (option === 'Delivery') {
+      setPagamentoNaEntrega(false)
+      // Only update shipping cost, don't trigger form submission
+      handleShippingCost(selectedMapShippingCost)
     }
-    if (option === 'shipping') {
-      setPagamentoNaEntrega(false) // if delivery with shipping cost is selected, Payment on Delivery is false.
+    if (option === 'delivery') {
+      setPagamentoNaEntrega(true)
+      handleOpenPaymentModal()
+      handleShippingCost(selectedMapShippingCost)
     }
   }
 
@@ -208,15 +233,13 @@ const Checkout = () => {
   }
 
   React.useEffect(() => {
-    if (selectedOption === 'Delivery') {
+    if (selectedOption === 'Delivery' || selectedOption === 'delivery') {
+      // Mantém o valor do frete selecionado para ambas as opções
       handleShippingCost(selectedMapShippingCost)
-    } else if (selectedOption === 'delivery') {
-      handleShippingCost(0)
     } else if (isPickupActive) {
-      handleShippingCost(0) // Ensure shipping is 0 if pickup is active on initial render/updates
+      handleShippingCost(0)
     }
   }, [selectedOption, selectedMapShippingCost, handleShippingCost, isPickupActive])
-
 
   return (
     <>
@@ -435,7 +458,7 @@ const Checkout = () => {
                       )}
                     />
                   </div>
-                  <div className="grid grid-cols-6 gap-6">
+                  <div className="grid gap-6">
                     <div className="col-span-6 sm:col-span-3">
                       {/* entrega com Frete */}
                       <InputShipping
@@ -464,6 +487,18 @@ const Checkout = () => {
                       />
                       <Error errorName={errors.shippingOption} />
                     </div>
+                    {checkStoreStatus().isClosed && (
+                      <div className="col-span-6 sm:col-span-3">
+                        <button
+                          type="button"
+                          onClick={() => setIsAgendamentoModalOpen(true)}
+                          className="bg-customRed hover:bg-red-400 border transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
+                        >
+                          <IoCalendarOutline className="mr-2 text-xl" />
+                          Agendar Pedido
+                        </button>
+                      </div>
+                    )}
                   </div>
                   {/* Map Region Modal Component */}
                   <MapCheckoutModal
@@ -477,6 +512,15 @@ const Checkout = () => {
                     onClose={handleClosePaymentModal}
                     onPaymentMethodSelect={handlePaymentMethodSelect}
                   />
+                  {/* Agendamento Modal Component */}
+                  <AgendamentoModal
+                    isOpen={isAgendamentoModalOpen}
+                    onClose={() => setIsAgendamentoModalOpen(false)}
+                    onScheduleSelect={(schedule) => {
+                      setScheduledDelivery(schedule)
+                      setIsAgendamentoModalOpen(false)
+                    }}
+                  />
                   <div className="grid grid-cols-6 gap-4 lg:gap-6 mt-10">
                     <div className="col-span-6 sm:col-span-3">
                       <Link
@@ -486,9 +530,7 @@ const Checkout = () => {
                         <span className="text-xl mr-2">
                           <IoReturnUpBackOutline />
                         </span>
-                        {showingTranslateValue(
-                          storeCustomizationSetting?.checkout?.continue_button
-                        )}
+                        {showingTranslateValue(storeCustomizationSetting?.checkout?.continue_button)}
                       </Link>
                     </div>
                     <div className="col-span-6 sm:col-span-3">
@@ -499,28 +541,13 @@ const Checkout = () => {
                       >
                         {isCheckoutSubmit ? (
                           <span className="flex justify-center text-center">
-                            {" "}
-                            <img
-                              src="/loader/spinner.gif"
-                              alt="Loading"
-                              width={20}
-                              height={10}
-                            />{" "}
-                            <span className="ml-2">
-                              {t("common:processing")}
-                            </span>
+                            <img src="/loader/spinner.gif" alt="Loading" width={20} height={10} />
+                            <span className="ml-2">{t("common:processing")}</span>
                           </span>
                         ) : (
                           <span className="flex justify-center text-center">
-                            {/* {showingTranslateValue(
-                              storeCustomizationSetting?.checkout
-                                ?.confirm_button
-                            )} */}
-                            {textoBotao}
-                            <span className="text-xl ml-2">
-                              {" "}
-                              <IoArrowForward />
-                            </span>
+                            Confirmar Pedido
+                            <span className="text-xl ml-2"><IoArrowForward /></span>
                           </span>
                         )}
                       </button>
@@ -581,7 +608,7 @@ const Checkout = () => {
                               width={20}
                               height={10}
                             />
-                            <span className=" ml-2 font-light">Processing</span>
+                            <span className=" ml-2 font-light">Processando</span>
                           </button>
                         ) : (
                           <button

@@ -1,131 +1,128 @@
-import useTranslation from "next-translate/useTranslation";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
-import { FiMinus, FiPlus } from "react-icons/fi";
+import useTranslation from "next-translate/useTranslation"
+import Image from "next/image"
+import Link from "next/link"
+import { useRouter } from "next/router"
+import { useContext, useEffect, useState } from "react"
+import { FiMinus, FiPlus } from "react-icons/fi"
 
-import Price from "@components/common/Price";
-import Stock from "@components/common/Stock";
-import Tags from "@components/common/Tags";
-import { notifyError } from "@utils/toast";
-import useAddToCart from "@hooks/useAddToCart";
-import MainModal from "@components/modal/MainModal";
-import Discount from "@components/common/Discount";
-import VariantList from "@components/variants/VariantList";
-import { SidebarContext } from "@context/SidebarContext";
-import useUtilsFunction from "@hooks/useUtilsFunction";
-import { handleLogEvent } from "src/lib/analytics";
+import Price from "@components/common/Price"
+import Stock from "@components/common/Stock"
+import Tags from "@components/common/Tags"
+import { notifyError } from "@utils/toast"
+import useAddToCart from "@hooks/useAddToCart"
+import MainModal from "@components/modal/MainModal"
+import Discount from "@components/common/Discount"
+import VariantList from "@components/variants/VariantList"
+import { SidebarContext } from "@context/SidebarContext"
+import useUtilsFunction from "@hooks/useUtilsFunction"
+import { handleLogEvent } from "src/lib/analytics"
 
 const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }) => {
-  const router = useRouter();
-  const { setIsLoading, isLoading } = useContext(SidebarContext);
-  const { t } = useTranslation("ns1");
-  const { handleAddItem, setItem, item } = useAddToCart();
-  const { lang, showingTranslateValue, getNumber } = useUtilsFunction();
+  const router = useRouter()
+  const { setIsLoading, isLoading } = useContext(SidebarContext)
+  const { t } = useTranslation("ns1")
+  const { handleAddItem, setItem, item } = useAddToCart()
+  const { lang, showingTranslateValue, getNumber } = useUtilsFunction()
 
   // Estados
-  const [value, setValue] = useState("");
-  const [price, setPrice] = useState(0);
-  const [basePrice, setBasePrice] = useState(0);
-  const [extraPrices, setExtraPrices] = useState(0);
-  const [img, setImg] = useState("");
-  const [originalPrice, setOriginalPrice] = useState(0);
-  const [stock, setStock] = useState(0);
-  const [discount, setDiscount] = useState(0);
+  const [value, setValue] = useState("")
+  const [price, setPrice] = useState(0)
+  const [basePrice, setBasePrice] = useState(0)
+  const [extraPrices, setExtraPrices] = useState(0)
+  const [img, setImg] = useState("")
+  const [originalPrice, setOriginalPrice] = useState(0)
+  const [stock, setStock] = useState(0)
+  const [discount, setDiscount] = useState(0)
 
   // Aqui ficam as informações das variantes selecionadas
-  const [selectVariant, setSelectVariant] = useState({});
-  const [selectVa, setSelectVa] = useState({});
-  const [variantTitle, setVariantTitle] = useState([]);
-  const [variants, setVariants] = useState([]);
+  const [selectVariant, setSelectVariant] = useState({})
+  const [selectVa, setSelectVa] = useState({})
+  const [variantTitle, setVariantTitle] = useState([])
+  const [variants, setVariants] = useState([])
 
   // Função para somar os preços de extras (Checkbox)
   const onChangeMultiSelect = (updatedCheckboxes, attributeId) => {
-    let totalExtraPrice = 0;
-    // Acha o atributo de extras
-    const extrasAttribute = attributes.find(attr => attr._id === attributeId);
+    let totalExtraPrice = 0
+    const extrasAttribute = attributes.find(attr => attr._id === attributeId)
     if (extrasAttribute) {
-      // Filtra as variantes que tenham esse atributo
-      const extraVariants = product?.variants?.filter(v => v[extrasAttribute._id]);
+      const extraVariants = product?.variants?.filter(v => v[extrasAttribute._id])
       if (extraVariants) {
         updatedCheckboxes.forEach(extraValue => {
-          // Encontra a variante que corresponde a esse extra
-          const selectedExtraVariant = extraVariants.find(v => v[extrasAttribute._id] === extraValue);
+          const selectedExtraVariant = extraVariants.find(v => v[extrasAttribute._id] === extraValue)
           if (selectedExtraVariant && selectedExtraVariant.price) {
-            totalExtraPrice += getNumber(selectedExtraVariant.price);
+            totalExtraPrice += getNumber(selectedExtraVariant.price)
           }
-        });
+        })
       }
     }
-    setExtraPrices(totalExtraPrice);
-  };
+    setExtraPrices(totalExtraPrice)
+  }
 
   // useEffect para atualizar preço base e imagem, conforme o Tamanho selecionado (Radio)
   useEffect(() => {
-    let currentBasePrice = 0;
-    let selectedVariantResult;
+    let currentBasePrice = 0
+    let selectedVariantResult
 
     // Verifica se já selecionou algo
     if (Object.keys(selectVa).length > 0) {
       // Filtra product.variants para achar a variante que bate com o que está em selectVa
       selectedVariantResult = product?.variants?.filter((variant) =>
         Object.keys(selectVa).every((k) => selectVa[k] === variant[k])
-      );
+      )
     }
 
     if (selectedVariantResult && selectedVariantResult.length > 0) {
-      const resultVariant = selectedVariantResult[0];
-      setVariants(selectedVariantResult);
-      setSelectVariant(resultVariant);
-      setSelectVa(resultVariant);
-      setImg(resultVariant?.image);
-      setStock(resultVariant?.quantity);
-      currentBasePrice = getNumber(resultVariant?.price);
+      const resultVariant = selectedVariantResult[0]
+      setVariants(selectedVariantResult)
+      setSelectVariant(resultVariant)
+      setSelectVa(resultVariant)
+      setImg(resultVariant?.image)
+      setStock(resultVariant?.quantity)
+      currentBasePrice = getNumber(resultVariant?.price)
 
-      const originalPriceForVariant = getNumber(resultVariant?.originalPrice);
+      const originalPriceForVariant = getNumber(resultVariant?.originalPrice)
       const discountPercentage = getNumber(
         ((originalPriceForVariant - currentBasePrice) / originalPriceForVariant) * 100
-      );
-      setDiscount(discountPercentage);
-      setBasePrice(currentBasePrice);
-      setOriginalPrice(originalPriceForVariant);
+      )
+      setDiscount(discountPercentage)
+      setBasePrice(currentBasePrice)
+      setOriginalPrice(originalPriceForVariant)
     }
     else if (product?.variants?.length > 0) {
       // Caso não tenha selecionado nada ainda, pega a primeira variante
-      const firstVariant = product.variants[0];
-      setVariants([firstVariant]);
-      setStock(firstVariant?.quantity);
-      setSelectVariant(firstVariant);
-      setSelectVa(firstVariant);
-      setImg(firstVariant?.image);
-      currentBasePrice = getNumber(firstVariant?.price);
+      const firstVariant = product.variants[0]
+      setVariants([firstVariant])
+      setStock(firstVariant?.quantity)
+      setSelectVariant(firstVariant)
+      setSelectVa(firstVariant)
+      setImg(firstVariant?.image)
+      currentBasePrice = getNumber(firstVariant?.price)
 
-      const originalPriceForVariant = getNumber(firstVariant?.originalPrice);
+      const originalPriceForVariant = getNumber(firstVariant?.originalPrice)
       const discountPercentage = getNumber(
         ((originalPriceForVariant - currentBasePrice) / originalPriceForVariant) * 100
-      );
-      setDiscount(discountPercentage);
-      setBasePrice(currentBasePrice);
-      setOriginalPrice(originalPriceForVariant);
+      )
+      setDiscount(discountPercentage)
+      setBasePrice(currentBasePrice)
+      setOriginalPrice(originalPriceForVariant)
     }
     else {
       // Se não tiver variants, pega do produto
-      setStock(product?.stock);
-      setImg(product?.image[0]);
-      currentBasePrice = getNumber(product?.prices?.price);
+      setStock(product?.stock)
+      setImg(product?.image[0])
+      currentBasePrice = getNumber(product?.prices?.price)
 
-      const originalPriceProduct = getNumber(product?.prices?.originalPrice);
+      const originalPriceProduct = getNumber(product?.prices?.originalPrice)
       const discountPercentage = getNumber(
         ((originalPriceProduct - currentBasePrice) / originalPriceProduct) * 100
-      );
-      setDiscount(discountPercentage);
-      setBasePrice(currentBasePrice);
-      setOriginalPrice(originalPriceProduct);
+      )
+      setDiscount(discountPercentage)
+      setBasePrice(currentBasePrice)
+      setOriginalPrice(originalPriceProduct)
     }
 
     // Preço final = base + extras
-    setPrice(basePrice + extraPrices);
+    setPrice(basePrice + extraPrices)
   }, [
     product?.prices?.discount,
     product?.prices?.originalPrice,
@@ -134,21 +131,22 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
     product?.variants,
     selectVa,
     extraPrices,
-  ]);
+    basePrice
+  ])
 
   // Descobre quais atributos existem (para renderizar no map)
   useEffect(() => {
-    const res = Object.keys(Object.assign({}, ...product?.variants));
-    const varTitle = attributes?.filter((att) => res.includes(att?._id));
-    setVariantTitle(varTitle?.sort());
-  }, [variants, attributes, product?.variants]);
+    const res = Object.keys(Object.assign({}, ...product?.variants))
+    const varTitle = attributes?.filter((att) => res.includes(att?._id))
+    setVariantTitle(varTitle?.sort())
+  }, [variants, attributes, product?.variants])
 
   // Botão Adicionar ao carrinho
   const handleAddToCart = (p) => {
     if (p.variants.length === 1 && p.variants[0].quantity < 1) {
-      return notifyError("Insufficient stock");
+      return notifyError("Insufficient stock")
     }
-    if (stock <= 0) return notifyError("Insufficient stock");
+    if (stock <= 0) return notifyError("Insufficient stock")
 
     // Verifica se a variante atual corresponde à seleção
     if (
@@ -158,7 +156,7 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
           Object.entries(selectVariant).sort().toString()
       )
     ) {
-      const { variants, categories, description, ...updatedProduct } = product;
+      const { variants, categories, description, ...updatedProduct } = product
       const newItem = {
         ...updatedProduct,
         id: `${p?.variants.length <= 0
@@ -179,23 +177,16 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
         variant: selectVariant || {},
         price: price,
         originalPrice: originalPrice,
-      };
-      handleAddItem(newItem);
+      }
+      handleAddItem(newItem)
     } else {
-      return notifyError("Please select all variant first!");
+      return notifyError("Please select all variant first!")
     }
-  };
-
-  const handleMoreInfo = (slug) => {
-    setModalOpen(false);
-    router.push(`/product/${slug}`);
-    setIsLoading(!isLoading);
-    handleLogEvent("product", `opened ${slug} product details`);
-  };
+  }
 
   const category_name = showingTranslateValue(product?.category?.name)
     ?.toLowerCase()
-    ?.replace(/[^A-Z0-9]+/gi, "-");
+    ?.replace(/[^A-Z0-9]+/gi, "-")
 
   return (
     <MainModal modalOpen={modalOpen} setModalOpen={setModalOpen}>
@@ -224,7 +215,6 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
             )}
           </div>
           {/* </Link> */}
-
           <div className="w-full flex flex-col p-5 md:p-8 text-left">
             <div className="mb-2 md:mb-2.5 block -mt-1.5">
               {/* <Link href={`/product/${product.slug}`} passHref> */}
@@ -236,11 +226,9 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
               </h1>
               {/* </Link> */}
             </div>
-
             <p className="text-sm leading-6 text-gray-500 md:leading-6">
               {showingTranslateValue(product?.description)}
             </p>
-
             <div className="flex items-center my-4">
               <Price
                 product={product}
@@ -249,7 +237,6 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
                 originalPrice={originalPrice}
               />
             </div>
-
             <div className="mb-1">
               {variantTitle?.map((a) => (
                 <span key={a._id}>
@@ -272,7 +259,6 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
                 </span>
               ))}
             </div>
-
             <div className="flex items-center mt-4">
               <div className="flex items-center justify-between space-s-3 sm:space-s-4 w-full">
                 <div className="group flex items-center justify-between rounded-md overflow-hidden flex-shrink-0 border h-11 md:h-12 border-gray-300">
@@ -298,7 +284,6 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
                     </span>
                   </button>
                 </div>
-
                 <button
                   onClick={() => handleAddToCart(product)}
                   disabled={product.quantity < 1}
@@ -308,7 +293,6 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
                 </button>
               </div>
             </div>
-
             <div className="flex items-center mt-4">
               <div className="flex items-center justify-between space-s-3 sm:space-s-4 w-full">
                 <div>
@@ -336,7 +320,7 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
         </div>
       </div>
     </MainModal>
-  );
-};
+  )
+}
 
-export default ProductModal;
+export default ProductModal
