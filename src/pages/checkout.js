@@ -40,6 +40,7 @@ const Checkout = () => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = React.useState(false)
   const [isAgendamentoModalOpen, setIsAgendamentoModalOpen] = React.useState(false)
   const [textoBotao, setTextoBotao] = React.useState("Confirmar Pedido")
+  const [isOrderButtonEnabled, setIsOrderButtonEnabled] = React.useState(false)
 
   const checkStoreStatus = () => {
     const now = new Date().toLocaleString("pt-PT", { timeZone: "Europe/Lisbon" })
@@ -118,7 +119,8 @@ const Checkout = () => {
     setFormaDePagamento,
     setScheduledDelivery,
     setSelectedOption,
-    selectedOption
+    selectedOption,
+    scheduledDelivery
   } = useCheckoutSubmit()
 
   const queryClient = useQueryClient()
@@ -135,12 +137,21 @@ const Checkout = () => {
     setSelectedMapShippingCost(cost)
     handleShippingCost(cost)
     setIsMapModalOpen(false)
+    checkEnableOrderButton()
+  }
+
+  // Add validation function
+  const checkEnableOrderButton = () => {
+    const hasValidShipping = selectedMapShippingCost > 0
+    const hasValidSchedule = scheduledDelivery !== null
+    setIsOrderButtonEnabled(hasValidShipping && hasValidSchedule)
   }
 
   const handleOpenMapModal = () => {
     setIsMapModalOpen(true)
   }
-  const handleOpenPaymentModal = () => { // Function to open payment modal
+
+  const handleOpenPaymentModal = () => {
     setIsPaymentModalOpen(true)
   }
 
@@ -148,8 +159,8 @@ const Checkout = () => {
     setIsPaymentModalOpen(false)
   }
   const handlePaymentMethodSelect = (paymentMethod) => {
-    setFormaDePagamento(paymentMethod) // Update payment method in useCheckoutSubmit
-    setIsPaymentModalOpen(false) // Close payment modal
+    setFormaDePagamento(paymentMethod)
+    setIsPaymentModalOpen(false)
   }
 
   const getGeolocation = async () => {
@@ -240,6 +251,10 @@ const Checkout = () => {
       handleShippingCost(0)
     }
   }, [selectedOption, selectedMapShippingCost, handleShippingCost, isPickupActive])
+
+  React.useEffect(() => {
+    checkEnableOrderButton()
+  }, [selectedMapShippingCost, scheduledDelivery])
 
   return (
     <>
@@ -533,25 +548,26 @@ const Checkout = () => {
                         {showingTranslateValue(storeCustomizationSetting?.checkout?.continue_button)}
                       </Link>
                     </div>
-                    <div className="col-span-6 sm:col-span-3">
-                      <button
-                        type="submit"
-                        disabled={isEmpty || isCheckoutSubmit}
-                        className="bg-customRed hover:bg-red-500 border border-customRed transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
-                      >
-                        {isCheckoutSubmit ? (
-                          <span className="flex justify-center text-center">
-                            <img src="/loader/spinner.gif" alt="Loading" width={20} height={10} />
-                            <span className="ml-2">{t("common:processing")}</span>
-                          </span>
-                        ) : (
-                          <span className="flex justify-center text-center">
-                            Confirmar Pedido
-                            <span className="text-xl ml-2"><IoArrowForward /></span>
-                          </span>
-                        )}
-                      </button>
-                    </div>
+                    <button
+                      type="submit"
+                      disabled={isEmpty || isCheckoutSubmit || !isOrderButtonEnabled}
+                      className={`${isEmpty || isCheckoutSubmit || !isOrderButtonEnabled
+                        ? 'bg-gray-400 cursor-not-allowed opacity-60'
+                        : 'bg-customRed hover:bg-red-500'}
+                      border border-customRed transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full col-span-6 sm:col-span-3
+                      `}>
+                      {isCheckoutSubmit ? (
+                        <span className="flex justify-center text-center">
+                          <img src="/loader/spinner.gif" alt="Loading" width={20} height={10} />
+                          <span className="ml-2">{t("common:processing")}</span>
+                        </span>
+                      ) : (
+                        <span className="flex justify-center text-center">
+                          Confirmar Pedido
+                          <span className="text-xl ml-2"><IoArrowForward /></span>
+                        </span>
+                      )}
+                    </button>
                   </div>
                 </form>
               </div>
