@@ -1,10 +1,9 @@
 import { useRouter } from "next/router"
 import React from "react"
-import { FaStore, FaCalendarAlt } from "react-icons/fa"
+import { FaStore } from "react-icons/fa"
 
 export default function LojaFechadaModal({ isOpen, onClose }) {
     if (!isOpen) return null
-    const router = useRouter()
 
     return (
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity flex justify-center items-center z-50">

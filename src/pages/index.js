@@ -24,7 +24,12 @@ const Home = ({ popularProducts, discountProducts, attributes }) => {
   const { isLoading, setIsLoading } = useContext(SidebarContext)
   const { loading, error, storeCustomizationSetting } = useGetSetting()
   const [lojaFechadaModal, setLojaFechadaModal] = React.useState(false)
-  const [showRedirecionarLojas, setShowRedirecionarLojas] = React.useState(true);
+  const [showRedirecionarLojas, setShowRedirecionarLojas] = React.useState(true)
+  const [storeStatus, setStoreStatus] = React.useState({
+    isOpen: false,
+    isClosed: true,
+    isClosedDay: false
+  })
 
   // console.log("storeCustomizationSetting", storeCustomizationSetting)
 
@@ -36,38 +41,35 @@ const Home = ({ popularProducts, discountProducts, attributes }) => {
     }
   }, [router])
 
-  // Verificar se o dia da semana é segunda e exibir o modal de loja fechada
   useEffect(() => {
     const verificarHorarioFuncionamento = () => {
-      const now = new Date().toLocaleString("pt-PT", { timeZone: "Europe/Lisbon" })
-      const portugalTime = new Date(now)
-      const diaSemanaAtual = portugalTime.getDay()
-      const tempoAtualEmMinutos = portugalTime.getHours() * 60 + portugalTime.getMinutes()
+      const portugalDate = new Date().toLocaleString('pt-PT', { timeZone: 'Europe/Lisbon' })
+      const currentDate = new Date(portugalDate)
 
-      const horarioAbertura = diaSemanaAtual === 0 || diaSemanaAtual === 2 || diaSemanaAtual === 3
-        ? 17 * 60 + 30 // 17:30
-        : 17 * 60      // 17:00
+      const diaSemanaAtual = currentDate.getDay()
+      const hours = currentDate.getHours()
+      const minutes = currentDate.getMinutes()
+      const tempoAtualEmMinutos = (hours * 60) + minutes
 
-      const horarioFechamento = 22 * 60; // 22:00
-      const isDentroHorario = tempoAtualEmMinutos >= horarioAbertura && tempoAtualEmMinutos < horarioFechamento;
-      const isDiaAberto = diaSemanaAtual >= 2 && diaSemanaAtual <= 6 && isDentroHorario;
+      const horarioAbertura = (diaSemanaAtual === 0 || diaSemanaAtual === 2 || diaSemanaAtual === 3)
+        ? (17 * 60) + 30
+        : 17 * 60
 
-      // Only show LojaFechadaModal if RedirecionarLojas is closed
-      const hasSelectedStore = localStorage.getItem('selectedStore');
-      if (hasSelectedStore) {
-        setShowRedirecionarLojas(false);
-        setLojaFechadaModal(!isDiaAberto);
-      } else {
-        setShowRedirecionarLojas(true);
-        setLojaFechadaModal(false);
-      }
-    };
+      const horarioFechamento = 22 * 60
+      const isDentroHorario = tempoAtualEmMinutos >= horarioAbertura && tempoAtualEmMinutos < horarioFechamento
+      const isDiaAberto = diaSemanaAtual >= 2 && diaSemanaAtual <= 6
 
-    verificarHorarioFuncionamento();
-    const interval = setInterval(verificarHorarioFuncionamento, 60000);
+      setStoreStatus({
+        isOpen: isDentroHorario && isDiaAberto,
+        isClosed: !isDentroHorario,
+        isClosedDay: diaSemanaAtual === 1
+      })
+    }
 
-    return () => clearInterval(interval);
-  }, []);
+    verificarHorarioFuncionamento()
+    const interval = setInterval(verificarHorarioFuncionamento, 60000)
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <>
@@ -90,19 +92,19 @@ const Home = ({ popularProducts, discountProducts, attributes }) => {
                 {storeCustomizationSetting?.home?.promotion_banner_status && (
                   <div className="bg-orange-100 px-10 py-6 rounded-lg mt-6">
                     <Banner />
-                  </div>
-                )}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-            {showRedirecionarLojas && <RedirecionarLojas />}
-            {!showRedirecionarLojas && (
-              <LojaFechadaModal
-                isOpen={lojaFechadaModal}
-                onClose={() => setLojaFechadaModal(false)}
-              />
-            )}
-            {/* feature category's */}
-            {storeCustomizationSetting?.home?.featured_status && (
+              {showRedirecionarLojas && <RedirecionarLojas />}
+              {!showRedirecionarLojas && (
+                <LojaFechadaModal
+                  isOpen={!storeStatus.isOpen && (storeStatus.isClosed || storeStatus.isClosedDay)}
+                  onClose={() => setLojaFechadaModal(false)}
+                />
+              )}
+              {/* feature category's */}
+              {storeCustomizationSetting?.home?.featured_status && (
               <div className="bg-gray-100 lg:py-16 py-10">
                 <div className="mx-auto max-w-screen-2xl px-3 sm:px-10">
                   <div className="mb-10 flex justify-center">
@@ -133,7 +135,6 @@ const Home = ({ popularProducts, discountProducts, attributes }) => {
                 </div>
               </div>
             )}
-
             {/* popular products */}
             {storeCustomizationSetting?.home?.popular_products_status && (
               <div className="bg-gray-50 lg:py-16 py-10 mx-auto max-w-screen-2xl px-3 sm:px-10">
@@ -190,7 +191,6 @@ const Home = ({ popularProducts, discountProducts, attributes }) => {
                 </div>
               </div>
             )}
-
             {/* promotional banner card */}
             {storeCustomizationSetting?.home?.delivery_status && (
               <div className="block mx-auto max-w-screen-2xl">
@@ -201,7 +201,6 @@ const Home = ({ popularProducts, discountProducts, attributes }) => {
                 </div>
               </div>
             )}
-
             {/* discounted products */}
             {storeCustomizationSetting?.home?.discount_product_status &&
               discountProducts?.length > 0 && (

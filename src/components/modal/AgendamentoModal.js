@@ -69,7 +69,6 @@ export default function AgendamentoModal({ isOpen, onClose, onScheduleSelect }) 
                             dateFormat="dd/MM/yyyy"
                             className="w-full p-2 border rounded focus:ring-2 focus:ring-customRed"
                             placeholderText="Escolha uma data"
-                            locale="pt-PT"
                             showMonthDropdown
                             showYearDropdown
                             dropdownMode="select"

@@ -102,81 +102,78 @@ const useCheckoutSubmit = (storeSetting) => {
     // Initial validations
     if (!scheduledDelivery || !shippingCost) {
       notifyError("Selecione data de agendamento e região de entrega")
-    } else {
-      notifySuccess("Data e região selecionadas com sucesso!")
+      return
     }
 
     if (pagamentoNaEntrega && !formaDePagamento.method) {
       notifyError("Selecione uma forma de pagamento")
-    } else {
-      notifySuccess("Forma de pagamento selecionada com sucesso!")
+      return
     }
 
     try {
       setIsCheckoutSubmit(true)
       setError("")
 
-      const userDetails = {
-        name: `${data.firstName} ${data.lastName}`,
-        contact: data.contact,
-        email: data.email,
-        address: data.address,
-        country: data.country,
-        city: data.city,
-        zipCode: data.zipCode,
-        nif: data.nif,
-        additionalInformation: data.additionalInformation,
-      }
-
-      const baseOrderInfo = {
-        user_info: userDetails,
-        shippingOption: data.shippingOption,
+      const orderData = {
+        cart: items.map(item => ({
+          _id: item._id,
+          productId: item.productId,
+          title: item.title,
+          slug: item.slug,
+          image: item.image,
+          variant: item.variant,
+          price: item.price,
+          originalPrice: item.originalPrice,
+          quantity: item.quantity,
+          itemTotal: item.itemTotal,
+          category: item.category
+        })),
+        user_info: {
+          name: `${data.firstName} ${data.lastName}`,
+          email: data.email,
+          contact: data.contact,
+          address: data.address,
+          city: data.city,
+          country: data.country,
+          zipCode: data.zipCode,
+          nif: data.nif,
+          additionalInformation: data.additionalInformation
+        },
+        amount: totalPrice,
+        customerTrns: "Total: ",
+        merchantTrns: productName.join(", "),
+        dynamicDescriptor: productName.join(", "),
+        paymentTimeout: 65535,
+        preauth: false,
+        allowRecurring: false,
+        maxInstallments: 12,
+        paymentNotification: true,
+        tipAmount: 0,
         status: "Pendente",
-        cart: items,
         subTotal: cartTotal,
         shippingCost: shippingCost,
-        additionalInformation: userDetails.additionalInformation,
         discount: discountAmount,
+        total: total,
         agendamento: scheduledDelivery ? {
           data: scheduledDelivery.date,
           horario: scheduledDelivery.time
         } : null,
-        total: total,
-        localizacao: {
+        localizacao: coordenadas ? {
           latitude: coordenadas.latitude,
-          longitude: coordenadas.longitude,
-        }
+          longitude: coordenadas.longitude
+        } : null
       }
 
       if (pagamentoNaEntrega) {
         const orderDelivery = {
-          ...baseOrderInfo,
-          amount: totalPrice,
-          customerTrns: "Total: ",
-          customer: {
-            email: userDetails.email,
-            fullName: userDetails.name,
-            phone: userDetails.contact,
-            requestLang: "pt",
-          },
-          dynamicDescriptor: `${productName}`,
+          ...orderData,
           paymentMethod: "Pagamento na Entrega",
           paymentMethodDetails: {
             method: formaDePagamento.method,
             changeFor: formaDePagamento.troco
           },
-          paymentTimeout: 65535,
-          preauth: false,
-          allowRecurring: false,
-          maxInstallments: 12,
-          merchantTrns: `${productName}`,
-          paymentNotification: true,
-          tipAmount: 0,
-          disableExactAmount: false,
-          disableCash: false,
           disableWallet: true,
-          sourceCode: "Default",
-          additionalInformation: userDetails.additionalInformation,
+          sourceCode: "Default"
         }
 
         const response = await axios.post(deliveryUrl, orderDelivery)
@@ -189,26 +186,8 @@ const useCheckoutSubmit = (storeSetting) => {
         }
       } else {
         const orderVivaPaymentData = {
-          ...baseOrderInfo,
-          amount: totalPrice,
-          customerTrns: "Total: ",
-          customer: {
-            email: userDetails.email,
-            fullName: userDetails.name,
-            phone: userDetails.contact,
-            requestLang: "pt",
-          },
-          dynamicDescriptor: `${productName}`,
+          ...orderData,
           paymentMethod: "Online",
-          paymentTimeout: 65535,
-          preauth: false,
-          allowRecurring: false,
-          maxInstallments: 12,
-          merchantTrns: `${productName}`,
-          paymentNotification: true,
-          tipAmount: 0,
-          disableExactAmount: false,
-          disableCash: false,
           disableWallet: false,
           sourceCode: "Default"
         }
@@ -216,26 +195,25 @@ const useCheckoutSubmit = (storeSetting) => {
         await useVivaPayment(orderVivaPaymentData)
       }
 
-      // Save shipping address
-      await CustomerServices.addShippingAddress({
-        userId: userInfo?.id,
-        shippingAddressData: {
-          name: data.firstName + " " + data.lastName,
-          contact: data.contact,
-          email: userInfo?.email,
-          address: data.address,
-          country: data.country,
-          city: data.city,
-          zipCode: data.zipCode,
-        },
-      })
+      // await CustomerServices.addShippingAddress({
+      //   userId: userInfo?.id,
+      //   shippingAddressData: {
+      //     name: `${data.firstName} ${data.lastName}`,
+      //     contact: data.contact,
+      //     email: userInfo?.email,
+      //     address: data.address,
+      //     country: data.country,
+      //     city: data.city,
+      //     zipCode: data.zipCode
+      //   }
+      // })
 
     } catch (err) {
+      console.log("Erro ao processar pedido | pagamento: ", err)
       notifyError(err?.response?.data?.message || err?.message)
       setIsCheckoutSubmit(false)
     }
   }
-
 
   const handleShippingCost = (value) => {
     // console.log("handleShippingCost", value)
