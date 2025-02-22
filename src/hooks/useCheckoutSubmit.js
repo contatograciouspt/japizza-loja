@@ -122,6 +122,8 @@ const useCheckoutSubmit = (storeSetting) => {
           slug: item.slug,
           image: item.image,
           variant: item.variant,
+          variantNames: item.variantNames,
+          zoneSoftId: item.zoneSoftId,
           price: item.price,
           originalPrice: item.originalPrice,
           quantity: item.quantity,
@@ -163,6 +165,8 @@ const useCheckoutSubmit = (storeSetting) => {
           longitude: coordenadas.longitude
         } : null
       }
+
+      console.log("orderData", orderData)
 
       if (pagamentoNaEntrega) {
         const orderDelivery = {
