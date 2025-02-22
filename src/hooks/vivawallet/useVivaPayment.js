@@ -2,8 +2,8 @@ import React from 'react'
 import axios from 'axios'
 import { useCart } from 'react-use-cart'
 
-// const urlProduction = process.env.NEXT_PUBLIC_PRODUCTION_URL_PAYMENT
-const  urlDev = process.env.NEXT_PUBLIC_DEV_URL_PAYMENT
+const urlProduction = process.env.NEXT_PUBLIC_PRODUCTION_URL_PAYMENT
+// const  urlDev = process.env.NEXT_PUBLIC_DEV_URL_PAYMENT
 
 export default function usePaymentVivaWallet() {
     const [error, setError] = React.useState(null)
@@ -13,7 +13,7 @@ export default function usePaymentVivaWallet() {
     const useVivaPayment = async (vivaPaymentData) => {
         try {
             // Realizar a requisição de pagamento
-            const payment = await axios.post(urlDev, vivaPaymentData);
+            const payment = await axios.post(urlProduction, vivaPaymentData);
 
             if (payment.status === 200) {
                 const orderCode = payment.data.orderCode;
