@@ -35,7 +35,6 @@ const ContactUs = () => {
       />
       <div className="bg-white">
         <div className="max-w-screen-2xl mx-auto lg:py-20 py-10 px-4 sm:px-10">
-          {/* contact promo */}
           <div className="grid md:grid-cols-2 gap-6 lg:grid-cols-3 xl:gap-8 font-serif">
             {loading ? (
               <CMSkeleton
@@ -56,7 +55,6 @@ const ContactUs = () => {
                 </h5>
                 <p className="mb-0 text-base opacity-90 leading-7">
                   <a
-                    href={`mailto:${storeCustomizationSetting?.contact_us?.email_box_email}`}
                     className="text-customRed"
                   >
                     {showingTranslateValue(
@@ -69,7 +67,6 @@ const ContactUs = () => {
                 </p>
               </div>
             )}
-
             {loading ? (
               <CMSkeleton
                 count={10}
@@ -89,7 +86,6 @@ const ContactUs = () => {
                 </h5>
                 <p className="mb-0 text-base opacity-90 leading-7">
                   <a
-                    href={`mailto:${storeCustomizationSetting?.contact_us?.call_box_phone}`}
                     className="text-customRed"
                   >
                     {showingTranslateValue(
@@ -140,9 +136,8 @@ const ContactUs = () => {
               </div>
             )}
           </div>
-
           {/* contact form */}
-          <div className="px-0 pt-24 mx-auto items-center flex flex-col md:flex-row w-full justify-between">
+          {/* <div className="px-0 pt-24 mx-auto items-center flex flex-col md:flex-row w-full justify-between">
             <div className="hidden md:w-full lg:w-5/12 lg:flex flex-col h-full">
               <Image
                 width={874}
@@ -250,7 +245,7 @@ const ContactUs = () => {
                 </div>
               </form>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </Layout>

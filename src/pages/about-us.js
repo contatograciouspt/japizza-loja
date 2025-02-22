@@ -34,7 +34,7 @@ const AboutUs = () => {
                   count={1}
                   height={50}
                   loading={loading}
-                  data={storeCustomizationSetting?.about_us?.top_title}
+                  data={storeCustomizationSetting?.about_us?.top_title?.pt}
                 />
               </h3>
               <div className="mt-3 text-base opacity-90 leading-7">
