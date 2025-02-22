@@ -5,6 +5,7 @@ import useTranslation from "next-translate/useTranslation";
 import {
   FacebookIcon,
   LinkedinIcon,
+  InstapaperIcon,
   PinterestIcon,
   TwitterIcon,
   WhatsappIcon,
@@ -316,23 +317,19 @@ const Footer = () => {
             </div>
           )}
         </div>
-
         <hr className="hr-line"></hr>
-
         <div className="mx-auto max-w-screen-2xl px-4 sm:px-10 bg-gray-50 shadow-sm border border-gray-50 rounded-lg">
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-5 sm:gap-9 lg:gap-11 xl:gap-7 py-8 items-center justify-between">
             <div className="col-span-1">
               {storeCustomizationSetting?.footer?.social_links_status && (
                 <div>
                   {(storeCustomizationSetting?.footer?.social_facebook ||
-                    storeCustomizationSetting?.footer?.social_twitter ||
-                    storeCustomizationSetting?.footer?.social_pinterest ||
-                    storeCustomizationSetting?.footer?.social_linkedin ||
+                    storeCustomizationSetting?.footer?.social_instagram ||
                     storeCustomizationSetting?.footer?.social_whatsapp) && (
-                    <span className="text-base leading-7 font-medium block mb-2 pb-0.5">
-                      {t("common:footer-follow-us")}
-                    </span>
-                  )}
+                      <span className="text-base leading-7 font-medium block mb-2 pb-0.5">
+                        {t("common:footer-follow-us")}
+                      </span>
+                    )}
                   <ul className="text-sm flex">
                     {storeCustomizationSetting?.footer?.social_facebook && (
                       <li className="flex items-center mr-3 transition ease-in-out duration-500">
@@ -347,45 +344,6 @@ const Footer = () => {
                         </Link>
                       </li>
                     )}
-                    {storeCustomizationSetting?.footer?.social_twitter && (
-                      <li className="flex items-center  mr-3 transition ease-in-out duration-500">
-                        <Link
-                          href={`${storeCustomizationSetting?.footer?.social_twitter}`}
-                          aria-label="Social Link"
-                          rel="noreferrer"
-                          target="_blank"
-                          className="block text-center mx-auto text-gray-500 hover:text-white"
-                        >
-                          <TwitterIcon size={34} round />
-                        </Link>
-                      </li>
-                    )}
-                    {storeCustomizationSetting?.footer?.social_pinterest && (
-                      <li className="flex items-center mr-3 transition ease-in-out duration-500">
-                        <Link
-                          href={`${storeCustomizationSetting?.footer?.social_pinterest}`}
-                          aria-label="Social Link"
-                          rel="noreferrer"
-                          target="_blank"
-                          className="block text-center mx-auto text-gray-500 hover:text-white"
-                        >
-                          <PinterestIcon size={34} round />
-                        </Link>
-                      </li>
-                    )}
-                    {storeCustomizationSetting?.footer?.social_linkedin && (
-                      <li className="flex items-center  mr-3 transition ease-in-out duration-500">
-                        <Link
-                          href={`${storeCustomizationSetting?.footer?.social_linkedin}`}
-                          aria-label="Social Link"
-                          rel="noreferrer"
-                          target="_blank"
-                          className="block text-center mx-auto text-gray-500 hover:text-white"
-                        >
-                          <LinkedinIcon size={34} round />
-                        </Link>
-                      </li>
-                    )}
                     {storeCustomizationSetting?.footer?.social_whatsapp && (
                       <li className="flex items-center  mr-3 transition ease-in-out duration-500">
                         <Link
@@ -396,6 +354,26 @@ const Footer = () => {
                           className="block text-center mx-auto text-gray-500 hover:text-white"
                         >
                           <WhatsappIcon size={34} round />
+                        </Link>
+                      </li>
+                    )}
+                    {storeCustomizationSetting?.footer?.social_instagram && (
+                      <li className="flex items-center  mr-3 transition ease-in-out duration-500">
+                        <Link
+                          href={`${storeCustomizationSetting?.footer?.social_instagram}`}
+                          aria-label="Social Link"
+                          rel="noreferrer"
+                          target="_blank"
+                          className="block text-center mx-auto text-gray-500 hover:text-white"
+                        >
+                          {/* <LinkedinIcon size={34} round /> */}
+                          <Image
+                            src={"/icon_instagram.png"}
+                            alt="instagram"
+                            width={34}
+                            height={34}
+                            quality={100}
+                          />
                         </Link>
                       </li>
                     )}
