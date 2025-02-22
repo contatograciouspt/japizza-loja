@@ -42,20 +42,22 @@ const useAddToCart = () => {
   const handleAddItem = (product) => {
     const result = items.find((i) => i.id === product.id)
     const { variants, categories, description, ...updatedProduct } = product
-    
-    // incluir zoneSoftId no carrinho
+
+    // Include zoneSoftId in the cart item
     updatedProduct.zoneSoftId = product.zoneSoftId
 
-    // Add variant names to the product
-    const variantNames = Object.entries(product.variant).reduce((acc, [key, value]) => {
-      if (key !== 'price' && key !== 'originalPrice' && key !== 'quantity' && key !== 'discount' && key !== 'productId' && key !== 'barcode' && key !== 'sku' && key !== 'image') {
+    // Add variant names with null check
+    const variantNames = product.variant ? Object.entries(product.variant).reduce((acc, [key, value]) => {
+      if (key !== 'price' && key !== 'originalPrice' && key !== 'quantity' &&
+        key !== 'discount' && key !== 'productId' && key !== 'barcode' &&
+        key !== 'sku' && key !== 'image' && variants) {
         const variantInfo = variants.find(v => v._id === value)
-        if (variantInfo) {
+        if (variantInfo && variantInfo.name && variantInfo.name.pt) {
           acc.push(variantInfo.name.pt)
         }
       }
       return acc
-    }, [])
+    }, []) : []
 
     updatedProduct.variantNames = variantNames
 
@@ -70,12 +72,12 @@ const useAddToCart = () => {
       if (item <= (product?.variants?.length > 0 ? product?.variant?.quantity : product?.stock)) {
         addItem(updatedProduct, item)
         notifySuccess(`${item} ${product.title} adicionado no carrinho!`)
-        console.log("Produto adicionado no carrinho: ", product)
       } else {
         notifyError("Estoque insuficiente!")
       }
     }
   }
+
 
   const handleIncreaseQuantity = (product) => {
     const result = items?.find((p) => p.id === product.id)

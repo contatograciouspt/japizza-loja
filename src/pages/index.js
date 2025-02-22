@@ -59,10 +59,18 @@ const Home = ({ popularProducts, discountProducts, attributes }) => {
       const isDentroHorario = tempoAtualEmMinutos >= horarioAbertura && tempoAtualEmMinutos < horarioFechamento
       const isDiaAberto = diaSemanaAtual >= 2 && diaSemanaAtual <= 6
 
+      const hasSelectedStore = localStorage.getItem('selectedStore')
+
+      if (hasSelectedStore) {
+        setShowRedirecionarLojas(false)
+        setLojaFechadaModal(!isDentroHorario || !isDiaAberto)
+      } else {
+        setShowRedirecionarLojas(true)
+      }
       setStoreStatus({
         isOpen: isDentroHorario && isDiaAberto,
-        isClosed: !isDentroHorario,
-        isClosedDay: diaSemanaAtual === 1
+        isClosed: !isDentroHorario || !isDiaAberto,
+        isClosedDay: !isDiaAberto
       })
     }
 
@@ -92,19 +100,19 @@ const Home = ({ popularProducts, discountProducts, attributes }) => {
                 {storeCustomizationSetting?.home?.promotion_banner_status && (
                   <div className="bg-orange-100 px-10 py-6 rounded-lg mt-6">
                     <Banner />
-                    </div>
-                  )}
-                </div>
+                  </div>
+                )}
               </div>
-              {showRedirecionarLojas && <RedirecionarLojas />}
-              {!showRedirecionarLojas && (
-                <LojaFechadaModal
-                  isOpen={!storeStatus.isOpen && (storeStatus.isClosed || storeStatus.isClosedDay)}
-                  onClose={() => setLojaFechadaModal(false)}
-                />
-              )}
-              {/* feature category's */}
-              {storeCustomizationSetting?.home?.featured_status && (
+            </div>
+            {showRedirecionarLojas && <RedirecionarLojas />}
+            {!showRedirecionarLojas && lojaFechadaModal && (
+              <LojaFechadaModal
+                isOpen={!storeStatus.isOpen && (storeStatus.isClosed || storeStatus.isClosedDay)}
+                onClose={() => setLojaFechadaModal(false)}
+              />
+            )}
+            {/* feature category's */}
+            {storeCustomizationSetting?.home?.featured_status && (
               <div className="bg-gray-100 lg:py-16 py-10">
                 <div className="mx-auto max-w-screen-2xl px-3 sm:px-10">
                   <div className="mb-10 flex justify-center">
