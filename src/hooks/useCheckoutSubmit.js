@@ -147,6 +147,11 @@ const useCheckoutSubmit = (storeSetting) => {
         dynamicDescriptor: productName.join(", "),
         paymentTimeout: 65535,
         preauth: false,
+        paymentMethod: "Online",
+        paymentMethodDetails: {
+          method: formaDePagamento.method,
+          changeFor: formaDePagamento.troco
+        },
         allowRecurring: false,
         maxInstallments: 12,
         paymentNotification: true,
