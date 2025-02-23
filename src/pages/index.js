@@ -43,30 +43,71 @@ const Home = ({ popularProducts, discountProducts, attributes }) => {
 
   useEffect(() => {
     const verificarHorarioFuncionamento = () => {
-      const portugalDate = new Date().toLocaleString('pt-PT', { timeZone: 'Europe/Lisbon' })
-      const currentDate = new Date(portugalDate)
+      // Get current date in both timezones for comparison
+      const brasilTime = new Date()
+      const portugalTimeStr = brasilTime.toLocaleString('pt-PT', {
+        timeZone: 'Europe/Lisbon',
+        hour12: false,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      })
 
-      const diaSemanaAtual = currentDate.getDay()
-      const hours = currentDate.getHours()
-      const minutes = currentDate.getMinutes()
-      const tempoAtualEmMinutos = (hours * 60) + minutes
+      // Parse Portugal time components
+      const [datePart, timePart] = portugalTimeStr.split(', ')
+      const [day, month, year] = datePart.split('/')
+      const [hours, minutes, seconds] = timePart.split(':')
 
+      // Create Portugal date object
+      const portugalTime = new Date(
+        parseInt(year),
+        parseInt(month) - 1,
+        parseInt(day),
+        parseInt(hours),
+        parseInt(minutes),
+        parseInt(seconds)
+      )
+
+      // Extract time components for store hours calculation
+      const diaSemanaAtual = portugalTime.getDay()
+      const horaAtual = portugalTime.getHours()
+      const minutosAtual = portugalTime.getMinutes()
+      const tempoAtualEmMinutos = (horaAtual * 60) + minutosAtual
+
+      // Define store hours
       const horarioAbertura = (diaSemanaAtual === 0 || diaSemanaAtual === 2 || diaSemanaAtual === 3)
-        ? (17 * 60) + 30
-        : 17 * 60
+        ? (17 * 60) + 30  // 17:30
+        : 17 * 60         // 17:00
 
-      const horarioFechamento = 22 * 60
+      const horarioFechamento = 22 * 60  // 22:00
+
+      // Calculate store status
       const isDentroHorario = tempoAtualEmMinutos >= horarioAbertura && tempoAtualEmMinutos < horarioFechamento
-      const isDiaAberto = diaSemanaAtual >= 2 && diaSemanaAtual <= 6
+      const isDiaAberto = (diaSemanaAtual >= 2 && diaSemanaAtual <= 6) || diaSemanaAtual === 0
+
+      // Debug logs
+      // console.log('Portugal Time Components:', {
+      //   diaSemana: diaSemanaAtual,
+      //   hora: horaAtual,
+      //   minutos: minutosAtual,
+      //   tempoAtual: tempoAtualEmMinutos,
+      //   horarioAbertura,
+      //   isDentroHorario,
+      //   isDiaAberto
+      // })
 
       const hasSelectedStore = localStorage.getItem('selectedStore')
 
       if (hasSelectedStore) {
         setShowRedirecionarLojas(false)
-        setLojaFechadaModal(!isDentroHorario || !isDiaAberto)
+        setLojaFechadaModal(!isDentroHorario && !isDiaAberto)
       } else {
         setShowRedirecionarLojas(true)
       }
+
       setStoreStatus({
         isOpen: isDentroHorario && isDiaAberto,
         isClosed: !isDentroHorario || !isDiaAberto,
@@ -78,6 +119,7 @@ const Home = ({ popularProducts, discountProducts, attributes }) => {
     const interval = setInterval(verificarHorarioFuncionamento, 60000)
     return () => clearInterval(interval)
   }, [])
+
 
   return (
     <>
@@ -104,13 +146,13 @@ const Home = ({ popularProducts, discountProducts, attributes }) => {
                 )}
               </div>
             </div>
-            {showRedirecionarLojas && <RedirecionarLojas />}
-            {!showRedirecionarLojas && lojaFechadaModal && (
-              <LojaFechadaModal
-                isOpen={!storeStatus.isOpen && (storeStatus.isClosed || storeStatus.isClosedDay)}
-                onClose={() => setLojaFechadaModal(false)}
-              />
-            )}
+              {showRedirecionarLojas && <RedirecionarLojas />}
+              {!showRedirecionarLojas && lojaFechadaModal && (
+                <LojaFechadaModal
+                  isOpen={!(isDentroHorario && isDiaAberto)}
+                  onClose={() => setLojaFechadaModal(false)}
+                />
+              )}
             {/* feature category's */}
             {storeCustomizationSetting?.home?.featured_status && (
               <div className="bg-gray-100 lg:py-16 py-10">

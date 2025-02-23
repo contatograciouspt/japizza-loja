@@ -1,46 +1,76 @@
 // Category.js
-import React, { useContext, useState } from "react"; // Import useState
-import Link from "next/link";
-import Image from "next/image";
-import { IoClose } from "react-icons/io5";
-import { useQuery } from "@tanstack/react-query";
+import React, { useContext, useState } from "react" // Import useState
+import Link from "next/link"
+import Image from "next/image"
+import { IoClose } from "react-icons/io5"
+import { useQuery } from "@tanstack/react-query"
 
 //internal import
-import { pages } from "@utils/data";
-import Loading from "@components/preloader/Loading";
-import { SidebarContext } from "@context/SidebarContext";
-import CategoryServices from "@services/CategoryServices";
-import CategoryCard from "@components/category/CategoryCard";
-import useUtilsFunction from "@hooks/useUtilsFunction";
-import HorarioModal from "@components/modal/HorarioModal";
+import { pages } from "@utils/data"
+import Loading from "@components/preloader/Loading"
+import { SidebarContext } from "@context/SidebarContext"
+import CategoryServices from "@services/CategoryServices"
+import CategoryCard from "@components/category/CategoryCard"
+import useUtilsFunction from "@hooks/useUtilsFunction"
+import HorarioModal from "@components/modal/HorarioModal"
 
 const Category = () => {
-  const { categoryDrawerOpen, closeCategoryDrawer } = useContext(SidebarContext);
-  const { showingTranslateValue } = useUtilsFunction();
-  const [isHorarioModalOpen, setIsHorarioModalOpen] = useState(false); // State for HorarioModal - declare using useState here
-  const { data, error, isLoading } = useQuery({
-    queryKey: ["category"],
-    queryFn: async () => await CategoryServices.getShowingCategory(),
-  });
+  const { categoryDrawerOpen, closeCategoryDrawer } = useContext(SidebarContext)
+  const { showingTranslateValue } = useUtilsFunction()
+  const [isStoreOpen, setIsStoreOpen] = useState(false) // State for HorarioModal - declare using useState here
+  const [isHorarioModalOpen, setIsHorarioModalOpen] = useState(false)
+  const { data, error, isLoading } = useQuery({ queryKey: ["category"], queryFn: async () => await CategoryServices.getShowingCategory() })
 
   // HorarioModal handlers
-  const handleOpenHorarioModal = () => {
-    setIsHorarioModalOpen(true);
-  };
+  const handleOpenHorarioModal = () => setIsHorarioModalOpen(true)
+  const handleCloseHorarioModal = () => setIsHorarioModalOpen(false)
 
-  const handleCloseHorarioModal = () => {
-    setIsHorarioModalOpen(false);
-  };
+  React.useEffect(() => {
+    const checkStoreStatus = () => {
+      const portugalTimeStr = new Date().toLocaleString('pt-PT', {
+        timeZone: 'Europe/Lisbon',
+        hour12: false,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      })
 
-  const now = new Date().toLocaleString("en-US", { timeZone: "Europe/Lisbon" })
-const portugalTime = new Date(now)
-const diaSemanaAtual = portugalTime.getDay()
-const tempoAtualEmMinutos = portugalTime.getHours() * 60 + portugalTime.getMinutes()
-const horarioAbertura = diaSemanaAtual === 0 || diaSemanaAtual === 2 || diaSemanaAtual === 3 ? 17 * 60 + 30 : 17 * 60
-const horarioFechamento = 22 * 60
+      const [datePart, timePart] = portugalTimeStr.split(', ')
+      const [day, month, year] = datePart.split('/')
+      const [hours, minutes, seconds] = timePart.split(':')
 
-  const isDentroHorario = tempoAtualEmMinutos >= horarioAbertura && tempoAtualEmMinutos < horarioFechamento;
-  const isDiaAberto = diaSemanaAtual >= 2 && diaSemanaAtual <= 6 && isDentroHorario;
+      const portugalTime = new Date(
+        parseInt(year),
+        parseInt(month) - 1,
+        parseInt(day),
+        parseInt(hours),
+        parseInt(minutes),
+        parseInt(seconds)
+      )
+
+      const diaSemanaAtual = portugalTime.getDay()
+      const horaAtual = portugalTime.getHours()
+      const minutosAtual = portugalTime.getMinutes()
+      const tempoAtualEmMinutos = (horaAtual * 60) + minutosAtual
+
+      const horarioAbertura = (diaSemanaAtual === 0 || diaSemanaAtual === 2 || diaSemanaAtual === 3)
+        ? (17 * 60) + 30
+        : 17 * 60
+
+      const horarioFechamento = 22 * 60
+      const isDentroHorario = tempoAtualEmMinutos >= horarioAbertura && tempoAtualEmMinutos < horarioFechamento
+      const isDiaAberto = (diaSemanaAtual >= 2 && diaSemanaAtual <= 6) || diaSemanaAtual === 0
+
+      setIsStoreOpen(isDentroHorario && isDiaAberto)
+    }
+
+    checkStoreStatus()
+    const interval = setInterval(checkStoreStatus, 60000)
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <div className="flex flex-col w-full h-full bg-white cursor-pointer scrollbar-hide">
@@ -123,14 +153,14 @@ const horarioFechamento = 22 * 60
               <button
                 type="button"
                 onClick={handleOpenHorarioModal} // Make sure this is correctly connected
-                className={`relative inline-flex items-center ${isDiaAberto ? 'bg-green-100' : 'bg-red-100'} font-serif ml-2 py-0 px-2 rounded text-sm font-medium text-${isDiaAberto ? 'green-500' : 'red-500'} hover:text-customRed focus:outline-none`}
+                className={`relative inline-flex items-center ${isStoreOpen ? 'bg-green-100' : 'bg-red-100'} font-serif ml-2 py-0 px-2 rounded text-sm font-medium text-${isStoreOpen ? 'green-500' : 'red-500'} hover:text-customRed focus:outline-none`}
               >
                 <span className={`relative flex h-2 w-2 mr-1`}>
-                  <span className={`animate-ping absolute inline-flex -top-2.5 -right-16 h-full w-full rounded-full ${isDiaAberto ? 'bg-green-500' : 'bg-red-500'} opacity-75`}></span>
-                  <span className={`relative inline-flex rounded-full -top-2.5 -right-16 h-2 w-2 ${isDiaAberto ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                  <span className={`animate-ping absolute inline-flex -top-2.5 -right-16 h-full w-full rounded-full ${isStoreOpen ? 'bg-green-500' : 'bg-red-500'} opacity-75`}></span>
+                  <span className={`relative inline-flex rounded-full -top-2.5 -right-16 h-2 w-2 ${isStoreOpen ? 'bg-green-500' : 'bg-red-500'}`}></span>
                 </span>
                 <p className="relative -left-2">
-                  {isDiaAberto ? 'Aberto' : 'Fechado'}
+                  {isStoreOpen ? 'Aberto' : 'Fechado'}
                 </p>
               </button>
             </div>
@@ -142,7 +172,7 @@ const horarioFechamento = 22 * 60
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Category;
+export default Category
