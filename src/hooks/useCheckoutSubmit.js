@@ -100,8 +100,13 @@ const useCheckoutSubmit = (storeSetting) => {
 
   const submitHandler = async (data) => {
     // Initial validations
-    if (!scheduledDelivery || !shippingCost) {
-      console.log("Selecione data de agendamento e região de entrega")
+    // if (!scheduledDelivery || !shippingCost) {
+    //   console.log("Selecione data de agendamento e região de entrega")
+    //   return
+    // }
+
+    if (!shippingCost) {
+      console.log("Selecione uma região de entrega")
       return
     }
 

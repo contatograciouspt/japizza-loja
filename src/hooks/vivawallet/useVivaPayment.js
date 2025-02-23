@@ -12,7 +12,7 @@ export default function usePaymentVivaWallet() {
     // Função para gerar o ordercode no servidor e gerar o pagamento
     const useVivaPayment = async (vivaPaymentData) => {
         // Validate required data before processing
-        if (!vivaPaymentData.amount || !vivaPaymentData.customer || !vivaPaymentData.agendamento) {
+        if (!vivaPaymentData.amount || !vivaPaymentData.customer) {
             setError("Dados de pagamento incompletos")
         } else {
             console.log.log("Avançando com pagamento...")

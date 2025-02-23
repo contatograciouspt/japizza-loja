@@ -146,10 +146,11 @@ const Checkout = () => {
   // Add validation function
   const checkEnableOrderButton = () => {
     const hasValidShipping = selectedMapShippingCost > 0
-    const hasValidSchedule = scheduledDelivery !== null
+    // const hasValidSchedule = scheduledDelivery !== null
     const hasValidPayment = pagamentoNaEntrega ? formaDePagamento !== null : true
   
-    setIsOrderButtonEnabled(hasValidShipping && hasValidSchedule && hasValidPayment)
+    // setIsOrderButtonEnabled(hasValidShipping && hasValidSchedule && hasValidPayment)
+    setIsOrderButtonEnabled(hasValidShipping && hasValidPayment)
   }
 
   const handleOpenMapModal = () => {
@@ -259,7 +260,7 @@ const Checkout = () => {
 
   React.useEffect(() => {
     checkEnableOrderButton()
-}, [selectedMapShippingCost, scheduledDelivery, pagamentoNaEntrega, formaDePagamento])
+}, [selectedMapShippingCost, pagamentoNaEntrega, formaDePagamento])
 
   React.useEffect(() => {
     const storedLojaSelecionada = localStorage.getItem("selectedStore")
@@ -566,8 +567,8 @@ const Checkout = () => {
                       className={`${isEmpty || isCheckoutSubmit || !isOrderButtonEnabled
                         ? 'bg-gray-400 cursor-not-allowed opacity-60'
                         : 'bg-customRed hover:bg-red-500'}
-                      border border-customRed transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full col-span-6 sm:col-span-3
-                      `}>
+                        border border-customRed transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full col-span-6 sm:col-span-3
+                        `}>
                       {isCheckoutSubmit ? (
                         <span className="flex justify-center text-center">
                           <img src="/loader/spinner.gif" alt="Loading" width={20} height={10} />
