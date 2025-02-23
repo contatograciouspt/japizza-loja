@@ -28,7 +28,6 @@ const useAddToCart = () => {
     } else {
       if (item <= (product?.variants?.length > 0 ? product?.variant?.quantity : product?.stock)) {
         addItem(updatedProduct, item)
-        console.log("Produto adicionado no carrinho com extras:", updatedProduct)
         notifySuccess(`${item} ${product.title} adicionado no carrinho!`)
       } else {
         notifyError("Estoque insuficiente!")

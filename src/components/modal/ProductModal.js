@@ -48,7 +48,6 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
     if (extrasAttribute) {
       updatedCheckboxes.forEach(extraId => {
         const selectedExtra = extrasAttribute.variants.find(v => v._id === extraId)
-        console.log("Nome do Extra selecionado: ", selectedExtra)
         if (selectedExtra?.name?.pt) {
           selectedExtras.push(selectedExtra.name.pt)
           const variantWithPrice = product?.variants?.find(v => v[attributeId] === extraId)
