@@ -152,7 +152,6 @@ const useCheckoutSubmit = (storeSetting) => {
         paymentNotification: true,
         tipAmount: 0,
         status: "Pendente",
-        merchantTrns: `Extras - ${cart.extras.join(", ")}`,
         subTotal: cartTotal,
         shippingCost: shippingCost,
         discount: discountAmount,
