@@ -15,14 +15,12 @@ import Discount from "@components/common/Discount"
 import VariantList from "@components/variants/VariantList"
 import { SidebarContext } from "@context/SidebarContext"
 import useUtilsFunction from "@hooks/useUtilsFunction"
-import { handleLogEvent } from "src/lib/analytics"
 
 const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }) => {
-  const router = useRouter()
   const { setIsLoading, isLoading } = useContext(SidebarContext)
   const { t } = useTranslation("ns1")
   const { handleAddItem, setItem, item } = useAddToCart()
-  const { lang, showingTranslateValue, getNumber } = useUtilsFunction()
+  const { showingTranslateValue, getNumber } = useUtilsFunction()
 
   // Estados
   const [value, setValue] = useState("")
@@ -39,22 +37,34 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
   const [selectVa, setSelectVa] = useState({})
   const [variantTitle, setVariantTitle] = useState([])
   const [variants, setVariants] = useState([])
+  const [selectedProductExtras, setSelectedProductExtras] = useState([])
 
-  // Função para somar os preços de extras (Checkbox)
   const onChangeMultiSelect = (updatedCheckboxes, attributeId) => {
     let totalExtraPrice = 0
-    const extrasAttribute = attributes.find(attr => attr._id === attributeId)
+    const selectedExtras = []
+
+    const extrasAttribute = attributes.find(attr => attr._id === attributeId && attr.option === "Checkbox")
+
     if (extrasAttribute) {
-      const extraVariants = product?.variants?.filter(v => v[extrasAttribute._id])
-      if (extraVariants) {
-        updatedCheckboxes.forEach(extraValue => {
-          const selectedExtraVariant = extraVariants.find(v => v[extrasAttribute._id] === extraValue)
-          if (selectedExtraVariant && selectedExtraVariant.price) {
-            totalExtraPrice += getNumber(selectedExtraVariant.price)
+      updatedCheckboxes.forEach(extraId => {
+        const selectedExtra = extrasAttribute.variants.find(v => v._id === extraId)
+        console.log("Nome do Extra selecionado: ", selectedExtra)
+        if (selectedExtra?.name?.pt) {
+          selectedExtras.push(selectedExtra.name.pt)
+          const variantWithPrice = product?.variants?.find(v => v[attributeId] === extraId)
+          if (variantWithPrice?.price) {
+            totalExtraPrice += getNumber(variantWithPrice.price)
           }
-        })
-      }
+        }
+      })
+
+      setSelectedProductExtras(selectedExtras)
+      setSelectVariant(prev => ({
+        ...prev,
+        selectedExtras: selectedExtras
+      }))
     }
+
     setExtraPrices(totalExtraPrice)
   }
 
@@ -62,6 +72,7 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
   useEffect(() => {
     let currentBasePrice = 0
     let selectedVariantResult
+    let selectedVariantNames = []
 
     // Verifica se já selecionou algo
     if (Object.keys(selectVa).length > 0) {
@@ -69,21 +80,32 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
       selectedVariantResult = product?.variants?.filter((variant) =>
         Object.keys(selectVa).every((k) => selectVa[k] === variant[k])
       )
+
+      // Collect variant names
+      variantTitle?.forEach(attribute => {
+        const selectedValue = selectVa[attribute._id]
+        const selectedVariant = attribute.variants?.find(v => v._id === selectedValue)
+        if (selectedVariant) {
+          selectedVariantNames.push(showingTranslateValue(selectedVariant.name))
+        }
+      })
     }
 
     if (selectedVariantResult && selectedVariantResult.length > 0) {
       const resultVariant = selectedVariantResult[0]
       setVariants(selectedVariantResult)
-      setSelectVariant(resultVariant)
+      // setSelectVariant(resultVariant)
+      setSelectVariant({
+        ...resultVariant,
+        variantNames: selectedVariantNames.join(', ')
+      })
       setSelectVa(resultVariant)
       setImg(resultVariant?.image)
       setStock(resultVariant?.quantity)
       currentBasePrice = getNumber(resultVariant?.price)
 
       const originalPriceForVariant = getNumber(resultVariant?.originalPrice)
-      const discountPercentage = getNumber(
-        ((originalPriceForVariant - currentBasePrice) / originalPriceForVariant) * 100
-      )
+      const discountPercentage = getNumber(((originalPriceForVariant - currentBasePrice) / originalPriceForVariant) * 100)
       setDiscount(discountPercentage)
       setBasePrice(currentBasePrice)
       setOriginalPrice(originalPriceForVariant)
@@ -99,9 +121,7 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
       currentBasePrice = getNumber(firstVariant?.price)
 
       const originalPriceForVariant = getNumber(firstVariant?.originalPrice)
-      const discountPercentage = getNumber(
-        ((originalPriceForVariant - currentBasePrice) / originalPriceForVariant) * 100
-      )
+      const discountPercentage = getNumber(((originalPriceForVariant - currentBasePrice) / originalPriceForVariant) * 100)
       setDiscount(discountPercentage)
       setBasePrice(currentBasePrice)
       setOriginalPrice(originalPriceForVariant)
@@ -113,9 +133,7 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
       currentBasePrice = getNumber(product?.prices?.price)
 
       const originalPriceProduct = getNumber(product?.prices?.originalPrice)
-      const discountPercentage = getNumber(
-        ((originalPriceProduct - currentBasePrice) / originalPriceProduct) * 100
-      )
+      const discountPercentage = getNumber(((originalPriceProduct - currentBasePrice) / originalPriceProduct) * 100)
       setDiscount(discountPercentage)
       setBasePrice(currentBasePrice)
       setOriginalPrice(originalPriceProduct)
@@ -144,39 +162,24 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
   // Botão Adicionar ao carrinho
   const handleAddToCart = (p) => {
     if (p.variants.length === 1 && p.variants[0].quantity < 1) {
-      return notifyError("Insufficient stock")
+      return notifyError("Estoque insuficiente")
     }
-    if (stock <= 0) return notifyError("Insufficient stock")
+    if (stock <= 0) return notifyError("Estoque insuficiente")
 
     // Verifica se a variante atual corresponde à seleção
-    if (
-      product?.variants.map(
-        (variant) =>
-          Object.entries(variant).sort().toString() ===
-          Object.entries(selectVariant).sort().toString()
-      )
-    ) {
-      const { variants, categories, description, ...updatedProduct } = product
+    if (product?.variants.map((variant) => Object.entries(variant).sort().toString() === Object.entries(selectVariant).sort().toString())) {
       const newItem = {
-        ...updatedProduct,
-        id: `${p?.variants.length <= 0
-          ? p._id
-          : p._id + "-" + variantTitle?.map((att) => selectVariant[att._id]).join("-")
-          }`,
-        title: `${p?.variants.length <= 0
-          ? showingTranslateValue(p.title)
-          : showingTranslateValue(p.title) +
-          "-" +
-          variantTitle
-            ?.map((att) =>
-              att.variants?.find((v) => v._id === selectVariant[att._id])
-            )
-            .map((el) => showingTranslateValue(el?.name))
-          }`,
+        ...p,
+        id: `${p?.variants.length <= 0 ? p._id : p._id + "-" + variantTitle?.map((att) => selectVariant[att._id]).join("-")}`,
+        title: `${p?.variants.length <= 0 ? showingTranslateValue(p.title) : showingTranslateValue(p.title) + "-" + variantTitle?.map((att) => att.variants?.find((v) => v._id === selectVariant[att._id])).map((el) => showingTranslateValue(el?.name))}`,
         image: img,
-        variant: selectVariant || {},
+        variant: {
+          ...selectVariant,
+          variantNames: variantTitle?.map((att) => att.variants?.find((v) => v._id === selectVariant[att._id])).map((el) => showingTranslateValue(el?.name)).join(", ")
+        },
+        extras: selectedProductExtras,
         price: price,
-        originalPrice: originalPrice,
+        originalPrice: originalPrice
       }
       handleAddItem(newItem)
     } else {

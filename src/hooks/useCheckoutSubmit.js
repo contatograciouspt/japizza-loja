@@ -101,12 +101,12 @@ const useCheckoutSubmit = (storeSetting) => {
   const submitHandler = async (data) => {
     // Initial validations
     if (!scheduledDelivery || !shippingCost) {
-      notifyError("Selecione data de agendamento e região de entrega")
+      console.log("Selecione data de agendamento e região de entrega")
       return
     }
 
     if (pagamentoNaEntrega && !formaDePagamento.method) {
-      notifyError("Selecione uma forma de pagamento")
+      console.log("Selecione uma forma de pagamento")
       return
     }
 
@@ -122,7 +122,7 @@ const useCheckoutSubmit = (storeSetting) => {
           slug: item.slug,
           image: item.image,
           variant: item.variant,
-          variantNames: item.variantNames,
+          extras: item.extras,
           zoneSoftId: item.zoneSoftId,
           price: item.price,
           originalPrice: item.originalPrice,
@@ -152,18 +152,17 @@ const useCheckoutSubmit = (storeSetting) => {
         paymentNotification: true,
         tipAmount: 0,
         status: "Pendente",
+        merchantTrns: `Extras - ${cart.extras.join(", ")}`,
         subTotal: cartTotal,
         shippingCost: shippingCost,
         discount: discountAmount,
         total: total,
+        lojaSelecionada: lojaSelecionada,
         agendamento: scheduledDelivery ? {
           data: scheduledDelivery.date,
           horario: scheduledDelivery.time
         } : null,
-        localizacao: coordenadas ? {
-          latitude: coordenadas.latitude,
-          longitude: coordenadas.longitude
-        } : null
+        localizacao: coordenadas
       }
 
       console.log("orderData", orderData)
@@ -336,7 +335,8 @@ const useCheckoutSubmit = (storeSetting) => {
     setScheduledDelivery,
     setSelectedOption,
     selectedOption,
-    formaDePagamento
+    formaDePagamento,
+    setLojaSelecionada
   }
 }
 

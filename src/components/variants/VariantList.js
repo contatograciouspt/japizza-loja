@@ -22,12 +22,29 @@ const VariantList = ({
         : [...selectedCheckboxes, v]
 
       setSelectedCheckboxes(updatedSelection)
+
+      // Get current attribute and selected extras names
+      const currentAttribute = varTitle.find(vr => vr._id === att)
+      const selectedNames = updatedSelection.map(selectedId => {
+        const variant = currentAttribute?.variants?.find(v => v._id === selectedId)
+        return variant?.name?.pt || ''
+      }).filter(Boolean)
+
+      setSelectVariant(prev => ({
+        ...prev,
+        [att]: updatedSelection,
+        selectedExtras: selectedNames
+      }))
+
       onChangeMultiSelect(updatedSelection, att)
     } else {
       setValue(v)
       setSelectVariant(prev => ({
         ...prev,
-        [att]: v
+        [att]: v,
+        variantNames: showingTranslateValue(
+          varTitle.find(vr => vr._id === att)?.variants.find(el => el._id === v)?.name
+        )
       }))
       setSelectVa({ [att]: v })
     }

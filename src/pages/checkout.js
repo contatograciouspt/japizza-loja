@@ -112,6 +112,8 @@ const Checkout = () => {
     hasShippingAddress,
     isCouponAvailable,
     coordenadas,
+    setLojaSelecionada,
+    lojaSelecionada,
     setCoordenadas,
     pagamentoNaEntrega,
     setPagamentoNaEntrega,
@@ -258,6 +260,13 @@ const Checkout = () => {
   React.useEffect(() => {
     checkEnableOrderButton()
 }, [selectedMapShippingCost, scheduledDelivery, pagamentoNaEntrega, formaDePagamento])
+
+  React.useEffect(() => {
+    const storedLojaSelecionada = localStorage.getItem("selectedStore")
+    if (storedLojaSelecionada) {
+      setLojaSelecionada(storedLojaSelecionada)
+    }
+  }, [lojaSelecionada])
 
   return (
     <>
