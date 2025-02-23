@@ -179,7 +179,8 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
         },
         extras: selectedProductExtras,
         price: price,
-        originalPrice: originalPrice
+        originalPrice: originalPrice,
+        zoneSoftId: p.zoneSoftId
       }
       handleAddItem(newItem)
     } else {

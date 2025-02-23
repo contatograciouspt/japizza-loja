@@ -156,6 +156,7 @@ const useCheckoutSubmit = (storeSetting) => {
         shippingCost: shippingCost,
         discount: discountAmount,
         total: total,
+        frete: shippingCost,
         lojaSelecionada: lojaSelecionada,
         agendamento: scheduledDelivery ? {
           data: scheduledDelivery.date,
