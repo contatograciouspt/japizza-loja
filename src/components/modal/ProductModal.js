@@ -38,38 +38,16 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
   const [variantTitle, setVariantTitle] = useState([])
   const [variants, setVariants] = useState([])
   const [selectedProductExtras, setSelectedProductExtras] = useState([])
+  // 1. Adicione um estado para armazenar os IDs dos extras selecionados
+  const [selectedExtraIds, setSelectedExtraIds] = useState([])
 
-  // const onChangeMultiSelect = (updatedCheckboxes, attributeId) => {
-  //   let totalExtraPrice = 0
-  //   const selectedExtras = []
-
-  //   const extrasAttribute = attributes.find(attr => attr._id === attributeId && attr.option === "Checkbox")
-
-  //   if (extrasAttribute) {
-  //     updatedCheckboxes.forEach(extraId => {
-  //       const selectedExtra = extrasAttribute.variants.find(v => v._id === extraId)
-  //       if (selectedExtra?.name?.pt) {
-  //         selectedExtras.push(selectedExtra.name.pt)
-  //         const variantWithPrice = product?.variants?.find(v => v[attributeId] === extraId)
-  //         if (variantWithPrice?.price) {
-  //           totalExtraPrice += getNumber(variantWithPrice.price)
-  //         }
-  //       }
-  //     })
-
-  //     setSelectedProductExtras(selectedExtras)
-  //     setSelectVariant(prev => ({
-  //       ...prev,
-  //       selectedExtras: selectedExtras
-  //     }))
-  //   }
-
-  //   setExtraPrices(totalExtraPrice)
-  // }
-
+  // 2. Função que trata a seleção dos extras (Checkbox)
   const onChangeMultiSelect = (updatedCheckboxes, attributeId) => {
     let totalExtraPrice = 0
     const selectedExtras = []
+
+    // Salva os IDs dos extras selecionados para usarmos depois quando o tamanho mudar
+    setSelectedExtraIds(updatedCheckboxes)
 
     // Localiza o objeto do atributo Extras
     const extrasAttribute = attributes.find(
@@ -91,21 +69,21 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
         if (selectedExtra?.name?.pt) {
           selectedExtras.push(selectedExtra.name.pt)
 
-          // Agora localiza a COMBINAÇÃO que tenha (Tamanho=selectedSizeId E Extra=extraId)
+          // Localiza a combinação que tenha (Tamanho = selectedSizeId E Extra = extraId)
           const variantWithPrice = product?.variants?.find(
             (variant) =>
               variant[sizeAttribute._id] === selectedSizeId &&
               variant[attributeId] === extraId
           )
 
-          // Se achou o variant certo, soma o preço
+          // Se achou a combinação, soma o preço
           if (variantWithPrice?.price) {
             totalExtraPrice += getNumber(variantWithPrice.price)
           }
         }
       })
 
-      // Salva a lista de extras selecionados
+      // Atualiza os estados com os extras selecionados (nomes e na seleção do variant)
       setSelectedProductExtras(selectedExtras)
       setSelectVariant((prev) => ({
         ...prev,
@@ -113,28 +91,77 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
       }))
     }
 
-    // Atualiza o total de extras no state
+    // Atualiza o total dos preços dos extras
     setExtraPrices(totalExtraPrice)
   }
 
+  // const onChangeMultiSelect = (updatedCheckboxes, attributeId) => {
+  //   let totalExtraPrice = 0
+  //   const selectedExtras = []
 
-  // useEffect para atualizar preço base e imagem, conforme o Tamanho selecionado (Radio)
+  //   // Localiza o objeto do atributo Extras
+  //   const extrasAttribute = attributes.find(
+  //     (attr) => attr._id === attributeId && attr.option === "Checkbox"
+  //   )
+
+  //   // Localiza o objeto do atributo Tamanho (Radio)
+  //   const sizeAttribute = attributes.find(
+  //     (attr) => attr.option === "Radio" && attr.title?.pt === "Tamanho"
+  //   )
+
+  //   // ID do tamanho atualmente selecionado
+  //   const selectedSizeId = selectVa[sizeAttribute?._id]
+
+  //   if (extrasAttribute) {
+  //     updatedCheckboxes.forEach((extraId) => {
+  //       // Localiza info do Extra (para exibir o nome, etc.)
+  //       const selectedExtra = extrasAttribute.variants.find((v) => v._id === extraId)
+  //       if (selectedExtra?.name?.pt) {
+  //         selectedExtras.push(selectedExtra.name.pt)
+
+  //         // Agora localiza a COMBINAÇÃO que tenha (Tamanho=selectedSizeId E Extra=extraId)
+  //         const variantWithPrice = product?.variants?.find(
+  //           (variant) =>
+  //             variant[sizeAttribute._id] === selectedSizeId &&
+  //             variant[attributeId] === extraId
+  //         )
+
+  //         // Se achou o variant certo, soma o preço
+  //         if (variantWithPrice?.price) {
+  //           totalExtraPrice += getNumber(variantWithPrice.price)
+  //         }
+  //       }
+  //     })
+
+  //     // Salva a lista de extras selecionados
+  //     setSelectedProductExtras(selectedExtras)
+  //     setSelectVariant((prev) => ({
+  //       ...prev,
+  //       selectedExtras: selectedExtras,
+  //     }))
+  //   }
+
+  //   // Atualiza o total de extras no state
+  //   setExtraPrices(totalExtraPrice)
+  // }
+
+
+  // 3. useEffect para atualizar o preço base, imagem, etc. conforme o Tamanho (Radio)
   useEffect(() => {
     let currentBasePrice = 0
     let selectedVariantResult
     let selectedVariantNames = []
 
-    // Verifica se já selecionou algo
     if (Object.keys(selectVa).length > 0) {
-      // Filtra product.variants para achar a variante que bate com o que está em selectVa
+      // Filtra product.variants para achar a variante que bate com o que está em selectVa
       selectedVariantResult = product?.variants?.filter((variant) =>
         Object.keys(selectVa).every((k) => selectVa[k] === variant[k])
       )
 
-      // Collect variant names
-      variantTitle?.forEach(attribute => {
+      // Coleta os nomes das variantes selecionadas
+      variantTitle?.forEach((attribute) => {
         const selectedValue = selectVa[attribute._id]
-        const selectedVariant = attribute.variants?.find(v => v._id === selectedValue)
+        const selectedVariant = attribute.variants?.find((v) => v._id === selectedValue)
         if (selectedVariant) {
           selectedVariantNames.push(showingTranslateValue(selectedVariant.name))
         }
@@ -144,10 +171,9 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
     if (selectedVariantResult && selectedVariantResult.length > 0) {
       const resultVariant = selectedVariantResult[0]
       setVariants(selectedVariantResult)
-      // setSelectVariant(resultVariant)
       setSelectVariant({
         ...resultVariant,
-        variantNames: selectedVariantNames.join(', ')
+        variantNames: selectedVariantNames.join(", "),
       })
       setSelectVa(resultVariant)
       setImg(resultVariant?.image)
@@ -155,13 +181,14 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
       currentBasePrice = getNumber(resultVariant?.price)
 
       const originalPriceForVariant = getNumber(resultVariant?.originalPrice)
-      const discountPercentage = getNumber(((originalPriceForVariant - currentBasePrice) / originalPriceForVariant) * 100)
+      const discountPercentage = getNumber(
+        ((originalPriceForVariant - currentBasePrice) / originalPriceForVariant) * 100
+      )
       setDiscount(discountPercentage)
       setBasePrice(currentBasePrice)
       setOriginalPrice(originalPriceForVariant)
-    }
-    else if (product?.variants?.length > 0) {
-      // Caso não tenha selecionado nada ainda, pega a primeira variante
+    } else if (product?.variants?.length > 0) {
+      // Caso não tenha selecionado nada ainda, pega a primeira variante
       const firstVariant = product.variants[0]
       setVariants([firstVariant])
       setStock(firstVariant?.quantity)
@@ -171,26 +198,29 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
       currentBasePrice = getNumber(firstVariant?.price)
 
       const originalPriceForVariant = getNumber(firstVariant?.originalPrice)
-      const discountPercentage = getNumber(((originalPriceForVariant - currentBasePrice) / originalPriceForVariant) * 100)
+      const discountPercentage = getNumber(
+        ((originalPriceForVariant - currentBasePrice) / originalPriceForVariant) * 100
+      )
       setDiscount(discountPercentage)
       setBasePrice(currentBasePrice)
       setOriginalPrice(originalPriceForVariant)
-    }
-    else {
-      // Se não tiver variants, pega do produto
+    } else {
+      // Se não tiver variants, pega do produto
       setStock(product?.stock)
       setImg(product?.image[0])
       currentBasePrice = getNumber(product?.prices?.price)
 
       const originalPriceProduct = getNumber(product?.prices?.originalPrice)
-      const discountPercentage = getNumber(((originalPriceProduct - currentBasePrice) / originalPriceProduct) * 100)
+      const discountPercentage = getNumber(
+        ((originalPriceProduct - currentBasePrice) / originalPriceProduct) * 100
+      )
       setDiscount(discountPercentage)
       setBasePrice(currentBasePrice)
       setOriginalPrice(originalPriceProduct)
     }
 
-    // Preço final = base + extras
-    setPrice(basePrice + extraPrices)
+    // Atualiza o preço final (base + extras)
+    setPrice(currentBasePrice + extraPrices)
   }, [
     product?.prices?.discount,
     product?.prices?.originalPrice,
@@ -199,8 +229,43 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
     product?.variants,
     selectVa,
     extraPrices,
-    basePrice
+    basePrice,
   ])
+
+  // 4. Novo useEffect para recalcular o preço dos extras sempre que o Tamanho for alterado
+  useEffect(() => {
+    if (selectedExtraIds.length > 0) {
+      let totalExtraPrice = 0
+
+      // Localiza o objeto do atributo Extras
+      const extrasAttribute = attributes.find(
+        (attr) => attr.option === "Checkbox" && attr.title?.pt === "Extras"
+      )
+
+      // Localiza o objeto do atributo Tamanho (Radio)
+      const sizeAttribute = attributes.find(
+        (attr) => attr.option === "Radio" && attr.title?.pt === "Tamanho"
+      )
+
+      // ID do tamanho atualmente selecionado
+      const selectedSizeId = selectVa[sizeAttribute?._id]
+
+      if (extrasAttribute) {
+        selectedExtraIds.forEach((extraId) => {
+          const variantWithPrice = product?.variants?.find(
+            (variant) =>
+              variant[sizeAttribute._id] === selectedSizeId &&
+              variant[extrasAttribute._id] === extraId
+          )
+          if (variantWithPrice?.price) {
+            totalExtraPrice += getNumber(variantWithPrice.price)
+          }
+        })
+      }
+      setExtraPrices(totalExtraPrice)
+    }
+  }, [selectVa, selectedExtraIds, product?.variants, attributes])
+
 
   // Descobre quais atributos existem (para renderizar no map)
   useEffect(() => {
