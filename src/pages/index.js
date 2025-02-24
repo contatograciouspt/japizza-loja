@@ -87,18 +87,6 @@ const Home = ({ popularProducts, discountProducts, attributes }) => {
       // Calculate store status
       const isDentroHorario = tempoAtualEmMinutos >= horarioAbertura && tempoAtualEmMinutos < horarioFechamento
       const isDiaAberto = (diaSemanaAtual >= 2 && diaSemanaAtual <= 6) || diaSemanaAtual === 0
-
-      // Debug logs
-      // console.log('Portugal Time Components:', {
-      //   diaSemana: diaSemanaAtual,
-      //   hora: horaAtual,
-      //   minutos: minutosAtual,
-      //   tempoAtual: tempoAtualEmMinutos,
-      //   horarioAbertura,
-      //   isDentroHorario,
-      //   isDiaAberto
-      // })
-
       const hasSelectedStore = localStorage.getItem('selectedStore')
 
       if (hasSelectedStore) {
@@ -116,7 +104,7 @@ const Home = ({ popularProducts, discountProducts, attributes }) => {
     }
 
     verificarHorarioFuncionamento()
-    const interval = setInterval(verificarHorarioFuncionamento, 60000)
+    const interval = setInterval(verificarHorarioFuncionamento, 300000)
     return () => clearInterval(interval)
   }, [])
 

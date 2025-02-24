@@ -39,33 +39,84 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
   const [variants, setVariants] = useState([])
   const [selectedProductExtras, setSelectedProductExtras] = useState([])
 
+  // const onChangeMultiSelect = (updatedCheckboxes, attributeId) => {
+  //   let totalExtraPrice = 0
+  //   const selectedExtras = []
+
+  //   const extrasAttribute = attributes.find(attr => attr._id === attributeId && attr.option === "Checkbox")
+
+  //   if (extrasAttribute) {
+  //     updatedCheckboxes.forEach(extraId => {
+  //       const selectedExtra = extrasAttribute.variants.find(v => v._id === extraId)
+  //       if (selectedExtra?.name?.pt) {
+  //         selectedExtras.push(selectedExtra.name.pt)
+  //         const variantWithPrice = product?.variants?.find(v => v[attributeId] === extraId)
+  //         if (variantWithPrice?.price) {
+  //           totalExtraPrice += getNumber(variantWithPrice.price)
+  //         }
+  //       }
+  //     })
+
+  //     setSelectedProductExtras(selectedExtras)
+  //     setSelectVariant(prev => ({
+  //       ...prev,
+  //       selectedExtras: selectedExtras
+  //     }))
+  //   }
+
+  //   setExtraPrices(totalExtraPrice)
+  // }
+
   const onChangeMultiSelect = (updatedCheckboxes, attributeId) => {
     let totalExtraPrice = 0
     const selectedExtras = []
 
-    const extrasAttribute = attributes.find(attr => attr._id === attributeId && attr.option === "Checkbox")
+    // Localiza o objeto do atributo Extras
+    const extrasAttribute = attributes.find(
+      (attr) => attr._id === attributeId && attr.option === "Checkbox"
+    )
+
+    // Localiza o objeto do atributo Tamanho (Radio)
+    const sizeAttribute = attributes.find(
+      (attr) => attr.option === "Radio" && attr.title?.pt === "Tamanho"
+    )
+
+    // ID do tamanho atualmente selecionado
+    const selectedSizeId = selectVa[sizeAttribute?._id]
 
     if (extrasAttribute) {
-      updatedCheckboxes.forEach(extraId => {
-        const selectedExtra = extrasAttribute.variants.find(v => v._id === extraId)
+      updatedCheckboxes.forEach((extraId) => {
+        // Localiza info do Extra (para exibir o nome, etc.)
+        const selectedExtra = extrasAttribute.variants.find((v) => v._id === extraId)
         if (selectedExtra?.name?.pt) {
           selectedExtras.push(selectedExtra.name.pt)
-          const variantWithPrice = product?.variants?.find(v => v[attributeId] === extraId)
+
+          // Agora localiza a COMBINAÇÃO que tenha (Tamanho=selectedSizeId E Extra=extraId)
+          const variantWithPrice = product?.variants?.find(
+            (variant) =>
+              variant[sizeAttribute._id] === selectedSizeId &&
+              variant[attributeId] === extraId
+          )
+
+          // Se achou o variant certo, soma o preço
           if (variantWithPrice?.price) {
             totalExtraPrice += getNumber(variantWithPrice.price)
           }
         }
       })
 
+      // Salva a lista de extras selecionados
       setSelectedProductExtras(selectedExtras)
-      setSelectVariant(prev => ({
+      setSelectVariant((prev) => ({
         ...prev,
-        selectedExtras: selectedExtras
+        selectedExtras: selectedExtras,
       }))
     }
 
+    // Atualiza o total de extras no state
     setExtraPrices(totalExtraPrice)
   }
+
 
   // useEffect para atualizar preço base e imagem, conforme o Tamanho selecionado (Radio)
   useEffect(() => {
