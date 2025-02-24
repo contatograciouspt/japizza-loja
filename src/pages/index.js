@@ -149,7 +149,7 @@ const Home = ({ popularProducts, discountProducts, attributes }) => {
               {showRedirecionarLojas && <RedirecionarLojas />}
               {!showRedirecionarLojas && lojaFechadaModal && (
                 <LojaFechadaModal
-                  isOpen={!(isDentroHorario && isDiaAberto)}
+                  isOpen={!storeStatus.isOpen}
                   onClose={() => setLojaFechadaModal(false)}
                 />
               )}
