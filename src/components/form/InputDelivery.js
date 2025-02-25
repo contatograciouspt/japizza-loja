@@ -1,3 +1,4 @@
+import useCheckoutSubmit from "@hooks/useCheckoutSubmit"
 import React from "react"
 
 const InputDelivery = ({
@@ -9,7 +10,24 @@ const InputDelivery = ({
     name,
     Icon,
     disabled = false,
+    warningMessage,
+    isRegionSelected,
+    handleOpenPaymentModal,
+    setDeliveryWarningMessage
 }) => {
+
+    const handleChange = (e) => {
+        onChange(e)
+        if (e.target.checked) {
+            if (!isRegionSelected) {
+                setDeliveryWarningMessage("Selecione o valor do frete em Delivery")
+            }
+            handleOpenPaymentModal() // Add this to open payment modal
+        } else {
+            setDeliveryWarningMessage("")
+        }
+    }
+
     return (
         <div>
             <div className="p-3 card border border-gray-200 bg-white rounded-md">
@@ -32,14 +50,20 @@ const InputDelivery = ({
                             type={type}
                             name={name || "pagamentoNaEntrega"}
                             checked={checked}
-                            onChange={onChange}
+                            onChange={handleChange}
                             className="form-checkbox outline-none focus:ring-0 text-customRed"
                             disabled={disabled}
                             value={value}
+                            isRegionSelected={isRegionSelected}
+                            setDeliveryWarningMessage={setDeliveryWarningMessage}
+                            handleOpenPaymentModal={handleOpenPaymentModal}
                         />
                     </div>
                 </label>
             </div>
+            {warningMessage && (
+                <p className="mt-2 text-sm text-red-500">{warningMessage}</p>
+            )}
         </div>
     )
 }

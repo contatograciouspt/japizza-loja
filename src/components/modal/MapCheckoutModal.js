@@ -2,22 +2,26 @@ import React, { useState } from "react"
 import { FaChevronDown, FaChevronUp } from "react-icons/fa"
 import { deliveryRegions } from "./Cidades"
 import { notifyError } from "@utils/toast"
+import useCheckoutSubmit from "@hooks/useCheckoutSubmit"
 
 export default function MapCheckoutModal({ isOpen, onClose, onSelectRegion }) {
     const [selectedRegionCost, setSelectedRegionCost] = useState(null)
     const [expandedRegion, setExpandedRegion] = useState(null)
     const [selectedCity, setSelectedCity] = useState(null)
+    const { setIsRegionSelected } = useCheckoutSubmit()
 
     if (!isOpen) return null
 
     const handleRegionSelect = (region) => {
         setSelectedRegionCost(region.cost)
         setSelectedCity(region)
+        setIsRegionSelected(true)
     }
 
     const handleConfirm = () => {
         if (selectedRegionCost !== null) {
             onSelectRegion(selectedRegionCost)
+            setIsRegionSelected(true)
             onClose()
         } else {
             notifyError("Por favor, selecione uma região de entrega.")

@@ -1,6 +1,6 @@
 import Cookies from "js-cookie"
 import dayjs from "dayjs"
-import { set, useForm } from "react-hook-form"
+import { useForm } from "react-hook-form"
 import { useCart } from "react-use-cart"
 import { useContext, useEffect, useRef, useState } from "react"
 
@@ -39,6 +39,9 @@ const useCheckoutSubmit = (storeSetting) => {
   const [selectedOption, setSelectedOption] = useState(null)
   const [selectedShippingOption, setSelectedShippingOption] = useState(null)
   const [isPickupActive, setIsPickupActive] = useState(false)
+  const [deliveryWarningMessage, setDeliveryWarningMessage] = useState("")
+  const [isRegionSelected, setIsRegionSelected] = useState(false)
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false)
 
   const couponRef = useRef("")
   const { isEmpty, items, cartTotal, emptyCart } = useCart()
@@ -101,7 +104,7 @@ const useCheckoutSubmit = (storeSetting) => {
   const productName = items.map((item) => item.title)
 
   const submitHandler = async (data) => {
-    if(isPickupActive){
+    if (isPickupActive) {
       console.log("Retirada na Loja")
     } else {
       if (!shippingCost) {
@@ -110,10 +113,10 @@ const useCheckoutSubmit = (storeSetting) => {
       }
     }
 
-    if (pagamentoNaEntrega && !formaDePagamento.method) {
-      console.log("Selecione uma forma de pagamento")
-      return
-    }
+    // if (pagamentoNaEntrega && !formaDePagamento.method) {
+    //   console.log("Selecione uma forma de pagamento")
+    //   return
+    // }
 
     try {
       setIsCheckoutSubmit(true)
@@ -216,7 +219,6 @@ const useCheckoutSubmit = (storeSetting) => {
   }
 
   const handleShippingCost = (value) => {
-    // console.log("handleShippingCost", value)
     setShippingCost(Number(value))
   }
 
@@ -295,6 +297,12 @@ const useCheckoutSubmit = (storeSetting) => {
   }
 
   return {
+    isPaymentModalOpen,
+    setIsPaymentModalOpen,
+    isRegionSelected,
+    setIsRegionSelected,
+    deliveryWarningMessage,
+    setDeliveryWarningMessage,
     isPickupActive,
     setIsPickupActive,
     selectedShippingOption,

@@ -36,9 +36,9 @@ const Checkout = () => {
   const [isMapModalOpen, setIsMapModalOpen] = React.useState(false)
   const [selectedMapShippingCost, setSelectedMapShippingCost] = React.useState(0)
   const [freteCoordenadas, setFreteCoordenadas] = React.useState("")
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = React.useState(false)
   const [isAgendamentoModalOpen, setIsAgendamentoModalOpen] = React.useState(false)
   const [isOrderButtonEnabled, setIsOrderButtonEnabled] = React.useState(false)
+
 
   React.useEffect(() => {
     const verificarHorarioFuncionamento = () => {
@@ -63,6 +63,12 @@ const Checkout = () => {
   }, [])
 
   const {
+    isPaymentModalOpen,
+    setIsPaymentModalOpen,
+    isRegionSelected,
+    setIsRegionSelected,
+    deliveryWarningMessage,
+    setDeliveryWarningMessage,
     isPickupActive,
     setIsPickupActive,
     couponInfo,
@@ -113,38 +119,84 @@ const Checkout = () => {
     setSelectedMapShippingCost(cost)
     handleShippingCost(cost)
     setIsMapModalOpen(false)
+    setIsRegionSelected(true)
     checkEnableOrderButton()
   }
 
   // Função para verificar e atualizar o estado do botão "Confirmar Pedido"
-  const checkEnableOrderButton = () => {
-    let isFormValid = true; // Começamos assumindo que o formulário é válido
+  // const checkEnableOrderButton = () => {
+  //   let isFormValid = true // Começamos assumindo que o formulário é válido
 
-    if (isPickupActive) { // Se "Retirada na Loja" está ATIVA
-      const camposObrigatoriosRetirada = ['firstName', 'lastName', 'nif', 'contact', 'email'];
-      for (const campo of camposObrigatoriosRetirada) {
-        if (errors[campo]) { // Se houver erro em algum campo OBRIGATÓRIO para Retirada, formulário é inválido
-          isFormValid = false;
-          break; // Não precisa verificar mais campos se já encontrou um erro
-        }
+  //   if (isPickupActive) { // Se "Retirada na Loja" está ATIVA
+  //     const camposObrigatoriosRetirada = ['firstName', 'lastName', 'nif', 'contact', 'email']
+  //     for (const campo of camposObrigatoriosRetirada) {
+  //       if (errors[campo]) { // Se houver erro em algum campo OBRIGATÓRIO para Retirada, formulário é inválido
+  //         isFormValid = false
+  //         break // Não precisa verificar mais campos se já encontrou um erro
+  //       }
+  //     }
+  //   } else { // Se "Retirada na Loja" está DESATIVADA (entrega normal)
+  //     const camposObrigatoriosEntrega = ['firstName', 'lastName', 'nif', 'contact', 'email', 'address', 'city', 'zipCode', 'country'] // Campos obrigatórios normais
+  //     for (const campo of camposObrigatoriosEntrega) {
+  //       if (errors[campo]) { // Se houver erro em algum campo OBRIGATÓRIO para Entrega, formulário é inválido
+  //         isFormValid = false
+  //         break // Não precisa verificar mais campos se já encontrou um erro
+  //       }
+  //     }
+
+  //     // Verifica se tem frete selecionado e pagamento na entrega
+  //     if (pagamentoNaEntrega && shippingCost > 0) {
+  //       isFormValid = true
+  //     }
+
+  //     // Verifica se tem região selecionada
+  //     if (!shippingCost && !isPickupActive) {
+  //       isFormValid = false
+  //     }
+
+  //     if (selectedShippingOption !== 'Delivery' && !pagamentoNaEntrega) {
+  //       isFormValid = false
+  //     }
+
+  //     if (selectedMapShippingCost <= 0) { // Se frete não foi selecionado, inválido também
+  //       isFormValid = false
+  //     }
+
+  //     if (pagamentoNaEntrega && formaDePagamento.method === null) { // Se pagamento na entrega e método não selecionado, inválido
+  //       isFormValid = false
+  //     }
+  //   }
+  //   setIsOrderButtonEnabled(isFormValid) // Atualiza o estado do botão baseado na validade do form
+  // }
+
+  const checkEnableOrderButton = () => {
+    let isFormValid = true
+
+    if (isPickupActive) {
+      const camposObrigatoriosRetirada = ['firstName', 'lastName', 'nif', 'contact', 'email']
+      isFormValid = !camposObrigatoriosRetirada.some(campo => errors[campo])
+    } else {
+      const camposObrigatoriosEntrega = ['firstName', 'lastName', 'nif', 'contact', 'email', 'address', 'city', 'zipCode', 'country']
+      isFormValid = !camposObrigatoriosEntrega.some(campo => errors[campo])
+
+      // Verifica condições de entrega
+      if (pagamentoNaEntrega) {
+        isFormValid = isFormValid && shippingCost > 0
       }
-    } else { // Se "Retirada na Loja" está DESATIVADA (entrega normal)
-      const camposObrigatoriosEntrega = ['firstName', 'lastName', 'nif', 'contact', 'email', 'address', 'city', 'zipCode', 'country']; // Campos obrigatórios normais
-      for (const campo of camposObrigatoriosEntrega) {
-        if (errors[campo]) { // Se houver erro em algum campo OBRIGATÓRIO para Entrega, formulário é inválido
-          isFormValid = false;
-          break; // Não precisa verificar mais campos se já encontrou um erro
-        }
+
+      if(selectedShippingOption === "Delivery" && shippingCost > 0){
+        isFormValid = true
       }
-      if (selectedMapShippingCost <= 0) { // Se frete não foi selecionado, inválido também
-        isFormValid = false;
-      }
-       if (pagamentoNaEntrega && formaDePagamento.method === null) { // Se pagamento na entrega e método não selecionado, inválido
-          isFormValid = false;
+
+      // Verifica se região foi selecionada
+      if (!isRegionSelected && !isPickupActive) {
+        isFormValid = false
       }
     }
-    setIsOrderButtonEnabled(isFormValid); // Atualiza o estado do botão baseado na validade do form
-  };
+
+    setIsOrderButtonEnabled(isFormValid)
+  }
+
 
   const handleOpenMapModal = () => {
     setIsMapModalOpen(true)
@@ -249,6 +301,7 @@ const Checkout = () => {
     if (isChecked) {
       if (value === 'Delivery') {
         handleShippingCost(cost)
+        setIsRegionSelected(true)
       } else {
         handleShippingCost(0)
       }
@@ -260,6 +313,11 @@ const Checkout = () => {
 
   const handlePagamentoNaEntregaChange = (event) => {
     setPagamentoNaEntrega(event.target.checked)
+    if (event.target.checked && shippingCost <= 0)  {
+      setDeliveryWarningMessage("Selecione o valor do frete em Delivery")
+    } else {
+      setDeliveryWarningMessage("")
+    }
     checkEnableOrderButton()
   }
 
@@ -528,7 +586,11 @@ const Checkout = () => {
                             type="checkbox"
                             Icon={FaHome}
                             name="Pagamento na Entrega"
-                            onClick={handleOpenPaymentModal} // open payment modal directly on radio click
+                            onClick={handleOpenPaymentModal}
+                            warningMessage={deliveryWarningMessage}
+                            isRegionSelected={isRegionSelected}
+                            setDeliveryWarningMessage={setDeliveryWarningMessage}
+                            handleOpenPaymentModal={handleOpenPaymentModal}
                           />
                           <Error errorName={errors.shippingOption} />
                         </div>

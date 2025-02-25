@@ -247,7 +247,7 @@ const storeCustomization = {
         pt: "Envie-nos um e-mail",
       },
       email_box_email: {
-        pt: "info@japizza.com",
+        pt: "geraljapizza@gmail.com",
       },
       email_box_text: {
         pt: "Cresça interativamente e fortaleça-se para uma vinculação total centrada em processos."

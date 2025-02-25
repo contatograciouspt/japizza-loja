@@ -1,19 +1,16 @@
 // RecentOrder Component (RecentOrder.js)
-import React from "react";
-import { IoBagHandle } from "react-icons/io5";
-import Link from "next/link";
+import React from "react"
+import { IoBagHandle } from "react-icons/io5"
+import Link from "next/link"
 
-//internal import
+import useGetSetting from "@hooks/useGetSetting"
+import useUtilsFunction from "@hooks/useUtilsFunction"
+import OrderHistory from "@components/order/OrderHistory"
+import CMSkeletonTwo from "@components/preloader/CmSkeletonTwo"
 
-import useGetSetting from "@hooks/useGetSetting";
-import useUtilsFunction from "@hooks/useUtilsFunction";
-import OrderHistory from "@components/order/OrderHistory";
-import CMSkeletonTwo from "@components/preloader/CmSkeletonTwo";
-
-const RecentOrder = ({ orders, loading, error }) => {
-
-  const { storeCustomizationSetting } = useGetSetting();
-  const { showingTranslateValue } = useUtilsFunction();
+export default function RecentOrder({ orders, loading, error }){
+  const { storeCustomizationSetting } = useGetSetting()
+  const { showingTranslateValue } = useUtilsFunction()
 
   return (
     <>
@@ -111,7 +108,5 @@ const RecentOrder = ({ orders, loading, error }) => {
         </div>
       </div>
     </>
-  );
-};
-
-export default RecentOrder;
+  )
+}

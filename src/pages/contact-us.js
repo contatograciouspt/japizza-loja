@@ -44,28 +44,31 @@ const ContactUs = () => {
                 loading={loading}
               />
             ) : (
-              <div className="border p-10 rounded-lg text-center">
-                <span className="flex justify-center text-4xl text-customRed mb-4">
-                  <FiMail />
-                </span>
-                <h5 className="text-xl mb-2 font-bold">
-                  {showingTranslateValue(
-                    storeCustomizationSetting?.contact_us?.email_box_title
-                  )}
-                </h5>
-                <p className="mb-0 text-base opacity-90 leading-7">
-                  <a
-                    className="text-customRed"
-                  >
+                <div className="border p-10 rounded-lg text-center">
+                  <span className="flex justify-center text-4xl text-customRed mb-4">
+                    <FiMail />
+                  </span>
+                  <h5 className="text-xl mb-2 font-bold">
                     {showingTranslateValue(
-                      storeCustomizationSetting?.contact_us?.email_box_email
+                      storeCustomizationSetting?.contact_us?.email_box_title
                     )}
-                  </a>{" "}
-                  {showingTranslateValue(
-                    storeCustomizationSetting?.contact_us?.email_box_text
-                  )}
-                </p>
-              </div>
+                  </h5>
+                  <p className="mb-0 text-base opacity-90 leading-7">
+                    <a
+                      href={`mailto:${showingTranslateValue(
+                        storeCustomizationSetting?.contact_us?.email_box_email
+                      )}`}
+                      className="text-customRed hover:text-red-700 cursor-pointer"
+                    >
+                      {showingTranslateValue(
+                        storeCustomizationSetting?.contact_us?.email_box_email
+                      )}
+                    </a>{" "}
+                    {showingTranslateValue(
+                      storeCustomizationSetting?.contact_us?.email_box_text
+                    )}
+                  </p>
+                </div>
             )}
             {loading ? (
               <CMSkeleton

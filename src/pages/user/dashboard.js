@@ -1,10 +1,10 @@
 // Dashboard Component (Dashboard.js)
-import Cookies from "js-cookie";
-import dynamic from "next/dynamic";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import React, { useContext, useEffect, useState } from "react";
-import { IoLockOpenOutline } from "react-icons/io5";
+import Cookies from "js-cookie"
+import dynamic from "next/dynamic"
+import Link from "next/link"
+import { useRouter } from "next/router"
+import React, { useContext, useEffect, useState } from "react"
+import { IoLockOpenOutline } from "react-icons/io5"
 import {
   FiCheck,
   FiFileText,
@@ -15,76 +15,78 @@ import {
   FiShoppingCart,
   FiTruck,
   FiUser,
-} from "react-icons/fi";
-import { signOut } from "next-auth/react";
+} from "react-icons/fi"
+import { signOut } from "next-auth/react"
 
 //internal import
-import Layout from "@layout/Layout";
-import Card from "@components/order-card/Card";
-import RecentOrder from "@pages/user/recent-order";
-import { SidebarContext } from "@context/SidebarContext";
-import Loading from "@components/preloader/Loading";
-import useGetSetting from "@hooks/useGetSetting";
-import useUtilsFunction from "@hooks/useUtilsFunction";
-import axios from "axios";
+import Layout from "@layout/Layout"
+import Card from "@components/order-card/Card"
+import RecentOrder from "@pages/user/recent-order"
+import { SidebarContext } from "@context/SidebarContext"
+import Loading from "@components/preloader/Loading"
+import useGetSetting from "@hooks/useGetSetting"
+import useUtilsFunction from "@hooks/useUtilsFunction"
+import axios from "axios"
 
 const Dashboard = ({ title, description, children }) => {
-  const router = useRouter();
-  const { isLoading, setIsLoading } = useContext(SidebarContext);
-  const { storeCustomizationSetting } = useGetSetting();
-  const { showingTranslateValue } = useUtilsFunction();
-  const [orders, setOrders] = useState([]);
-  const [totalOrders, setTotalOrders] = useState(0);
-  const [pendingOrders, setPendingOrders] = useState(0);
-  const [completeOrders, setCompleteOrders] = useState(0);
-  const [loadingOrders, setLoadingOrders] = useState(false);
+  const router = useRouter()
+  const { isLoading, setIsLoading } = useContext(SidebarContext)
+  const { storeCustomizationSetting } = useGetSetting()
+  const { showingTranslateValue } = useUtilsFunction()
+  const [orders, setOrders] = useState([])
+  const [totalOrders, setTotalOrders] = useState(0)
+  const [pendingOrders, setPendingOrders] = useState(0)
+  const [completeOrders, setCompleteOrders] = useState(0)
+  const [loadingOrders, setLoadingOrders] = useState(false)
+
+  const getOrders = process.env.NEXT_PUBLIC_URL_GET_ORDERS
 
   const handleGetOrders = async () => {
-    setLoadingOrders(true);
+    setLoadingOrders(true)
     try {
-      const email = localStorage.getItem("email");
-      const response = await axios.get(`http://localhost:5055/api/orders/order/${email}`);
+      const email = localStorage.getItem("email")
+      const response = await axios.get(`${getOrders}/${email}`)
       if (response.status === 200) {
 
         // Assuming the API returns an *array* of orders, even if example showed one order object
         if (Array.isArray(response.data)) {
-          const allOrders = response.data;
-          setOrders(allOrders); // Set all orders for RecentOrder table
-          setTotalOrders(allOrders.length); // Total orders count is array length
-          setPendingOrders(allOrders.filter(order => order?.status === "Pending").length); // Count "Pending" status
-          setCompleteOrders(allOrders.filter(order => order?.status === "Pago").length); // Count "Pago" (Completed) status
+          const allOrders = response.data
+          setOrders(allOrders) // Set all orders for RecentOrder table
+          setTotalOrders(allOrders.length) // Total orders count is array length
+          setPendingOrders(allOrders.filter(order => order?.status === "Pendente").length) // Count "Pending" status
+          setCompleteOrders(allOrders.filter(order => order?.status === "Pago").length) // Count "Pago" (Completed) status
         } else if (response.data) {
           // If API returns a single order object (as per your example, although it's less likely for a dashboard)
           // You might need to adjust the backend to return an array of orders for a user dashboard scenario
-          setOrders([response.data]); // Set as an array of one order for RecentOrder table
-          setTotalOrders(1); // If single object, assume it's one order
-          setPendingOrders(response.data?.status === "Pending" ? 1 : 0);
-          setCompleteOrders(response.data?.status === "Pago" ? 1 : 0);
+          setOrders([response.data]) // Set as an array of one order for RecentOrder table
+          setTotalOrders(1) // If single object, assume it's one order
+          setPendingOrders(response.data?.status === "Pending" ? 1 : 0)
+          setCompleteOrders(response.data?.status === "Pago" ? 1 : 0)
         } else {
-          setOrders([]);
-          setTotalOrders(0);
-          setPendingOrders(0);
-          setCompleteOrders(0);
+          setOrders([])
+          setTotalOrders(0)
+          setPendingOrders(0)
+          setCompleteOrders(0)
         }
 
       }
     } catch (error) {
-      console.log("Erro ao obter pedidos:", error);
+      console.log("Erro ao obter pedidos:", error)
     } finally {
-      setLoadingOrders(false);
+      setLoadingOrders(false)
     }
-  };
+  }
 
   const handleLogOut = () => {
-    signOut();
-    Cookies.remove("couponInfo");
-    router.push("/");
-  };
+    signOut()
+    Cookies.remove("couponInfo")
+    router.push("/")
+  }
 
   useEffect(() => {
-    setIsLoading(false);
-    handleGetOrders();
-  }, []);
+    setIsLoading(false)
+    handleGetOrders()
+  }, [])
 
   const userSidebar = [
     {
@@ -113,7 +115,7 @@ const Dashboard = ({ title, description, children }) => {
       href: "/user/change-password",
       icon: FiFileText,
     },
-  ];
+  ]
 
   return (
     <>
@@ -128,9 +130,9 @@ const Dashboard = ({ title, description, children }) => {
             <div className="py-10 lg:py-12 flex flex-col lg:flex-row w-full">
               <div className="flex-shrink-0 w-full lg:w-80 mr-7 lg:mr-10  xl:mr-10 ">
                 <div className="bg-white p-4 sm:p-5 lg:p-8 rounded-md sticky top-32">
-                  {userSidebar?.map((item) => (
+                  {userSidebar?.map((item, index) => (
                     <span
-                      key={item.title}
+                      key={`sidebar-item-${index}-${item.title}`}
                       className="p-2 my-2 flex font-serif items-center rounded-md hover:bg-gray-50 w-full hover:text-emerald-600"
                     >
                       <item.icon
@@ -204,7 +206,7 @@ const Dashboard = ({ title, description, children }) => {
         </Layout>
       )}
     </>
-  );
-};
+  )
+}
 
-export default dynamic(() => Promise.resolve(Dashboard), { ssr: false });
+export default dynamic(() => Promise.resolve(Dashboard), { ssr: false })
