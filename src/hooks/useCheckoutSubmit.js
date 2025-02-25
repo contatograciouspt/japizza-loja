@@ -101,9 +101,13 @@ const useCheckoutSubmit = (storeSetting) => {
   const productName = items.map((item) => item.title)
 
   const submitHandler = async (data) => {
-    if (!shippingCost) {
-      console.log("Selecione uma região de entrega")
-      return
+    if(isPickupActive){
+      console.log("Retirada na Loja")
+    } else {
+      if (!shippingCost) {
+        console.log("Selecione uma região de entrega")
+        return
+      }
     }
 
     if (pagamentoNaEntrega && !formaDePagamento.method) {
