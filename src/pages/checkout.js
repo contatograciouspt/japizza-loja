@@ -36,32 +36,9 @@ const Checkout = () => {
   const [isMapModalOpen, setIsMapModalOpen] = React.useState(false)
   const [selectedMapShippingCost, setSelectedMapShippingCost] = React.useState(0)
   const [freteCoordenadas, setFreteCoordenadas] = React.useState("")
-  const [isPickupActive, setIsPickupActive] = React.useState(false)
   const [isPaymentModalOpen, setIsPaymentModalOpen] = React.useState(false)
   const [isAgendamentoModalOpen, setIsAgendamentoModalOpen] = React.useState(false)
-  const [textoBotao, setTextoBotao] = React.useState("Confirmar Pedido")
   const [isOrderButtonEnabled, setIsOrderButtonEnabled] = React.useState(false)
-
-  const checkStoreStatus = () => {
-    const now = new Date().toLocaleString("pt-PT", { timeZone: "Europe/Lisbon" })
-    const portugalTime = new Date(now)
-    const diaSemanaAtual = portugalTime.getDay()
-    const tempoAtualEmMinutos = portugalTime.getHours() * 60 + portugalTime.getMinutes()
-
-    const horarioAbertura = diaSemanaAtual === 0 || diaSemanaAtual === 2 || diaSemanaAtual === 3
-      ? 17 * 60 + 30  // 17:30
-      : 17 * 60       // 17:00
-
-    const horarioFechamento = 22 * 60 // 22:00
-    const isDentroHorario = tempoAtualEmMinutos >= horarioAbertura && tempoAtualEmMinutos < horarioFechamento
-    const isDiaAberto = diaSemanaAtual >= 2 && diaSemanaAtual <= 6 && isDentroHorario
-
-    return {
-      isOpen: isDiaAberto,
-      isClosed: !isDiaAberto,
-      isClosedDay: diaSemanaAtual === 1
-    }
-  }
 
   React.useEffect(() => {
     const verificarHorarioFuncionamento = () => {
@@ -77,12 +54,6 @@ const Checkout = () => {
       const horarioFechamento = 22 * 60 // 22:00
       const isDentroHorario = tempoAtualEmMinutos >= horarioAbertura && tempoAtualEmMinutos < horarioFechamento
       const isDiaAberto = diaSemanaAtual >= 2 && diaSemanaAtual <= 6 && isDentroHorario
-
-      if (diaSemanaAtual === 1 || !isDiaAberto) {
-        setTextoBotao("Agendar Pedido")
-      } else {
-        setTextoBotao("Confirmar Pedido")
-      }
     }
 
     verificarHorarioFuncionamento()
@@ -92,6 +63,8 @@ const Checkout = () => {
   }, [])
 
   const {
+    isPickupActive,
+    setIsPickupActive,
     couponInfo,
     couponRef,
     total,
@@ -109,7 +82,6 @@ const Checkout = () => {
     shippingCost,
     isCheckoutSubmit,
     useExistingAddress,
-    hasShippingAddress,
     isCouponAvailable,
     coordenadas,
     setLojaSelecionada,
@@ -122,8 +94,9 @@ const Checkout = () => {
     setScheduledDelivery,
     setSelectedOption,
     selectedOption,
-    scheduledDelivery,
-    formaDePagamento
+    formaDePagamento,
+    selectedShippingOption,
+    setSelectedShippingOption
   } = useCheckoutSubmit()
 
   const queryClient = useQueryClient()
@@ -143,15 +116,35 @@ const Checkout = () => {
     checkEnableOrderButton()
   }
 
-  // Add validation function
+  // Função para verificar e atualizar o estado do botão "Confirmar Pedido"
   const checkEnableOrderButton = () => {
-    const hasValidShipping = selectedMapShippingCost > 0
-    // const hasValidSchedule = scheduledDelivery !== null
-    const hasValidPayment = pagamentoNaEntrega ? formaDePagamento !== null : true
-  
-    // setIsOrderButtonEnabled(hasValidShipping && hasValidSchedule && hasValidPayment)
-    setIsOrderButtonEnabled(hasValidShipping && hasValidPayment)
-  }
+    let isFormValid = true; // Começamos assumindo que o formulário é válido
+
+    if (isPickupActive) { // Se "Retirada na Loja" está ATIVA
+      const camposObrigatoriosRetirada = ['firstName', 'lastName', 'nif', 'contact', 'email'];
+      for (const campo of camposObrigatoriosRetirada) {
+        if (errors[campo]) { // Se houver erro em algum campo OBRIGATÓRIO para Retirada, formulário é inválido
+          isFormValid = false;
+          break; // Não precisa verificar mais campos se já encontrou um erro
+        }
+      }
+    } else { // Se "Retirada na Loja" está DESATIVADA (entrega normal)
+      const camposObrigatoriosEntrega = ['firstName', 'lastName', 'nif', 'contact', 'email', 'address', 'city', 'zipCode', 'country']; // Campos obrigatórios normais
+      for (const campo of camposObrigatoriosEntrega) {
+        if (errors[campo]) { // Se houver erro em algum campo OBRIGATÓRIO para Entrega, formulário é inválido
+          isFormValid = false;
+          break; // Não precisa verificar mais campos se já encontrou um erro
+        }
+      }
+      if (selectedMapShippingCost <= 0) { // Se frete não foi selecionado, inválido também
+        isFormValid = false;
+      }
+       if (pagamentoNaEntrega && formaDePagamento.method === null) { // Se pagamento na entrega e método não selecionado, inválido
+          isFormValid = false;
+      }
+    }
+    setIsOrderButtonEnabled(isFormValid); // Atualiza o estado do botão baseado na validade do form
+  };
 
   const handleOpenMapModal = () => {
     setIsMapModalOpen(true)
@@ -167,6 +160,7 @@ const Checkout = () => {
   const handlePaymentMethodSelect = (paymentMethod) => {
     setFormaDePagamento(paymentMethod)
     setIsPaymentModalOpen(false)
+    checkEnableOrderButton()
   }
 
   const getGeolocation = async () => {
@@ -242,11 +236,31 @@ const Checkout = () => {
   const handlePickupToggle = (value) => {
     handleDefaultShippingAddress(value)
     setIsPickupActive(value)
+    checkEnableOrderButton() // Update button state
     if (value) {
       handleShippingCost(0) // Set shipping cost to 0 when pickup is active
     } else {
       handleShippingCost(selectedMapShippingCost) // Restore selected shipping cost when pickup is inactive, or default 6 if none selected before.
     }
+  }
+
+  const handleShippingOptionChange = (value, cost, isChecked) => {
+    setSelectedShippingOption(isChecked ? value : null)
+    if (isChecked) {
+      if (value === 'Delivery') {
+        handleShippingCost(cost)
+      } else {
+        handleShippingCost(0)
+      }
+    } else {
+      handleShippingCost(0)
+    }
+    checkEnableOrderButton()
+  }
+
+  const handlePagamentoNaEntregaChange = (event) => {
+    setPagamentoNaEntrega(event.target.checked)
+    checkEnableOrderButton()
   }
 
   React.useEffect(() => {
@@ -260,7 +274,7 @@ const Checkout = () => {
 
   React.useEffect(() => {
     checkEnableOrderButton()
-}, [selectedMapShippingCost, pagamentoNaEntrega, formaDePagamento])
+}, [selectedMapShippingCost, selectedMapShippingCost, isPickupActive, pagamentoNaEntrega, formaDePagamento])
 
   React.useEffect(() => {
     const storedLojaSelecionada = localStorage.getItem("selectedStore")
@@ -479,55 +493,64 @@ const Checkout = () => {
                       </div>
                     </div>
                   )} {/* End conditional rendering of shipping details */}
-                  <div className="mt-4">
-                    <Label
-                      label={showingTranslateValue(
-                        storeCustomizationSetting?.checkout?.shipping_cost
-                      )}
-                    />
-                  </div>
-                  <div className="grid gap-6">
-                    <div className="col-span-6 sm:col-span-3">
-                      {/* entrega com Frete */}
-                      <InputShipping
-                        currency={currency}
-                        handleShippingCost={handleOptionChange}
-                        register={register}
-                        checked={selectedOption === 'Delivery'}
-                        value="Delivery"
-                        time="Today"
-                        cost={selectedMapShippingCost}
-                        onOpenModal={handleOpenMapModal} // Prop to open modal
-                      />
-                      <Error errorName={errors.shippingOption} />
-                    </div>
-                    <div className="col-span-6 sm:col-span-3">
-                      {/* Pagamento na entrega */}
-                      <InputDelivery
-                        onChange={() => { handleOptionChange("delivery") }}
-                        checked={selectedOption === 'delivery'}
-                        register={register}
-                        value={pagamentoNaEntrega}
-                        type="radio"
-                        Icon={FaHome}
-                        name="Pagamento na Entrega"
-                        onClick={handleOpenPaymentModal} // open payment modal directly on radio click
-                      />
-                      <Error errorName={errors.shippingOption} />
-                    </div>
-                    {checkStoreStatus().isClosed && (
-                      <div className="col-span-6 sm:col-span-3">
-                        <button
-                          type="button"
-                          onClick={() => setIsAgendamentoModalOpen(true)}
-                          className="bg-customRed hover:bg-red-400 border transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
-                        >
-                          <IoCalendarOutline className="mr-2 text-xl" />
-                          Agendar Pedido
-                        </button>
+             
+                  {!isPickupActive && (
+                    <>
+                      <div className="mt-4">
+                        <Label
+                          label={showingTranslateValue(
+                            storeCustomizationSetting?.checkout?.shipping_cost
+                          )}
+                        />
                       </div>
-                    )}
+                      <div className="grid gap-6">
+                        <div className="col-span-6 sm:col-span-3">
+                          {/* entrega com Frete */}
+                          <InputShipping
+                            currency={currency}
+                            handleShippingCost={handleShippingOptionChange}
+                            register={register}
+                            checked={selectedShippingOption === 'Delivery'}
+                            value="Delivery"
+                            time="Today"
+                            cost={selectedMapShippingCost}
+                            onOpenModal={handleOpenMapModal} // Prop to open modal
+                          />
+                          <Error errorName={errors.shippingOption} />
+                        </div>
+                        <div className="col-span-6 sm:col-span-3">
+                          {/* Pagamento na entrega */}
+                          <InputDelivery
+                            onChange={handlePagamentoNaEntregaChange}
+                            checked={pagamentoNaEntrega}
+                            register={register}
+                            value={pagamentoNaEntrega}
+                            type="checkbox"
+                            Icon={FaHome}
+                            name="Pagamento na Entrega"
+                            onClick={handleOpenPaymentModal} // open payment modal directly on radio click
+                          />
+                          <Error errorName={errors.shippingOption} />
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  <div className="col-span-6 sm:col-span-3 mt-4">
+                    <button
+                      type="button"
+                      onClick={() => setIsAgendamentoModalOpen(true)}
+                      className="bg-customRed hover:bg-red-400 border transition-all rounded py-3 text-center text-sm font-serif font-medium text-white flex justify-center w-full"
+                    >
+                      <IoCalendarOutline className="mr-2 text-xl" />
+                      Agendar Pedido
+                    </button>
+                    {/* colocar uma flag de exclamação aqui com texto opcional */}
+                    <p className="text-md text-gray-500 mt-1">
+                      Opcional
+                    </p>
                   </div>
+
                   {/* Map Region Modal Component */}
                   <MapCheckoutModal
                     isOpen={isMapModalOpen}
@@ -558,7 +581,8 @@ const Checkout = () => {
                         <span className="text-xl mr-2">
                           <IoReturnUpBackOutline />
                         </span>
-                        {showingTranslateValue(storeCustomizationSetting?.checkout?.continue_button)}
+                        {/* {showingTranslateValue(storeCustomizationSetting?.checkout?.continue_button)} */}
+                        Continuar Comprando
                       </Link>
                     </div>
                     <button

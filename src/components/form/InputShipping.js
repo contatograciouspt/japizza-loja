@@ -1,7 +1,6 @@
 // InputShipping.js
-import React from "react";
-import { FiTruck } from "react-icons/fi";
-import { FaStoreAlt } from "react-icons/fa";
+import React from "react"
+import { FiTruck } from "react-icons/fi"
 
 const InputShipping = ({
   register,
@@ -12,18 +11,25 @@ const InputShipping = ({
   description,
   checked,
   handleShippingCost,
-  type = 'radio',
+  type = 'checkbox',
   name = "shippingOption",
   Icon = FiTruck,
   onOpenModal // new prop to handle modal opening
 }) => {
 
-  const handleClick = () => {
-    if (value === 'Delivery' && onOpenModal) { // Open modal only for 'Delivery'
-      onOpenModal();
+  // const handleClick = () => {
+  //   if (value === 'Delivery' && onOpenModal) { // Open modal only for 'Delivery'
+  //     onOpenModal()
+  //   }
+  //   handleShippingCost(value, cost)
+  // }
+
+  const handleChange = (event) => {
+    if (event.target.checked && value === 'Delivery' && onOpenModal) {
+      onOpenModal()
     }
-    handleShippingCost(value, cost);
-  };
+    handleShippingCost(value, cost, event.target.checked) // Passa o estado checked
+  }
 
   return (
     <div>
@@ -51,18 +57,18 @@ const InputShipping = ({
             </div>
             <input
               {...register(name)}
-              onClick={handleClick} // Use handleClick function
+              onClick={handleChange}
               name={name}
               type={type}
               value={value}
               checked={checked}
-              className="form-radio outline-none focus:ring-0 text-customRed"
+              className="form-checkbox outline-none focus:ring-0 text-customRed"
             />
           </div>
         </label>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default InputShipping;
+export default InputShipping

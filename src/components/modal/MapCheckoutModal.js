@@ -1,15 +1,18 @@
 import React, { useState } from "react"
 import { FaChevronDown, FaChevronUp } from "react-icons/fa"
 import { deliveryRegions } from "./Cidades"
+import { notifyError } from "@utils/toast"
 
 export default function MapCheckoutModal({ isOpen, onClose, onSelectRegion }) {
     const [selectedRegionCost, setSelectedRegionCost] = useState(null)
     const [expandedRegion, setExpandedRegion] = useState(null)
+    const [selectedCity, setSelectedCity] = useState(null)
 
     if (!isOpen) return null
 
     const handleRegionSelect = (region) => {
         setSelectedRegionCost(region.cost)
+        setSelectedCity(region)
     }
 
     const handleConfirm = () => {
@@ -17,7 +20,7 @@ export default function MapCheckoutModal({ isOpen, onClose, onSelectRegion }) {
             onSelectRegion(selectedRegionCost)
             onClose()
         } else {
-            alert("Por favor, selecione uma região de entrega.")
+            notifyError("Por favor, selecione uma região de entrega.")
         }
     }
 
@@ -46,16 +49,19 @@ export default function MapCheckoutModal({ isOpen, onClose, onSelectRegion }) {
                             {expandedRegion === region && (
                                 <div className="border-x border-b rounded-b-md">
                                     {cities.map(city => (
-                                        <div key={city.id} className="p-3 border-b last:border-b-0 hover:bg-gray-50">
+                                        <div
+                                            key={city.id}
+                                            className={`p-3 border-b last:border-b-0 hover:bg-gray-50 ${selectedCity && selectedCity.id === city.id ? 'bg-gray-100' : ''}`} // Adiciona classe para destacar
+                                        >
                                             <div className="flex justify-between items-center">
                                                 <span>{city.name}</span>
                                                 <div className="flex items-center">
                                                     <span className="mr-4">€{city.cost.toFixed(2)}</span>
                                                     <button
                                                         onClick={() => handleRegionSelect(city)}
-                                                        className="px-3 py-1 bg-customRed hover:bg-red-500 text-white rounded-md text-sm"
+                                                        className={`px-3 py-1 text-sm rounded-md ${selectedCity && selectedCity.id === city.id ? 'bg-green-500 hover:bg-green-600' : 'bg-customRed hover:bg-red-500'} text-white`} // Altera a cor do botão
                                                     >
-                                                        Selecionar
+                                                        {selectedCity && selectedCity.id === city.id ? 'Selecionado' : 'Selecionar'}
                                                     </button>
                                                 </div>
                                             </div>
@@ -85,7 +91,7 @@ export default function MapCheckoutModal({ isOpen, onClose, onSelectRegion }) {
                         onClick={handleConfirm}
                         disabled={selectedRegionCost === null}
                     >
-                        Confirmar Região
+                        Confirmar
                     </button>
                 </div>
             </div>

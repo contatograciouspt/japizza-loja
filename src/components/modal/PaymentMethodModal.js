@@ -105,7 +105,7 @@ const PaymentMethodModal = ({ isOpen, onClose, onPaymentMethodSelect }) => {
                         onClick={handleConfirmPayment}
                         disabled={!selectedPayment}
                     >
-                        Confirmar Pagamento
+                        Confirmar
                     </button>
                 </div>
             </div>

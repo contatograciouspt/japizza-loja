@@ -274,6 +274,8 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
     setVariantTitle(varTitle?.sort())
   }, [variants, attributes, product?.variants])
 
+  const router = useRouter()
+
   // Botão Adicionar ao carrinho
   const handleAddToCart = (p) => {
     if (p.variants.length === 1 && p.variants[0].quantity < 1) {
@@ -298,8 +300,9 @@ const ProductModal = ({ modalOpen, setModalOpen, product, attributes, currency }
         zoneSoftId: p.zoneSoftId
       }
       handleAddItem(newItem)
+      router.push("/checkout")
     } else {
-      return notifyError("Please select all variant first!")
+      return notifyError("Selecione todas as variantes primeiro!")
     }
   }
 

@@ -1,6 +1,6 @@
 import Cookies from "js-cookie"
 import dayjs from "dayjs"
-import { useForm } from "react-hook-form"
+import { set, useForm } from "react-hook-form"
 import { useCart } from "react-use-cart"
 import { useContext, useEffect, useRef, useState } from "react"
 
@@ -24,7 +24,7 @@ const useCheckoutSubmit = (storeSetting) => {
   const [minimumAmount, setMinimumAmount] = useState(0)
   const [showCard, setShowCard] = useState(false)
   const [pagamentoNaEntrega, setPagamentoNaEntrega] = useState(false)
-  const [shippingCost, setShippingCost] = useState(6)
+  const [shippingCost, setShippingCost] = useState(0) // define o valor inicial do frete como 0
   const [discountAmount, setDiscountAmount] = useState(0)
   const [discountPercentage, setDiscountPercentage] = useState(0)
   const [isCheckoutSubmit, setIsCheckoutSubmit] = useState(false)
@@ -37,6 +37,8 @@ const useCheckoutSubmit = (storeSetting) => {
   const [trocoPara, setTrocoPara] = useState("") // New state for cash change
   const [scheduledDelivery, setScheduledDelivery] = useState(null)
   const [selectedOption, setSelectedOption] = useState(null)
+  const [selectedShippingOption, setSelectedShippingOption] = useState(null)
+  const [isPickupActive, setIsPickupActive] = useState(false)
 
   const couponRef = useRef("")
   const { isEmpty, items, cartTotal, emptyCart } = useCart()
@@ -99,12 +101,6 @@ const useCheckoutSubmit = (storeSetting) => {
   const productName = items.map((item) => item.title)
 
   const submitHandler = async (data) => {
-    // Initial validations
-    // if (!scheduledDelivery || !shippingCost) {
-    //   console.log("Selecione data de agendamento e região de entrega")
-    //   return
-    // }
-
     if (!shippingCost) {
       console.log("Selecione uma região de entrega")
       return
@@ -167,6 +163,7 @@ const useCheckoutSubmit = (storeSetting) => {
         discount: discountAmount,
         total: total,
         frete: shippingCost,
+        retiradaNaLoja: isPickupActive,
         lojaSelecionada: lojaSelecionada,
         agendamento: scheduledDelivery ? {
           data: scheduledDelivery.date,
@@ -207,20 +204,6 @@ const useCheckoutSubmit = (storeSetting) => {
 
         await useVivaPayment(orderVivaPaymentData)
       }
-
-      // await CustomerServices.addShippingAddress({
-      //   userId: userInfo?.id,
-      //   shippingAddressData: {
-      //     name: `${data.firstName} ${data.lastName}`,
-      //     contact: data.contact,
-      //     email: userInfo?.email,
-      //     address: data.address,
-      //     country: data.country,
-      //     city: data.city,
-      //     zipCode: data.zipCode
-      //   }
-      // })
-
     } catch (err) {
       console.log("Erro ao processar pedido | pagamento: ", err)
       notifyError(err?.response?.data?.message || err?.message)
@@ -308,6 +291,10 @@ const useCheckoutSubmit = (storeSetting) => {
   }
 
   return {
+    isPickupActive,
+    setIsPickupActive,
+    selectedShippingOption,
+    setSelectedShippingOption,
     register,
     lojaSelecionada,
     errors,

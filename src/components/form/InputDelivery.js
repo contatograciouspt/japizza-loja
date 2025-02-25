@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"
 
 const InputDelivery = ({
     register,
@@ -41,7 +41,7 @@ const InputDelivery = ({
                 </label>
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default InputDelivery;
+export default InputDelivery
