@@ -39,7 +39,7 @@ const Dashboard = ({ title, description, children }) => {
   const [completeOrders, setCompleteOrders] = useState(0)
   const [loadingOrders, setLoadingOrders] = useState(false)
 
-  const getOrders = process.env.NEXT_PUBLIC_URL_GET_ORDERS
+  const getOrders = process.env.NEXT_PUBLIC_URL_ORDERS
 
   const handleGetOrders = async () => {
     setLoadingOrders(true)

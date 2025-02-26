@@ -168,7 +168,7 @@ const useCheckoutSubmit = (storeSetting) => {
         subTotal: cartTotal,
         shippingCost: shippingCost,
         discount: discountAmount,
-        cupom: couponInfo.couponCode,
+        cupom: couponInfo.couponCode || "Não aplicado",
         total: total,
         frete: shippingCost,
         retiradaNaLoja: isPickupActive,

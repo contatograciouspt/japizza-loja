@@ -97,7 +97,7 @@ const Order = ({ params }) => {
                     </button>
                   )}
                   content={() => printRef.current}
-                  documentTitle="Invoice"
+                  documentTitle="Fatura"
                 />
               </div>
             </div>

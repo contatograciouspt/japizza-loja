@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 
 const OrderHistory = ({ order, currency = "€" }) => { // Default currency set to "€"
   const actualOrderData = order?.cart?.[0]; // Access the order details in cart[0]
+  const amountOrder  = order?.amount / 100
 
   return (
     <>
@@ -38,7 +39,7 @@ const OrderHistory = ({ order, currency = "€" }) => { // Default currency set 
       <td className="px-5 py-3 leading-6 text-center whitespace-nowrap">
         <span className="text-sm font-bold">
           {currency}
-          {parseFloat(actualOrderData?.total || 0).toFixed(2)} {/* Total from cart[0], default 0 if missing */}
+          {amountOrder.toFixed(2)}
         </span>
       </td>
     </>
