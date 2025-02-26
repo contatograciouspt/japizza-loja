@@ -1,15 +1,25 @@
-import dayjs from "dayjs";
-import React from "react";
-import Link from "next/link";
-import Image from "next/image";
+import dayjs from "dayjs"
+import React from "react"
+import Link from "next/link"
+import Image from "next/image"
 //internal import
-import OrderTable from "@components/order/OrderTable";
-import useUtilsFunction from "@hooks/useUtilsFunction";
+import OrderTable from "@components/order/OrderTable"
+import useUtilsFunction from "@hooks/useUtilsFunction"
 
 const Invoice = ({ data, printRef, globalSetting, currency }) => {
   // console.log('invoice data',data)
 
-  const { getNumberTwo } = useUtilsFunction();
+  // converter data para formato brasileiro
+  const date = dayjs(data?.createdAt).format("DD/MM/YYYY")
+  const time = dayjs(data?.createdAt).format("HH:mm")
+  const dateTime = `${date} ${time}`
+
+  // formatar valor, shippingCost e discount para 2 casas decimais
+  const amount = data?.amount / 100
+  const shippingCost = data?.shippingCost / 100 || 0
+  const discount = data?.discount / 100
+
+  const { getNumberTwo } = useUtilsFunction()
 
   return (
     <div ref={printRef}>
@@ -60,17 +70,18 @@ const Invoice = ({ data, printRef, globalSetting, currency }) => {
         <div className="flex lg:flex-row md:flex-row flex-col justify-between pt-4">
           <div className="mb-3 md:mb-0 lg:mb-0 flex flex-col">
             <span className="font-bold font-serif text-sm uppercase text-gray-600 block">
-              Date
+              Data/Hora
             </span>
             <span className="text-sm text-gray-500 block">
               {data.createdAt !== undefined && (
-                <span>{dayjs(data?.createdAt).format("MMMM D, YYYY")}</span>
+                // <span>{dayjs(data?.createdAt).format("MMMM D, YYYY")}</span>
+                <span>{dateTime}</span>
               )}
             </span>
           </div>
           <div className="mb-3 md:mb-0 lg:mb-0 flex flex-col">
             <span className="font-bold font-serif text-sm uppercase text-gray-600 block">
-              Invoice No.
+              Fatura Nº.
             </span>
             <span className="text-sm text-gray-500 block">
               #{data?.invoice}
@@ -78,7 +89,7 @@ const Invoice = ({ data, printRef, globalSetting, currency }) => {
           </div>
           <div className="flex flex-col lg:text-right text-left">
             <span className="font-bold font-serif text-sm uppercase text-gray-600 block">
-              Invoice To.
+              Fatura Para.
             </span>
             <span className="text-sm text-gray-500 block">
               {data?.user_info?.name} <br />
@@ -108,25 +119,25 @@ const Invoice = ({ data, printRef, globalSetting, currency }) => {
                     scope="col"
                     className="font-serif font-semibold px-6 py-2 text-gray-700 uppercase tracking-wider text-left"
                   >
-                    Product Name
+                    Nome do Produto
                   </th>
                   <th
                     scope="col"
                     className="font-serif font-semibold px-6 py-2 text-gray-700 uppercase tracking-wider text-center"
                   >
-                    Quantity
+                    Quantidade
                   </th>
                   <th
                     scope="col"
                     className="font-serif font-semibold px-6 py-2 text-gray-700 uppercase tracking-wider text-center"
                   >
-                    Item Price
+                    Valor
                   </th>
                   <th
                     scope="col"
                     className="font-serif font-semibold px-6 py-2 text-gray-700 uppercase tracking-wider text-right"
                   >
-                    Amount
+                    Total
                   </th>
                 </tr>
               </thead>
@@ -139,7 +150,7 @@ const Invoice = ({ data, printRef, globalSetting, currency }) => {
         <div className="flex lg:flex-row md:flex-row flex-col justify-between pt-4">
           <div className="mb-3 md:mb-0 lg:mb-0  flex flex-col sm:flex-wrap">
             <span className="mb-1 font-bold font-serif text-sm uppercase text-gray-600 block">
-              Payment Method
+              Método de Pagamento
             </span>
             <span className="text-sm text-gray-500 font-semibold font-serif block">
               {data?.paymentMethod}
@@ -147,35 +158,35 @@ const Invoice = ({ data, printRef, globalSetting, currency }) => {
           </div>
           <div className="mb-3 md:mb-0 lg:mb-0  flex flex-col sm:flex-wrap">
             <span className="mb-1 font-bold font-serif text-sm uppercase text-gray-600 block">
-              Shipping Cost
+              Custo de Envio
             </span>
             <span className="text-sm text-gray-500 font-semibold font-serif block">
               {currency}
-              {getNumberTwo(data.shippingCost)}
+              {shippingCost.toFixed(2)}
             </span>
           </div>
           <div className="mb-3 md:mb-0 lg:mb-0  flex flex-col sm:flex-wrap">
             <span className="mb-1 font-bold font-serif text-sm uppercase text-gray-600 block">
-              Discount
+              Desconto
             </span>
             <span className="text-sm text-gray-500 font-semibold font-serif block">
               {currency}
-              {getNumberTwo(data.discount)}
+              {discount.toFixed(2)}
             </span>
           </div>
           <div className="flex flex-col sm:flex-wrap">
             <span className="mb-1 font-bold font-serif text-sm uppercase text-gray-600 block">
-              Total Amount
+              Total
             </span>
             <span className="text-2xl font-serif font-bold text-red-500 block">
               {currency}
-              {getNumberTwo(data.total)}
+              {amount.toFixed(2)}
             </span>
           </div>
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Invoice;
+export default Invoice

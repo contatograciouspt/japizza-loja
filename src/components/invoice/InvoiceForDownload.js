@@ -276,7 +276,7 @@ const InvoiceForDownload = ({
           <View style={styles.invoiceFirst}>
             <View>
               <Text style={{ fontFamily: "Open Sans", fontWeight: "bold" }}>
-                INVOICE
+                Fatura
               </Text>
               <Text style={styles.info}>Status : {data?.status}</Text>
             </View>
@@ -303,7 +303,7 @@ const InvoiceForDownload = ({
 
           <View style={styles.invoiceSecond}>
             <View>
-              <Text style={styles.title}>DATE</Text>
+              <Text style={styles.title}>DATA</Text>
               <Text style={styles.info}>
                 {dayjs(data?.createdAt).format("MMMM D, YYYY")}
               </Text>
@@ -334,24 +334,24 @@ const InvoiceForDownload = ({
               </View>
               <View style={styles.tableCol}>
                 <Text style={styles.tableCell}>
-                  <Text style={styles.header}>Product Name</Text>
+                  <Text style={styles.header}>Nome do Produto</Text>
                 </Text>
               </View>
               <View style={styles.tableCol}>
                 <Text style={styles.tableCell}>
-                  <Text style={styles.header}>Quantity</Text>
+                  <Text style={styles.header}>Quantidade</Text>
                 </Text>
               </View>
               <View style={styles.tableCol}>
                 <Text style={styles.tableCell}>
-                  <Text style={styles.header}>Item Price</Text>
+                  <Text style={styles.header}>Preço do Item</Text>
                 </Text>
               </View>
 
               <View style={styles.tableCol}>
                 <Text style={styles.tableCell}>
                   {" "}
-                  <Text style={styles.header}>Amount</Text>
+                  <Text style={styles.header}>Valor</Text>
                 </Text>
               </View>
             </View>
@@ -383,7 +383,7 @@ const InvoiceForDownload = ({
                   <Text style={styles.tableCell}>
                     <Text style={styles.amount}>
                       {currency}
-                      {getNumberTwo(item.itemTotal)}
+                      {getNumberTwo(item.amount)}
                     </Text>{" "}
                   </Text>
                 </View>

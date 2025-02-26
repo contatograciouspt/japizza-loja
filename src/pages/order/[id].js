@@ -1,34 +1,34 @@
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import dynamic from "next/dynamic";
-import { useRef } from "react";
-import { IoCloudDownloadOutline, IoPrintOutline } from "react-icons/io5";
-import ReactToPrint from "react-to-print";
-import { useQuery } from "@tanstack/react-query";
+import { PDFDownloadLink } from "@react-pdf/renderer"
+import dynamic from "next/dynamic"
+import { useRef } from "react"
+import { IoCloudDownloadOutline, IoPrintOutline } from "react-icons/io5"
+import ReactToPrint from "react-to-print"
+import { useQuery } from "@tanstack/react-query"
 
 //internal import
 
-import Layout from "@layout/Layout";
-import useGetSetting from "@hooks/useGetSetting";
-import Invoice from "@components/invoice/Invoice";
-import Loading from "@components/preloader/Loading";
-import OrderServices from "@services/OrderServices";
-import useUtilsFunction from "@hooks/useUtilsFunction";
-import InvoiceForDownload from "@components/invoice/InvoiceForDownload";
+import Layout from "@layout/Layout"
+import useGetSetting from "@hooks/useGetSetting"
+import Invoice from "@components/invoice/Invoice"
+import Loading from "@components/preloader/Loading"
+import OrderServices from "@services/OrderServices"
+import useUtilsFunction from "@hooks/useUtilsFunction"
+import InvoiceForDownload from "@components/invoice/InvoiceForDownload"
 
 const Order = ({ params }) => {
-  const printRef = useRef();
-  const orderId = params.id;
+  const printRef = useRef()
+  const orderId = params.id
 
   const { data, error, isLoading } = useQuery({
     queryKey: ["order"],
     queryFn: async () => await OrderServices.getOrderById(orderId),
-  });
+  })
 
-  const { showingTranslateValue, getNumberTwo, currency } = useUtilsFunction();
-  const { storeCustomizationSetting, globalSetting } = useGetSetting();
+  const { showingTranslateValue, getNumberTwo, currency } = useUtilsFunction()
+  const { storeCustomizationSetting, globalSetting } = useGetSetting()
 
   return (
-    <Layout title="Invoice" description="order confirmation page">
+    <Layout title="Fatura" description="order confirmation page">
       {isLoading ? (
         <Loading loading={isLoading} />
       ) : error ? (
@@ -68,7 +68,7 @@ const Order = ({ params }) => {
                       getNumberTwo={getNumberTwo}
                     />
                   }
-                  fileName="Invoice"
+                  fileName="Fatura"
                 >
                   {({ blob, url, loading, error }) =>
                     loading ? (
@@ -105,13 +105,13 @@ const Order = ({ params }) => {
         </div>
       )}
     </Layout>
-  );
-};
+  )
+}
 
 export const getServerSideProps = ({ params }) => {
   return {
     props: { params },
-  };
-};
+  }
+}
 
-export default dynamic(() => Promise.resolve(Order), { ssr: false });
+export default dynamic(() => Promise.resolve(Order), { ssr: false })
