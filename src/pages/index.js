@@ -24,7 +24,7 @@ const Home = ({ popularProducts, discountProducts, attributes }) => {
   const { isLoading, setIsLoading } = useContext(SidebarContext)
   const { loading, error, storeCustomizationSetting } = useGetSetting()
   const [lojaFechadaModal, setLojaFechadaModal] = React.useState(false)
-  const [showRedirecionarLojas, setShowRedirecionarLojas] = React.useState(true)
+  const [showRedirecionarLojas, setShowRedirecionarLojas] = React.useState(false)
   const [storeStatus, setStoreStatus] = React.useState({
     isOpen: false,
     isClosed: true,
@@ -108,44 +108,35 @@ const Home = ({ popularProducts, discountProducts, attributes }) => {
   //   return () => clearInterval(interval)
   // }, [])
 
+
+  const verificarHorarioFuncionamento = () => {
+    const portugalTimeStr = new Date().toLocaleString('pt-PT', { timeZone: 'Europe/Lisbon', hour12: false })
+    const [datePart, timePart] = portugalTimeStr.split(', ')
+    const [hours, minutes] = timePart.split(':')
+    const portugalTime = new Date()
+    const tempoAtualEmMinutos = (parseInt(hours) * 60) + parseInt(minutes)
+    const diaSemanaAtual = portugalTime.getDay()
+
+    const horarioAbertura = (diaSemanaAtual === 0 || diaSemanaAtual === 2 || diaSemanaAtual === 3)
+      ? (17 * 60) + 30 : 17 * 60
+
+    const horarioFechamento = 22 * 60
+    const isDentroHorario = tempoAtualEmMinutos >= horarioAbertura && tempoAtualEmMinutos < horarioFechamento
+    const isDiaAberto = (diaSemanaAtual >= 2 && diaSemanaAtual <= 6) || diaSemanaAtual === 0
+
+    return isDentroHorario && isDiaAberto
+  }
+
   useEffect(() => {
-    const verificarHorarioFuncionamento = () => {
-      const portugalTimeStr = new Date().toLocaleString('pt-PT', {
-        timeZone: 'Europe/Lisbon',
-        hour12: false
-      })
+    const isLojaAberta = verificarHorarioFuncionamento()
+    const hasSelectedStore = localStorage.getItem('selectedStore')
 
-      const [datePart, timePart] = portugalTimeStr.split(', ')
-      const [day, month, year] = datePart.split('/')
-      const [hours, minutes] = timePart.split(':')
-
-      const portugalTime = new Date(
-        parseInt(year),
-        parseInt(month) - 1,
-        parseInt(day),
-        parseInt(hours),
-        parseInt(minutes)
-      )
-
-      const diaSemanaAtual = portugalTime.getDay()
-      const tempoAtualEmMinutos = (portugalTime.getHours() * 60) + portugalTime.getMinutes()
-
-      const horarioAbertura = (diaSemanaAtual === 0 || diaSemanaAtual === 2 || diaSemanaAtual === 3)
-        ? (17 * 60) + 30  // 17:30
-        : 17 * 60        // 17:00
-
-      const horarioFechamento = 22 * 60  // 22:00
-      const isDentroHorario = tempoAtualEmMinutos >= horarioAbertura && tempoAtualEmMinutos < horarioFechamento
-      const isDiaAberto = (diaSemanaAtual >= 2 && diaSemanaAtual <= 6) || diaSemanaAtual === 0
-
-      setLojaFechadaModal(!isDentroHorario || !isDiaAberto)
+    if (!isLojaAberta) {
+      setLojaFechadaModal(true)
+    } else if (!hasSelectedStore) {
+      setShowRedirecionarLojas(true)
     }
-
-    verificarHorarioFuncionamento()
-    const interval = setInterval(verificarHorarioFuncionamento, 60000)
-    return () => clearInterval(interval)
   }, [])
-
 
   return (
     <>
@@ -169,16 +160,26 @@ const Home = ({ popularProducts, discountProducts, attributes }) => {
                   <div className="bg-orange-100 px-10 py-6 rounded-lg mt-6">
                     <Banner />
                   </div>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
-            {showRedirecionarLojas && <RedirecionarLojas />}
-            {lojaFechadaModal && (
-              <LojaFechadaModal
-                isOpen={true}
-                onClose={() => setLojaFechadaModal(false)}
-              />
-            )}
+              {lojaFechadaModal ? (
+                <LojaFechadaModal
+                  isOpen={true}
+                  onClose={() => {
+                    setLojaFechadaModal(false)
+                    if (!localStorage.getItem('selectedStore')) {
+                      setShowRedirecionarLojas(true)
+                    }
+                  }}
+                />
+              ) : showRedirecionarLojas ? (
+                <RedirecionarLojas
+                  onStoreSelect={() => {
+                    setShowRedirecionarLojas(false)
+                  }}
+                />
+              ) : null}
             {/* feature category's */}
             {storeCustomizationSetting?.home?.featured_status && (
               <div className="bg-gray-100 lg:py-16 py-10">

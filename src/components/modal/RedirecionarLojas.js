@@ -1,14 +1,13 @@
 import React, { Fragment, useEffect } from "react"
 import { Dialog, Transition } from "@headlessui/react"
 
-export default function RedirecionarLojas() {
+export default function RedirecionarLojas({ onStoreSelect }) {
     const [open, setOpen] = React.useState(false)
 
     const lojaPortimao = `37°08'12.6"N 8°32'25.6"W`
     const lojaMexilhoeira = `37°09'30.3"N 8°36'51.5"W`
 
     const handleOpen = () => {
-        // Check if user already selected a store
         const hasSelectedStore = localStorage.getItem('selectedStore')
         if (!hasSelectedStore) {
             setOpen(true)
@@ -24,7 +23,9 @@ export default function RedirecionarLojas() {
             localStorage.setItem('coordinates', lojaMexilhoeira)
         }
         setOpen(false)
+        onStoreSelect?.() // Chama o callback após seleção
     }
+
 
     useEffect(() => {
         handleOpen()

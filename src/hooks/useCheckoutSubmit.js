@@ -168,6 +168,7 @@ const useCheckoutSubmit = (storeSetting) => {
         subTotal: cartTotal,
         shippingCost: shippingCost,
         discount: discountAmount,
+        cupom: couponInfo.couponCode,
         total: total,
         frete: shippingCost,
         retiradaNaLoja: isPickupActive,
@@ -297,6 +298,7 @@ const useCheckoutSubmit = (storeSetting) => {
   }
 
   return {
+    setCouponInfo,
     isPaymentModalOpen,
     setIsPaymentModalOpen,
     isRegionSelected,

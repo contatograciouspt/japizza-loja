@@ -34,7 +34,7 @@ const CartItem = ({ item, currency }) => {
           {item.title}
         </Link>
         <span className="text-xs text-gray-400 mb-1">
-          Preço do item €{item.price}
+          Preço do item €{item.price.toFixed(2)}
         </span>
         <div className="flex items-center justify-between">
           <div className="font-bold text-sm md:text-base text-heading leading-5">

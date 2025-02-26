@@ -197,7 +197,6 @@ const Checkout = () => {
     setIsOrderButtonEnabled(isFormValid)
   }
 
-
   const handleOpenMapModal = () => {
     setIsMapModalOpen(true)
   }

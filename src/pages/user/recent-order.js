@@ -12,6 +12,8 @@ export default function RecentOrder({ orders, loading, error }){
   const { storeCustomizationSetting } = useGetSetting()
   const { showingTranslateValue } = useUtilsFunction()
 
+  console.log("orders", orders)
+
   return (
     <>
       <div className="max-w-screen-2xl mx-auto">
